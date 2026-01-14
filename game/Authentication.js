@@ -47,8 +47,8 @@ class Authentication {
             console.log(`[AUTH] New Pilot Registered (Pending Verify): ${username}`);
             return { success: true, message: 'OTP sent to email', requireOtp: true, email: email };
         } catch (err) {
-            console.error('[AUTH] Register Error:', err);
-            return { success: false, message: 'Server error' };
+            console.error('[AUTH] Register Critical Error:', err); // Detailed log for Render
+            return { success: false, message: 'Server error: ' + err.message };
         }
     }
 
