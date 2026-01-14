@@ -57,9 +57,40 @@ socket.on('connect', () => {
 });
 
 socket.on('registerResponse', (res) => {
+    if (res.success && res.requireOtp) {
+        showMsg('Code Sent! Check your Email.');
+        // Show OTP UI
+        emailInput.style.display = 'none';
+        usernameInput.style.display = 'none';
+        passwordInput.style.display = 'none';
+        registerBtn.style.display = 'none';
+
+        otpInput.style.display = 'block';
+        verifyBtn.style.display = 'block';
+    } else {
+        showMsg(res.message);
+    }
+});
+
+socket.on('verifyResponse', (res) => {
     if (res.success) {
-        showMsg('Registration Successful! Please Login.');
-        document.getElementById('password').value = '';
+        showMsg('Account Verified! Please Login.');
+        // Reset UI to Login
+        otpInput.style.display = 'none';
+        verifyBtn.style.display = 'none';
+
+        usernameInput.style.display = 'block';
+        passwordInput.style.display = 'block';
+        loginBtn.style.display = 'block';
+        registerBtn.style.display = 'block';
+
+        // Reset Register Button style
+        isRegistering = false;
+        registerBtn.textContent = 'REGISTER NEW PILOT';
+        registerBtn.style.background = 'transparent';
+        registerBtn.style.color = '#0f0';
+
+        passwordInput.value = '';
     } else {
         showMsg(res.message);
     }

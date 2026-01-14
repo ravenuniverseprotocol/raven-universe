@@ -117,10 +117,13 @@
     <div id="login-overlay">
         <div class="login-box">
             <h1>Raven Universe</h1>
-            <input type="email" id="email" placeholder="Communication Frequency (Email)" style="display:none;">
+            <input type="email" id="email" placeholder="Email Address" style="display:none;">
             <input type="text" id="username" placeholder="Pilot Callsign">
-            <input type="password" id="password" placeholder="Access Code">
+            <input type="password" id="password" placeholder="Password">
+            <input type="text" id="otp-code" placeholder="Verification Code (Check Email)"
+                style="display:none; border: 1px solid #ff0; color: #ff0;">
             <button id="btn-login">LOGIN</button>
+            <button id="btn-verify" style="display:none; background: #ff0; color: #000;">VERIFY CODE</button>
             <button id="btn-register" style="background: transparent; border: 1px solid #0f0; color: #0f0;">REGISTER NEW
                 PILOT</button>
             <div id="login-msg" class="error"></div>
@@ -130,6 +133,10 @@
     <div id="canvas-container">
         <canvas id="gameCanvas"></canvas>
         <div id="ui-layer" class="hidden">
+            <div id="version-label"
+                style="position: absolute; bottom: 10px; left: 10px; color: #555; font-family: 'Courier New'; font-size: 12px; pointer-events: none;">
+                Raven Universe Server v0.1.0
+            </div>
             <div class="panel">
                 <h1>Raven Universe Uplink</h1>
                 <div id="status">Connecting...</div>

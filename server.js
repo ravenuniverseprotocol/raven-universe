@@ -56,7 +56,13 @@ io.on('connection', (socket) => {
     // Handle Register
     socket.on('register', (data) => {
         const result = auth.register(data.username, data.email, data.password);
-        result.then(res => socket.emit('registerResponse', res)); // Async fix
+        result.then(res => socket.emit('registerResponse', res));
+    });
+
+    // Handle Verify OTP
+    socket.on('verify', (data) => {
+        const result = auth.verify(data.email, data.code);
+        result.then(res => socket.emit('verifyResponse', res));
     });
 
     // Handle Login

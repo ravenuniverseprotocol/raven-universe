@@ -2,8 +2,11 @@ const mongoose = require('mongoose');
 
 const UserSchema = new mongoose.Schema({
     username: { type: String, required: true, unique: true },
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true }, // Add Email
-    password: { type: String, required: true }, // Will be hashed
+    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    password: { type: String, required: true },
+    isVerified: { type: Boolean, default: false },
+    otpCode: { type: String },
+    otpExpires: { type: Date },
     credits: { type: Number, default: 1000 },
     ship: { type: String, default: 'miner-v1' },
     systemId: { type: Number, default: 0 },
