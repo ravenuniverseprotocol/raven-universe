@@ -6,13 +6,16 @@ class Authentication {
         // No local storage needed anymore
     }
 
-    async register(username, password) {
-        if (!username || !password) return { success: false, message: 'Invalid credentials' };
+    async register(username, email, password) {
+        if (!username || !email || !password) return { success: false, message: 'Invalid credentials' };
 
         try {
             // Check if user exists
-            const existingUser = await User.findOne({ username });
-            if (existingUser) return { success: false, message: 'Username already taken' };
+            const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+            if (existingUser) {
+                if (existingUser.email === email) return { success: false, message: 'Email already registered' };
+                return { success: false, message: 'Username already taken' };
+            }
 
             // Hash password
             const salt = await bcrypt.genSalt(10);
@@ -21,6 +24,7 @@ class Authentication {
             // Create new user in MongoDB
             const newUser = new User({
                 username,
+                email,
                 password: hashedPassword,
                 systemId: 0, // Raven Prime
                 credits: 1000

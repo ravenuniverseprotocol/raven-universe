@@ -55,8 +55,8 @@ io.on('connection', (socket) => {
 
     // Handle Register
     socket.on('register', (data) => {
-        const result = auth.register(data.username, data.password);
-        socket.emit('registerResponse', result);
+        const result = auth.register(data.username, data.email, data.password);
+        result.then(res => socket.emit('registerResponse', res)); // Async fix
     });
 
     // Handle Login
