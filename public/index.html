@@ -52,13 +52,83 @@
         .system-info {
             font-size: 12px;
         }
+
+        /* Login Overlay */
+        #login-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 100;
+        }
+
+        .login-box {
+            background: #001100;
+            border: 2px solid #0f0;
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+        }
+
+        input {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            background: #000;
+            border: 1px solid #0f0;
+            color: #0f0;
+            font-family: inherit;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            background: #0f0;
+            color: #000;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            font-family: inherit;
+            margin-top: 5px;
+        }
+
+        button:hover {
+            background: #0a0;
+        }
+
+        .error {
+            color: #f00;
+            font-size: 12px;
+            margin-top: 10px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 
 <body>
+    <div id="login-overlay">
+        <div class="login-box">
+            <h1>Raven Universe</h1>
+            <input type="text" id="username" placeholder="Pilot Callsign">
+            <input type="password" id="password" placeholder="Access Code">
+            <button id="btn-login">LOGIN</button>
+            <button id="btn-register" style="background: transparent; border: 1px solid #0f0; color: #0f0;">REGISTER NEW
+                PILOT</button>
+            <div id="login-msg" class="error"></div>
+        </div>
+    </div>
+
     <div id="canvas-container">
         <canvas id="gameCanvas"></canvas>
-        <div id="ui-layer">
+        <div id="ui-layer" class="hidden">
             <div class="panel">
                 <h1>Raven Universe Uplink</h1>
                 <div id="status">Connecting...</div>

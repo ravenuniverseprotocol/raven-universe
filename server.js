@@ -6,6 +6,9 @@ const cors = require('cors');
 
 // Game Modules
 const Universe = require('./game/Universe');
+const Authentication = require('./game/Authentication'); // Auth Module
+
+const path = require('path');
 
 const app = express();
 const server = http.createServer(app);
@@ -13,8 +16,13 @@ const server = http.createServer(app);
 // Configure CORS for web access
 app.use(cors());
 
-// Serve static files (if we host the client here later)
-app.use(express.static('public'));
+// Serve static files with absolute path
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Explicit handler for root
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // Socket.IO Setup
 const io = new Server(server, {
@@ -26,15 +34,49 @@ const io = new Server(server, {
 
 // Initialize Game Universe
 const ravenUniverse = new Universe();
+const auth = new Authentication(); // Initialize Auth
 console.log(`[GAME] Universe initialized with ${ravenUniverse.systems.length} systems.`);
 
 // Game State
 const players = new Map();
 
 io.on('connection', (socket) => {
-    console.log(`[NET] New Pilot Connected: ${socket.id}`);
+    console.log(`[NET] New Connection: ${socket.id}`);
 
-    // Handle Login / Join
+    // Handle Register
+    socket.on('register', (data) => {
+        const result = auth.register(data.username, data.password);
+        socket.emit('registerResponse', result);
+    });
+
+    // Handle Login
+    socket.on('login', (data) => {
+        const result = auth.login(data.username, data.password);
+        if (result.success) {
+            // Success! Join the game
+            const user = result.user;
+
+            // Re-sync user location if needed, or use saved
+            const startSystem = ravenUniverse.systems.find(s => s.id === user.systemId) || ravenUniverse.getStartingSystem();
+
+            const activePlayer = {
+                id: socket.id,
+                username: user.username,
+                systemId: startSystem.id,
+                credits: user.credits,
+                ship: user.ship,
+                status: 'active'
+            };
+
+            players.set(socket.id, activePlayer);
+            socket.emit('loginResponse', { success: true, player: activePlayer, universe: ravenUniverse.getPublicData() });
+
+            // Broadcast arrival
+            socket.broadcast.emit('playerJoined', { id: activePlayer.id, username: activePlayer.username });
+        } else {
+            socket.emit('loginResponse', { success: false, message: result.message });
+        }
+    });
     socket.on('join', (data) => {
         // data: { username: "PilotName" }
         const startSystem = ravenUniverse.getStartingSystem();
