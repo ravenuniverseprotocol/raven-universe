@@ -67,31 +67,32 @@ io.on('connection', (socket) => {
 
     // Handle Login
     socket.on('login', (data) => {
-        const result = auth.login(data.username, data.password);
-        if (result.success) {
-            // Success! Join the game
-            const user = result.user;
+        auth.login(data.username, data.password).then(result => {
+            if (result.success) {
+                // Success! Join the game
+                const user = result.user;
 
-            // Re-sync user location if needed, or use saved
-            const startSystem = ravenUniverse.systems.find(s => s.id === user.systemId) || ravenUniverse.getStartingSystem();
+                // Re-sync user location if needed, or use saved
+                const startSystem = ravenUniverse.systems.find(s => s.id === user.systemId) || ravenUniverse.getStartingSystem();
 
-            const activePlayer = {
-                id: socket.id,
-                username: user.username,
-                systemId: startSystem.id,
-                credits: user.credits,
-                ship: user.ship,
-                status: 'active'
-            };
+                const activePlayer = {
+                    id: socket.id,
+                    username: user.username,
+                    systemId: startSystem.id,
+                    credits: user.credits,
+                    ship: user.ship,
+                    status: 'active'
+                };
 
-            players.set(socket.id, activePlayer);
-            socket.emit('loginResponse', { success: true, player: activePlayer, universe: ravenUniverse.getPublicData() });
+                players.set(socket.id, activePlayer);
+                socket.emit('loginResponse', { success: true, player: activePlayer, universe: ravenUniverse.getPublicData() });
 
-            // Broadcast arrival
-            socket.broadcast.emit('playerJoined', { id: activePlayer.id, username: activePlayer.username });
-        } else {
-            socket.emit('loginResponse', { success: false, message: result.message });
-        }
+                // Broadcast arrival
+                socket.broadcast.emit('playerJoined', { id: activePlayer.id, username: activePlayer.username });
+            } else {
+                socket.emit('loginResponse', { success: false, message: result.message });
+            }
+        });
     });
     socket.on('join', (data) => {
         // data: { username: "PilotName" }
