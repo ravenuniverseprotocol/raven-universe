@@ -15,8 +15,12 @@ let camera = { x: 0, y: 0, zoom: 0.5 };
 
 // --- AUTH HANDLERS ---
 const emailInput = document.getElementById('email');
+const usernameInput = document.getElementById('username');
+const passwordInput = document.getElementById('password');
+const otpInput = document.getElementById('otp-code');
 const loginBtn = document.getElementById('btn-login');
 const registerBtn = document.getElementById('btn-register');
+const verifyBtn = document.getElementById('btn-verify');
 
 // Toggle UI logic
 let isRegistering = false;
@@ -41,10 +45,16 @@ registerBtn.addEventListener('click', () => {
 });
 
 loginBtn.addEventListener('click', () => {
-    const user = document.getElementById('username').value;
-    const pass = document.getElementById('password').value;
+    const user = usernameInput.value;
+    const pass = passwordInput.value;
     if (!user || !pass) return showMsg('Enter credentials');
     socket.emit('login', { username: user, password: pass });
+});
+
+verifyBtn.addEventListener('click', () => {
+    const code = otpInput.value;
+    if (!code) return showMsg('Enter code from email');
+    socket.emit('verify', { email: pendingEmail, code: code });
 });
 
 function showMsg(msg) {
