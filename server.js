@@ -40,9 +40,16 @@ console.log(`[GAME] Universe initialized with ${ravenUniverse.systems.length} sy
 
 // Database Connection
 if (process.env.MONGO_URI) {
-    mongoose.connect(process.env.MONGO_URI)
-        .then(() => console.log('[DB] Connected to MongoDB Atlas'))
+    console.log('[DB] Attempting connection to MongoDB Atlas...');
+    mongoose.connect(process.env.MONGO_URI, {
+        serverSelectionTimeoutMS: 5000 // Fast fail if can't connect
+    })
+        .then(() => console.log('[DB] !!! Connected to MongoDB Atlas !!!'))
         .catch(err => console.error('[DB] Connection Error:', err));
+
+    mongoose.connection.on('error', err => {
+        console.error('[DB] Runtime Connection Error:', err);
+    });
 } else {
     console.warn('[DB] No MONGO_URI found. Persistence disabled.');
 }
