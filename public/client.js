@@ -69,6 +69,7 @@ socket.on('connect', () => {
 });
 
 socket.on('registerResponse', (res) => {
+    console.log('[DEBUG] Register Response:', res);
     if (res.success && res.requireOtp) {
         showMsg('Code Sent! Check your Email.');
         // Show OTP UI

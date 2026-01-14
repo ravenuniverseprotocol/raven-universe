@@ -114,6 +114,11 @@
 </head>
 
 <body>
+    <div id="version-label"
+        style="position: fixed; bottom: 10px; left: 10px; color: #333; font-family: 'Courier New'; font-size: 12px; pointer-events: none; z-index: 1000;">
+        Raven Universe Server v0.1.0 (PROD)
+    </div>
+
     <div id="login-overlay">
         <div class="login-box">
             <h1>Raven Universe</h1>
@@ -133,10 +138,6 @@
     <div id="canvas-container">
         <canvas id="gameCanvas"></canvas>
         <div id="ui-layer" class="hidden">
-            <div id="version-label"
-                style="position: absolute; bottom: 10px; left: 10px; color: #555; font-family: 'Courier New'; font-size: 12px; pointer-events: none;">
-                Raven Universe Server v0.1.0
-            </div>
             <div class="panel">
                 <h1>Raven Universe Uplink</h1>
                 <div id="status">Connecting...</div>
