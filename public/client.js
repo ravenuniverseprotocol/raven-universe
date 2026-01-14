@@ -24,6 +24,7 @@ const verifyBtn = document.getElementById('btn-verify');
 
 // Toggle UI logic
 let isRegistering = false;
+let pendingEmail = '';
 
 registerBtn.addEventListener('click', () => {
     if (!isRegistering) {
@@ -36,10 +37,11 @@ registerBtn.addEventListener('click', () => {
         registerBtn.style.color = '#000';
     } else {
         // Perform Register
-        const user = document.getElementById('username').value;
-        const email = document.getElementById('email').value;
-        const pass = document.getElementById('password').value;
+        const user = usernameInput.value;
+        const email = emailInput.value;
+        const pass = passwordInput.value;
         if (!user || !email || !pass) return showMsg('All fields required');
+        pendingEmail = email; // Store for verification
         socket.emit('register', { username: user, email: email, password: pass });
     }
 });
