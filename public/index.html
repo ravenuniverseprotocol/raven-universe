@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raven Universe - Command Uplink</title>
+    <style>
+        body {
+            margin: 0;
+            background: #000;
+            color: #0f0;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+        }
+
+        #canvas-container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        canvas {
+            display: block;
+        }
+
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            padding: 20px;
+            pointer-events: none;
+        }
+
+        .panel {
+            background: rgba(0, 20, 0, 0.8);
+            border: 1px solid #0f0;
+            padding: 10px;
+            margin-bottom: 10px;
+        }
+
+        h1 {
+            margin: 0 0 10px 0;
+            font-size: 18px;
+            text-transform: uppercase;
+        }
+
+        #status {
+            color: #fff;
+        }
+
+        .system-info {
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="canvas-container">
+        <canvas id="gameCanvas"></canvas>
+        <div id="ui-layer">
+            <div class="panel">
+                <h1>Raven Universe Uplink</h1>
+                <div id="status">Connecting...</div>
+                <div id="player-count">Active Pilots: 0</div>
+            </div>
+            <div class="panel system-info">
+                <div>System: <span id="current-system">Unknown</span></div>
+                <div>Security: <span id="security-level">---</span></div>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="client.js"></script>
+</body>
+
+</html>
