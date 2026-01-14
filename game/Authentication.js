@@ -44,6 +44,7 @@ class Authentication {
             // Send Email
             await Mailer.sendOTP(email, otpCode);
 
+            console.log(`[AUTH] OTP generated for ${username}: ${otpCode}`); // DEBUG: View in Render Logs
             console.log(`[AUTH] New Pilot Registered (Pending Verify): ${username}`);
             return { success: true, message: 'OTP sent to email', requireOtp: true, email: email };
         } catch (err) {
