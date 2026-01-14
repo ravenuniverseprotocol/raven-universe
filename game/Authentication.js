@@ -1,67 +1,56 @@
-const fs = require('fs');
-const path = require('path');
+const bcrypt = require('bcryptjs');
+const User = require('./models/User');
 
 class Authentication {
     constructor() {
-        this.users = new Map();
-        this.dbPath = path.join(__dirname, '..', 'users.json');
-        this.loadUsers();
+        // No local storage needed anymore
     }
 
-    loadUsers() {
-        if (fs.existsSync(this.dbPath)) {
-            try {
-                const data = fs.readFileSync(this.dbPath, 'utf8');
-                const parsed = JSON.parse(data);
-                // Convert object to Map
-                Object.keys(parsed).forEach(key => {
-                    this.users.set(key, parsed[key]);
-                });
-                console.log(`[AUTH] Loaded ${this.users.size} users from disk.`);
-            } catch (e) {
-                console.error('[AUTH] Error loading users:', e);
-            }
-        }
-    }
-
-    saveUsers() {
-        try {
-            const obj = Object.fromEntries(this.users);
-            fs.writeFileSync(this.dbPath, JSON.stringify(obj, null, 2));
-        } catch (e) {
-            console.error('[AUTH] Error saving users:', e);
-        }
-    }
-
-    register(username, password) {
+    async register(username, password) {
         if (!username || !password) return { success: false, message: 'Invalid credentials' };
-        if (this.users.has(username)) return { success: false, message: 'Username already taken' };
 
-        const newUser = {
-            username,
-            password, // In production, this MUST be hashed (bcrypt)
-            credits: 1000,
-            ship: 'miner-v1',
-            systemId: 0, // Raven Prime
-            created: Date.now()
-        };
+        try {
+            // Check if user exists
+            const existingUser = await User.findOne({ username });
+            if (existingUser) return { success: false, message: 'Username already taken' };
 
-        this.users.set(username, newUser);
-        this.saveUsers();
-        return { success: true, message: 'Registration successful' };
+            // Hash password
+            const salt = await bcrypt.genSalt(10);
+            const hashedPassword = await bcrypt.hash(password, salt);
+
+            // Create new user in MongoDB
+            const newUser = new User({
+                username,
+                password: hashedPassword,
+                systemId: 0, // Raven Prime
+                credits: 1000
+            });
+
+            await newUser.save();
+            console.log(`[AUTH] New Pilot Registered: ${username}`);
+            return { success: true, message: 'Registration successful' };
+        } catch (err) {
+            console.error('[AUTH] Register Error:', err);
+            return { success: false, message: 'Server error' };
+        }
     }
 
-    login(username, password) {
-        if (!this.users.has(username)) return { success: false, message: 'User not found' };
+    async login(username, password) {
+        try {
+            // Find user
+            const user = await User.findOne({ username });
+            if (!user) return { success: false, message: 'User not found' };
 
-        const user = this.users.get(username);
-        if (user.password !== password) return { success: false, message: 'Invalid password' };
+            // Verify Password
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) return { success: false, message: 'Invalid credentials' };
 
-        return { success: true, user: user };
-    }
-
-    getUser(username) {
-        return this.users.get(username);
+            console.log(`[AUTH] Pilot Login: ${username}`);
+            return { success: true, user: user };
+        } catch (err) {
+            console.error('[AUTH] Login Error:', err);
+            return { success: false, message: 'Server error' };
+        }
     }
 }
 

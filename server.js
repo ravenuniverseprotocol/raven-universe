@@ -6,8 +6,9 @@ const cors = require('cors');
 
 // Game Modules
 const Universe = require('./game/Universe');
-const Authentication = require('./game/Authentication'); // Auth Module
+const Authentication = require('./game/Authentication');
 
+const mongoose = require('mongoose');
 const path = require('path');
 
 const app = express();
@@ -34,8 +35,17 @@ const io = new Server(server, {
 
 // Initialize Game Universe
 const ravenUniverse = new Universe();
-const auth = new Authentication(); // Initialize Auth
+const auth = new Authentication();
 console.log(`[GAME] Universe initialized with ${ravenUniverse.systems.length} systems.`);
+
+// Database Connection
+if (process.env.MONGO_URI) {
+    mongoose.connect(process.env.MONGO_URI)
+        .then(() => console.log('[DB] Connected to MongoDB Atlas'))
+        .catch(err => console.error('[DB] Connection Error:', err));
+} else {
+    console.warn('[DB] No MONGO_URI found. Persistence disabled.');
+}
 
 // Game State
 const players = new Map();
