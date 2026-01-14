@@ -14,18 +14,37 @@ let localPlayer = null;
 let camera = { x: 0, y: 0, zoom: 0.5 };
 
 // --- AUTH HANDLERS ---
-document.getElementById('btn-login').addEventListener('click', () => {
+const emailInput = document.getElementById('email');
+const loginBtn = document.getElementById('btn-login');
+const registerBtn = document.getElementById('btn-register');
+
+// Toggle UI logic
+let isRegistering = false;
+
+registerBtn.addEventListener('click', () => {
+    if (!isRegistering) {
+        // Switch to Register Mode
+        isRegistering = true;
+        emailInput.style.display = 'block';
+        loginBtn.style.display = 'none';
+        registerBtn.textContent = 'CONFIRM REGISTRATION';
+        registerBtn.style.background = '#0f0';
+        registerBtn.style.color = '#000';
+    } else {
+        // Perform Register
+        const user = document.getElementById('username').value;
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        if (!user || !email || !pass) return showMsg('All fields required');
+        socket.emit('register', { username: user, email: email, password: pass });
+    }
+});
+
+loginBtn.addEventListener('click', () => {
     const user = document.getElementById('username').value;
     const pass = document.getElementById('password').value;
     if (!user || !pass) return showMsg('Enter credentials');
     socket.emit('login', { username: user, password: pass });
-});
-
-document.getElementById('btn-register').addEventListener('click', () => {
-    const user = document.getElementById('username').value;
-    const pass = document.getElementById('password').value;
-    if (!user || !pass) return showMsg('Enter credentials');
-    socket.emit('register', { username: user, password: pass });
 });
 
 function showMsg(msg) {
