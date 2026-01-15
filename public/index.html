@@ -5,149 +5,297 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Raven Universe - Command Uplink</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;700&family=Rajdhani:wght@300;500;700&display=swap"
+        rel="stylesheet">
     <style>
+        :root {
+            --neon-blue: #00f3ff;
+            --neon-green: #0aff00;
+            --dark-bg: rgba(0, 10, 16, 0.95);
+            --glass-bg: rgba(0, 20, 30, 0.6);
+            --border-color: rgba(0, 243, 255, 0.3);
+            --text-main: #e0f8ff;
+        }
+
         body {
             margin: 0;
             background: #000;
-            color: #0f0;
-            font-family: 'Courier New', monospace;
+            color: var(--text-main);
+            font-family: 'Rajdhani', sans-serif;
             overflow: hidden;
-        }
-
-        #canvas-container {
-            position: relative;
-            width: 100vw;
             height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
 
-        canvas {
-            display: block;
+        /* Background Video */
+        #bg-video {
+            position: fixed;
+            right: 0;
+            bottom: 0;
+            min-width: 100%;
+            min-height: 100%;
+            z-index: -1;
+            opacity: 0.6;
+            filter: contrast(1.2) brightness(0.8);
+            object-fit: cover;
         }
 
-        #ui-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            padding: 20px;
-            pointer-events: none;
-        }
-
-        .panel {
-            background: rgba(0, 20, 0, 0.8);
-            border: 1px solid #0f0;
-            padding: 10px;
-            margin-bottom: 10px;
-        }
-
-        h1 {
-            margin: 0 0 10px 0;
-            font-size: 18px;
-            text-transform: uppercase;
-        }
-
-        #status {
-            color: #fff;
-        }
-
-        .system-info {
-            font-size: 12px;
-        }
-
-        /* Login Overlay */
-        #login-overlay {
+        /* Overlay Grid */
+        .grid-overlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.9);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 100;
+            background:
+                linear-gradient(rgba(0, 0, 0, 0) 50%, rgba(0, 0, 0, 0.2) 50%),
+                linear-gradient(90deg, rgba(0, 255, 255, 0.03) 1px, transparent 1px);
+            background-size: 100% 2px, 100px 100%;
+            pointer-events: none;
+            z-index: 0;
         }
 
-        .login-box {
-            background: #001100;
-            border: 2px solid #0f0;
-            padding: 20px;
-            width: 300px;
+        /* Login Container - EVE Style */
+        .login-container {
+            position: relative;
+            z-index: 10;
+            width: 400px;
+            background: var(--glass-bg);
+            backdrop-filter: blur(15px);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 0 30px rgba(0, 243, 255, 0.1);
+            padding: 2px;
+            /* For double border effect */
+            clip-path: polygon(0 0,
+                    100% 0,
+                    100% 85%,
+                    95% 100%,
+                    0 100%);
+        }
+
+        .login-inner {
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.4) 0%, rgba(0, 20, 30, 0.8) 100%);
+            padding: 40px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .header-logo {
             text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .header-logo h1 {
+            font-family: 'Orbitron', sans-serif;
+            font-size: 28px;
+            color: var(--neon-blue);
+            text-transform: uppercase;
+            letter-spacing: 4px;
+            margin: 0;
+            text-shadow: 0 0 10px rgba(0, 243, 255, 0.5);
+        }
+
+        .header-logo::after {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--neon-blue), transparent);
+            margin-top: 15px;
+        }
+
+        /* Inputs */
+        .input-group {
+            margin-bottom: 20px;
+            position: relative;
         }
 
         input {
             width: 100%;
-            padding: 10px;
-            margin: 10px 0;
-            background: #000;
-            border: 1px solid #0f0;
-            color: #0f0;
-            font-family: inherit;
+            padding: 12px 15px;
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid #334;
+            color: var(--neon-blue);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 14px;
+            box-sizing: border-box;
+            transition: all 0.3s ease;
         }
 
-        button {
+        input:focus {
+            outline: none;
+            border-color: var(--neon-blue);
+            box-shadow: 0 0 15px rgba(0, 243, 255, 0.2);
+            background: rgba(0, 10, 20, 0.8);
+        }
+
+        input::placeholder {
+            color: rgba(0, 243, 255, 0.3);
+            font-family: 'Rajdhani', sans-serif;
+            text-transform: uppercase;
+        }
+
+        /* Buttons */
+        .btn-main {
             width: 100%;
-            padding: 10px;
-            background: #0f0;
-            color: #000;
-            border: none;
+            padding: 15px;
+            background: linear-gradient(90deg, rgba(0, 243, 255, 0.1), rgba(0, 243, 255, 0.2));
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            font-family: 'Orbitron', sans-serif;
+            font-size: 16px;
+            letter-spacing: 2px;
             cursor: pointer;
-            font-weight: bold;
-            font-family: inherit;
-            margin-top: 5px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
         }
 
-        button:hover {
-            background: #0a0;
+        .btn-main:hover {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 20px rgba(0, 243, 255, 0.6);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: none;
+            color: #668;
+            font-size: 12px;
+            width: 100%;
+            margin-top: 15px;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: color 0.3s;
+        }
+
+        .btn-secondary:hover {
+            color: var(--text-main);
+        }
+
+        /* Messages */
+        .status-msg {
+            text-align: center;
+            font-size: 12px;
+            margin-top: 15px;
+            min-height: 15px;
+            color: var(--neon-green);
+            text-shadow: 0 0 5px rgba(10, 255, 0, 0.5);
         }
 
         .error {
-            color: #f00;
-            font-size: 12px;
-            margin-top: 10px;
+            color: #ff3333;
+            text-shadow: 0 0 5px rgba(255, 50, 50, 0.5);
         }
 
-        .hidden {
-            display: none !important;
+        /* Footer */
+        .footer-version {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            font-size: 10px;
+            color: rgba(255, 255, 255, 0.3);
+            text-align: right;
+        }
+
+        /* Canvas UI Layer (In-Game) */
+        #ui-layer {
+            display: none;
+        }
+
+        #canvas-container {
+            display: none;
+        }
+
+        /* Hidden until login */
+
+        /* Animation */
+        @keyframes scanline {
+            0% {
+                transform: translateY(-100%);
+            }
+
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 20px;
+            background: linear-gradient(to bottom, transparent, rgba(0, 243, 255, 0.1), transparent);
+            animation: scanline 4s linear infinite;
+            pointer-events: none;
+            z-index: 5;
         }
     </style>
 </head>
 
 <body>
-    <div id="version-label"
-        style="position: fixed; bottom: 10px; left: 10px; color: #333; font-family: 'Courier New'; font-size: 12px; pointer-events: none; z-index: 1000;">
-        Raven Universe Server v0.1.0 (PROD) - Build 23:25
-    </div>
 
+    <!-- Background -->
+    <video id="bg-video" autoplay muted loopPLAYSINLINE>
+        <source src="assets/background_login.webm" type="video/webm">
+    </video>
+    <div class="grid-overlay"></div>
+    <div class="scanline"></div>
+
+    <!-- Login Interface -->
     <div id="login-overlay">
-        <div class="login-box">
-            <h1>Raven Universe</h1>
-            <input type="email" id="email" placeholder="Email Address" style="display:none;">
-            <input type="text" id="username" placeholder="Pilot Callsign">
-            <input type="password" id="password" placeholder="Password">
-            <input type="text" id="otp-code" placeholder="Verification Code (Check Email)"
-                style="display:none; border: 1px solid #ff0; color: #ff0;">
-            <button id="btn-login">LOGIN</button>
-            <button id="btn-verify" style="display:none; background: #ff0; color: #000;">VERIFY CODE</button>
-            <button id="btn-register" style="background: transparent; border: 1px solid #0f0; color: #0f0;">REGISTER NEW
-                PILOT</button>
-            <div id="login-msg" class="error"></div>
+        <div class="login-container">
+            <div class="login-inner">
+                <div class="header-logo">
+                    <h1>Raven Universe</h1>
+                    <div style="font-size: 10px; color: #668; margin-top: 5px;">SECURE UPLINK // PROTOCOL V4</div>
+                </div>
+
+                <!-- Inputs -->
+                <div class="input-group">
+                    <input type="text" id="username" placeholder="Pilot Callsign" autocomplete="off">
+                </div>
+
+                <div class="input-group">
+                    <input type="password" id="password" placeholder="Access Key" autocomplete="off">
+                </div>
+
+                <!-- Hidden Email/OTP for backward compat with client.js logic if needed, but styling is clean -->
+                <input type="email" id="email" placeholder="Email Address" style="display:none;">
+                <input type="text" id="otp-code" placeholder="Verification Code" style="display:none;">
+
+                <!-- Actions -->
+                <button id="btn-login" class="btn-main">INITIALIZE UPLINK</button>
+                <button id="btn-verify" class="btn-main" style="display:none; background: #eb1;">VERIFY SIGNAL</button>
+
+                <button id="btn-register" class="btn-secondary">New Pilot Registration</button>
+
+                <div id="login-msg" class="status-msg">SYSTEM READY</div>
+            </div>
         </div>
     </div>
 
+    <!-- Game View (Hidden Initially) -->
     <div id="canvas-container">
         <canvas id="gameCanvas"></canvas>
-        <div id="ui-layer" class="hidden">
+        <div id="ui-layer">
+            <!-- HUD Elements will be injected here by JS -->
             <div class="panel">
-                <h1>Raven Universe Uplink</h1>
-                <div id="status">Connecting...</div>
-                <div id="player-count">Active Pilots: 0</div>
-            </div>
-            <div class="panel system-info">
-                <div>System: <span id="current-system">Unknown</span></div>
-                <div>Security: <span id="security-level">---</span></div>
+                <h1>Raven Prime</h1>
+                <div id="status">Connected</div>
             </div>
         </div>
+    </div>
+
+    <div class="footer-version">
+        BUILD 2026.15.01 <br> RAVEN PROTOCOL
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
