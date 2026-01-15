@@ -237,6 +237,10 @@
             pointer-events: none;
             z-index: 5;
         }
+
+        .hidden {
+            display: none !important;
+        }
     </style>
 </head>
 
@@ -264,7 +268,7 @@
                 </div>
 
                 <div class="input-group">
-                    <input type="password" id="password" placeholder="Access Key" autocomplete="off">
+                    <input type="password" id="password" placeholder="Password" autocomplete="off">
                 </div>
 
                 <!-- Hidden Email/OTP for backward compat with client.js logic if needed, but styling is clean -->

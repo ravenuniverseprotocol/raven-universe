@@ -56,6 +56,11 @@ if (loginBtn) {
         const user = usernameInput.value;
         const pass = passwordInput.value;
         if (!user || !pass) return showMsg('Enter credentials');
+
+        showMsg('Authenticating...');
+        loginBtn.textContent = 'CONNECTING...';
+        loginBtn.disabled = true;
+
         socket.emit('login', { username: user, password: pass });
     });
 }
@@ -116,6 +121,9 @@ socket.on('verifyResponse', (res) => {
 });
 
 socket.on('loginResponse', (res) => {
+    loginBtn.disabled = false;
+    loginBtn.textContent = 'INITIALIZE UPLINK';
+
     if (res.success) {
         // AUTH SUCCESS
         if (loginOverlay) loginOverlay.classList.add('hidden');
