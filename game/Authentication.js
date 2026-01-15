@@ -36,11 +36,11 @@ class Authentication {
 
             await newUser.save();
 
-            // Send Email
-            await Mailer.sendOTP(email, otpCode);
+            // Send Email (Async - Do not await to speed up UI)
+            Mailer.sendOTP(email, otpCode).catch(err => console.error('[AUTH] Email Error:', err));
 
-            console.log(`[AUTH] Register: OTP sent to ${username}`);
-            return { success: true, message: 'Code Sent! Check Email.', requireOtp: true, email: email };
+            console.log(`[AUTH] Register: OTP generated for ${username}`);
+            return { success: true, message: 'Code Generating... Check Email.', requireOtp: true, email: email };
         } catch (err) {
             console.error('[AUTH] Register Error:', err);
             return { success: false, message: 'Server error: ' + err.message };
@@ -95,9 +95,9 @@ class Authentication {
             user.otpExpires = Date.now() + 5 * 60 * 1000;
             await user.save();
 
-            // Send Email
-            await Mailer.sendOTP(user.email, otpCode);
-            console.log(`[AUTH] Login 2FA sent to ${username}`);
+            // Send Email (Async)
+            Mailer.sendOTP(user.email, otpCode).catch(err => console.error('[AUTH] Email Error:', err));
+            console.log(`[AUTH] Login 2FA generated for ${username}`);
 
             return { success: false, requireOtp: true, message: 'Security Code Sent to Email' };
 
