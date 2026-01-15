@@ -70,16 +70,18 @@ socket.on('connect', () => {
 
 socket.on('registerResponse', (res) => {
     console.log('[DEBUG] Register Response:', res);
-    if (res.success && res.requireOtp) {
-        showMsg('Code Sent! Check your Email.');
-        // Show OTP UI
+    if (res.success) {
+        showMsg(res.message);
+        // Direct flow to Login
         emailInput.style.display = 'none';
-        usernameInput.style.display = 'none';
-        passwordInput.style.display = 'none';
-        registerBtn.style.display = 'none';
+        isRegistering = false;
+        registerBtn.textContent = 'REGISTER NEW PILOT';
+        registerBtn.style.background = 'transparent';
+        registerBtn.style.color = '#0f0';
+        loginBtn.style.display = 'block';
 
-        otpInput.style.display = 'block';
-        verifyBtn.style.display = 'block';
+        // Auto-fill username for convenience
+        // passwordInput.value = ''; 
     } else {
         showMsg(res.message);
     }

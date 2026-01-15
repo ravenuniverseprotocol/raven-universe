@@ -22,58 +22,31 @@ class Authentication {
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
 
-            // Generate OTP
-            const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
-            const otpExpires = Date.now() + 10 * 60 * 1000; // 10 mins
-
-            // Create new user in MongoDB (Verified = false)
+            // Create new user (Verified = TRUE by default now)
             const newUser = new User({
                 username,
                 email,
                 password: hashedPassword,
-                systemId: 0, // Raven Prime
+                systemId: 0,
                 credits: 1000,
-                isVerified: false,
-                otpCode,
-                otpExpires
+                isVerified: true, // No email check
+                role: 'pilot'
             });
 
             await newUser.save();
 
-            // Send Email
-            await Mailer.sendOTP(email, otpCode);
-
-            console.log(`[AUTH] OTP generated for ${username}: ${otpCode}`); // DEBUG: View in Render Logs
-            console.log(`[AUTH] New Pilot Registered (Pending Verify): ${username}`);
-            return { success: true, message: 'OTP sent to email', requireOtp: true, email: email };
+            console.log(`[AUTH] New Pilot Registered (Auto-Verified): ${username}`);
+            // Auto login or ask to login
+            return { success: true, message: 'Registration Complete. Please Login.', requireOtp: false };
         } catch (err) {
-            console.error('[AUTH] Register Critical Error:', err); // Detailed log for Render
+            console.error('[AUTH] Register Error:', err);
             return { success: false, message: 'Server error: ' + err.message };
         }
     }
 
+    // Verify method removed (deprecated)
     async verify(email, code) {
-        try {
-            const user = await User.findOne({ email });
-            if (!user) return { success: false, message: 'User not found' };
-
-            if (user.isVerified) return { success: false, message: 'User already verified' };
-
-            if (Date.now() > user.otpExpires) return { success: false, message: 'Code expired' };
-
-            if (user.otpCode !== code) return { success: false, message: 'Invalid code' };
-
-            // Verify Success
-            user.isVerified = true;
-            user.otpCode = undefined;
-            user.otpExpires = undefined;
-            await user.save();
-
-            return { success: true, message: 'Account Verified' };
-        } catch (err) {
-            console.error('[AUTH] Verify Error:', err);
-            return { success: false, message: 'Server error' };
-        }
+        return { success: true, message: 'Verification not required.' };
     }
 
     async login(username, password) {
@@ -82,8 +55,8 @@ class Authentication {
             const user = await User.findOne({ username });
             if (!user) return { success: false, message: 'User not found' };
 
-            // Check Verification
-            if (!user.isVerified) return { success: false, message: 'Email not verified yet.' };
+            // Check Verification - DISABLED
+            // if (!user.isVerified) return { success: false, message: 'Email not verified yet.' };
 
             // Verify Password
             const isMatch = await bcrypt.compare(password, user.password);
