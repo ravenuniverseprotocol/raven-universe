@@ -1,69 +1,106 @@
 const bcrypt = require('bcryptjs');
 const User = require('./models/User');
-const Mailer = require('./Mailer'); // Import Mailer
+const Mailer = require('./Mailer');
 
 class Authentication {
-    constructor() {
-        // No local storage needed anymore
-    }
+    constructor() { }
 
     async register(username, email, password) {
         if (!username || !email || !password) return { success: false, message: 'Invalid credentials' };
 
         try {
-            // Check if user exists
             const existingUser = await User.findOne({ $or: [{ username }, { email }] });
             if (existingUser) {
                 if (existingUser.email === email) return { success: false, message: 'Email already registered' };
                 return { success: false, message: 'Username already taken' };
             }
 
-            // Hash password
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(password, salt);
 
-            // Create new user (Verified = TRUE by default now)
+            // Generate OTP
+            const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+            const otpExpires = Date.now() + 10 * 60 * 1000;
+
             const newUser = new User({
                 username,
                 email,
                 password: hashedPassword,
                 systemId: 0,
                 credits: 1000,
-                isVerified: true, // No email check
-                role: 'pilot'
+                isVerified: false,
+                role: 'pilot',
+                otpCode: otpCode,
+                otpExpires: otpExpires
             });
 
             await newUser.save();
 
-            console.log(`[AUTH] New Pilot Registered (Auto-Verified): ${username}`);
-            // Auto login or ask to login
-            return { success: true, message: 'Registration Complete. Please Login.', requireOtp: false };
+            // Send Email
+            await Mailer.sendOTP(email, otpCode);
+
+            console.log(`[AUTH] Register: OTP sent to ${username}`);
+            return { success: true, message: 'Code Sent! Check Email.', requireOtp: true, email: email };
         } catch (err) {
             console.error('[AUTH] Register Error:', err);
             return { success: false, message: 'Server error: ' + err.message };
         }
     }
 
-    // Verify method removed (deprecated)
     async verify(email, code) {
-        return { success: true, message: 'Verification not required.' };
+        try {
+            const user = await User.findOne({ email });
+            if (!user) return { success: false, message: 'User not found' };
+
+            if (Date.now() > user.otpExpires) return { success: false, message: 'Code expired' };
+            if (user.otpCode !== code) return { success: false, message: 'Invalid code' };
+
+            user.isVerified = true;
+            user.otpCode = undefined;
+            user.otpExpires = undefined;
+            await user.save();
+
+            return { success: true, message: 'Verified! Please Login.' };
+        } catch (err) {
+            console.error('[AUTH] Verify Error:', err);
+            return { success: false, message: 'Server error' };
+        }
     }
 
-    async login(username, password) {
+    async login(username, password, code) {
         try {
-            // Find user
             const user = await User.findOne({ username });
             if (!user) return { success: false, message: 'User not found' };
 
-            // Check Verification - DISABLED
-            // if (!user.isVerified) return { success: false, message: 'Email not verified yet.' };
-
-            // Verify Password
             const isMatch = await bcrypt.compare(password, user.password);
             if (!isMatch) return { success: false, message: 'Invalid credentials' };
 
-            console.log(`[AUTH] Pilot Login: ${username}`);
-            return { success: true, user: user };
+            // STRICT 2FA: Always require code
+            if (code) {
+                // Step 2: Verify Code
+                if (user.otpCode === code && Date.now() < user.otpExpires) {
+                    user.otpCode = undefined;
+                    user.otpExpires = undefined;
+                    await user.save();
+                    console.log(`[AUTH] Login Success: ${username}`);
+                    return { success: true, user: user };
+                } else {
+                    return { success: false, requireOtp: true, message: 'Invalid or Expired Code' };
+                }
+            }
+
+            // Step 1: Generate Login OTP
+            const otpCode = Math.floor(100000 + Math.random() * 900000).toString();
+            user.otpCode = otpCode;
+            user.otpExpires = Date.now() + 5 * 60 * 1000;
+            await user.save();
+
+            // Send Email
+            await Mailer.sendOTP(user.email, otpCode);
+            console.log(`[AUTH] Login 2FA sent to ${username}`);
+
+            return { success: false, requireOtp: true, message: 'Security Code Sent to Email' };
+
         } catch (err) {
             console.error('[AUTH] Login Error:', err);
             return { success: false, message: 'Server error' };

@@ -74,7 +74,7 @@ io.on('connection', (socket) => {
 
     // Handle Login
     socket.on('login', (data) => {
-        auth.login(data.username, data.password).then(result => {
+        auth.login(data.username, data.password, data.code).then(result => {
             if (result.success) {
                 // Success! Join the game
                 const user = result.user;
@@ -96,6 +96,9 @@ io.on('connection', (socket) => {
 
                 // Broadcast arrival
                 socket.broadcast.emit('playerJoined', { id: activePlayer.id, username: activePlayer.username });
+            } else if (result.requireOtp) {
+                // 2FA Challenge
+                socket.emit('loginResponse', { success: false, requireOtp: true, message: result.message });
             } else {
                 socket.emit('loginResponse', { success: false, message: result.message });
             }

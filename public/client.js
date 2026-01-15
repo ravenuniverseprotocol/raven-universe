@@ -4,7 +4,6 @@ const socket = io();
 const loginOverlay = document.getElementById('login-overlay');
 const loginMsg = document.getElementById('login-msg');
 const uiLayer = document.getElementById('ui-layer');
-
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
@@ -25,42 +24,64 @@ const verifyBtn = document.getElementById('btn-verify');
 // Toggle UI logic
 let isRegistering = false;
 let pendingEmail = '';
+let isLogin2FA = false;
 
-registerBtn.addEventListener('click', () => {
-    if (!isRegistering) {
-        // Switch to Register Mode
-        isRegistering = true;
-        emailInput.style.display = 'block';
-        loginBtn.style.display = 'none';
-        registerBtn.textContent = 'CONFIRM REGISTRATION';
-        registerBtn.style.background = '#0f0';
-        registerBtn.style.color = '#000';
-    } else {
-        // Perform Register
+if (registerBtn) {
+    registerBtn.addEventListener('click', () => {
+        if (!isRegistering) {
+            // Switch to Register Mode
+            isRegistering = true;
+            isLogin2FA = false;
+            emailInput.style.display = 'block';
+            loginBtn.style.display = 'none';
+            registerBtn.textContent = 'CONFIRM REGISTRATION';
+            registerBtn.style.background = '#0f0';
+            registerBtn.style.color = '#000';
+            otpInput.style.display = 'none';
+            verifyBtn.style.display = 'none';
+        } else {
+            // Perform Register
+            const user = usernameInput.value;
+            const email = emailInput.value;
+            const pass = passwordInput.value;
+            if (!user || !email || !pass) return showMsg('All fields required');
+            pendingEmail = email;
+            socket.emit('register', { username: user, email: email, password: pass });
+        }
+    });
+}
+
+if (loginBtn) {
+    loginBtn.addEventListener('click', () => {
         const user = usernameInput.value;
-        const email = emailInput.value;
         const pass = passwordInput.value;
-        if (!user || !email || !pass) return showMsg('All fields required');
-        pendingEmail = email; // Store for verification
-        socket.emit('register', { username: user, email: email, password: pass });
-    }
-});
+        if (!user || !pass) return showMsg('Enter credentials');
+        socket.emit('login', { username: user, password: pass });
+    });
+}
 
-loginBtn.addEventListener('click', () => {
-    const user = usernameInput.value;
-    const pass = passwordInput.value;
-    if (!user || !pass) return showMsg('Enter credentials');
-    socket.emit('login', { username: user, password: pass });
-});
+if (verifyBtn) {
+    verifyBtn.addEventListener('click', () => {
+        const code = otpInput.value;
+        if (!code) return showMsg('Enter code');
 
-verifyBtn.addEventListener('click', () => {
-    const code = otpInput.value;
-    if (!code) return showMsg('Enter code from email');
-    socket.emit('verify', { email: pendingEmail, code: code });
-});
+        if (isLogin2FA) {
+            // Step 2 Login: verify with code
+            socket.emit('login', {
+                username: usernameInput.value,
+                password: passwordInput.value,
+                code: code
+            });
+        } else {
+            // Registration Verify
+            socket.emit('verify', { email: pendingEmail, code: code });
+        }
+    });
+}
 
 function showMsg(msg) {
-    loginMsg.textContent = msg;
+    if (loginMsg) loginMsg.textContent = msg;
+    console.log('[MSG]', msg);
 }
 
 // --- SOCKET EVENTS ---
@@ -70,18 +91,16 @@ socket.on('connect', () => {
 
 socket.on('registerResponse', (res) => {
     console.log('[DEBUG] Register Response:', res);
-    if (res.success) {
+    if (res.success && res.requireOtp) {
         showMsg(res.message);
-        // Direct flow to Login
+        // Show OTP UI
         emailInput.style.display = 'none';
-        isRegistering = false;
-        registerBtn.textContent = 'REGISTER NEW PILOT';
-        registerBtn.style.background = 'transparent';
-        registerBtn.style.color = '#0f0';
-        loginBtn.style.display = 'block';
+        usernameInput.style.display = 'none';
+        passwordInput.style.display = 'none';
+        registerBtn.style.display = 'none';
 
-        // Auto-fill username for convenience
-        // passwordInput.value = ''; 
+        otpInput.style.display = 'block';
+        verifyBtn.style.display = 'block';
     } else {
         showMsg(res.message);
     }
@@ -90,22 +109,7 @@ socket.on('registerResponse', (res) => {
 socket.on('verifyResponse', (res) => {
     if (res.success) {
         showMsg('Account Verified! Please Login.');
-        // Reset UI to Login
-        otpInput.style.display = 'none';
-        verifyBtn.style.display = 'none';
-
-        usernameInput.style.display = 'block';
-        passwordInput.style.display = 'block';
-        loginBtn.style.display = 'block';
-        registerBtn.style.display = 'block';
-
-        // Reset Register Button style
-        isRegistering = false;
-        registerBtn.textContent = 'REGISTER NEW PILOT';
-        registerBtn.style.background = 'transparent';
-        registerBtn.style.color = '#0f0';
-
-        passwordInput.value = '';
+        setTimeout(() => location.reload(), 2000);
     } else {
         showMsg(res.message);
     }
@@ -114,49 +118,74 @@ socket.on('verifyResponse', (res) => {
 socket.on('loginResponse', (res) => {
     if (res.success) {
         // AUTH SUCCESS
-        loginOverlay.classList.add('hidden');
-        uiLayer.classList.remove('hidden');
+        if (loginOverlay) loginOverlay.classList.add('hidden');
+        if (uiLayer) uiLayer.style.display = 'block';
+        if (canvas) canvas.style.display = 'block';
 
         // Init Game
         localPlayer = res.player;
         universeData = res.universe;
         initGame();
+    } else if (res.requireOtp) {
+        // 2FA Challenge
+        isLogin2FA = true;
+        showMsg(res.message);
+
+        loginBtn.style.display = 'none';
+        registerBtn.style.display = 'none';
+        usernameInput.style.display = 'none';
+        passwordInput.style.display = 'none';
+
+        otpInput.style.display = 'block';
+        verifyBtn.style.display = 'block';
+        verifyBtn.textContent = 'VERIFY LOGIN CODE';
+        verifyBtn.style.background = '#eb1';
     } else {
         showMsg(res.message);
     }
 });
 
 function initGame() {
-    // Center camera on start system
     const startSys = universeData.find(s => s.id === localPlayer.systemId);
     if (startSys) {
         camera.x = startSys.x;
         camera.y = startSys.y;
-        document.getElementById('current-system').textContent = startSys.name;
-        document.getElementById('security-level').textContent = startSys.security > 0.5 ? 'HIGH (SAFE)' : 'NULL (PVP)';
+        const sysEl = document.getElementById('current-system');
+        const secEl = document.getElementById('security-level');
+        if (sysEl) sysEl.textContent = startSys.name;
+        if (secEl) secEl.textContent = startSys.security > 0.5 ? 'HIGH (SAFE)' : 'NULL (PVP)';
     }
     requestAnimationFrame(gameLoop);
 }
 
-// --- RENDER LOOP (Same as before) ---
-function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+// --- RENDER LOOP ---
+function resize() {
+    if (canvas) {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+    }
+}
 window.addEventListener('resize', resize);
 resize();
 
 function gameLoop() {
+    if (!canvas || !ctx) return;
+
     // Clear
     ctx.fillStyle = '#000000';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     drawGrid();
 
     // Draw Systems
-    universeData.forEach(system => {
-        drawSystem(system);
-    });
+    if (universeData) {
+        universeData.forEach(system => {
+            drawSystem(system);
+        });
+    }
 
     // Draw Player Ship
     if (localPlayer) {
-        drawShip(canvas.width / 2, canvas.height / 2, 'cyan', 'ME');
+        drawShip(canvas.width / 2, canvas.height / 2, 'cyan');
     }
 
     requestAnimationFrame(gameLoop);
