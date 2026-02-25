@@ -1,5 +1,14 @@
 class AuthModule {
     constructor() {
+        if (window.DEBUG_RESET) {
+            console.warn("[RAVEN DEBUG] Reset Mode Active: Purging Local Session.");
+            // We clear most keys but keep maybe the last name entered if desired? 
+            // The user said "inicie desde o inicio", so let's be thorough.
+            const keysToKeep = ['raven_debug_persist']; // Example
+            Object.keys(localStorage).forEach(key => {
+                if (!keysToKeep.includes(key)) localStorage.removeItem(key);
+            });
+        }
         this.token = localStorage.getItem('raven_token');
         this.user = JSON.parse(localStorage.getItem('raven_user'));
         this.isAuth = !!this.token;
@@ -97,14 +106,17 @@ class AuthModule {
                     headers: { 'Authorization': this.token }
                 });
                 if (response.ok) {
-                    const gameState = await response.json();
+                    let gameState = await response.json();
+                    if (window.DEBUG_RESET) {
+                        console.log("[RAVEN DEBUG] Bypassing Server State for Clinical Reset.");
+                        gameState = null; // Force defaults
+                    }
                     this.hideGate(gameState);
                 } else {
                     this.logout();
                 }
             } catch (err) {
                 console.warn("OFFLINE MODE ACTIVATED");
-                // Option: Fallback to local if desired, but for fullstack we wait for server
             }
         }
     }
