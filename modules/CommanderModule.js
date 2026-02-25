@@ -754,6 +754,15 @@ function initCommander(initialState) {
     }
 
     setInterval(() => skillManager.update(), 100);
+
+    // HEARTBEAT PROTOCOL: Sends a save every 10min to prevent Render from sleeping
+    setInterval(() => {
+        if (skillManager.isOnline) {
+            console.log("[RAVEN HEARTBEAT] Pulse Sent - Station Online");
+            skillManager.save();
+        }
+    }, 600000); // 10 minutes
+
     window.skillManager = skillManager;
 
     // Ensure Shield Logic is initialized

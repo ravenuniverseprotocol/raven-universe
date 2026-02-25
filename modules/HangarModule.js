@@ -84,6 +84,11 @@ function renderHangar() {
                 ? `<button class="market-action-btn" style="margin-right:0" onclick="handleShipCommand('${ship.id}', 'deploy')">UNDOCK</button>`
                 : `<button class="market-action-btn sell" style="margin-right:0" onclick="handleShipCommand('${ship.id}', 'recall')">RECALL</button>`
             }
+                <button class="market-action-btn ${ship.autoLoop ? '' : 'disabled'}" 
+                    style="margin-left:5px; padding: 2px 5px; font-size:9px; background: ${ship.autoLoop ? '#00ff8833' : '#333'}; color: ${ship.autoLoop ? '#00ff88' : '#888'}; border-color: ${ship.autoLoop ? '#00ff8855' : '#444'}" 
+                    onclick="window.toggleAutoFarm('${ship.id}')">
+                    AUTO: ${ship.autoLoop ? 'ON' : 'OFF'}
+                </button>
             </td>
         `;
         listContainer.appendChild(tr);
@@ -144,6 +149,19 @@ window.handleShipCommand = function (shipId, command) {
         if (typeof showGameNotification === 'function') showGameNotification(`${ship.id} RETURNING TO BASE`);
     }
     renderHangar();
+};
+
+window.toggleAutoFarm = function (shipId) {
+    if (!window.systemView) return;
+    const ship = window.systemView.playerShips.find(s => s.id === shipId);
+    if (ship) {
+        ship.autoLoop = !ship.autoLoop;
+        const status = ship.autoLoop ? "ACTIVATED" : "DEACTIVATED";
+        if (typeof showGameNotification === 'function') {
+            showGameNotification(`AUTO-FARM PROTOCOL ${status} FOR ${ship.id}`);
+        }
+        renderHangar();
+    }
 };
 
 window.initHangar = initHangar;

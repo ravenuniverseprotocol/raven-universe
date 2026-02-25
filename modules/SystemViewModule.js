@@ -43,7 +43,8 @@ class SystemView {
                 docked: true,
                 status: 'DOCKED',
                 cargo: 0,
-                capacity: 100
+                capacity: 100,
+                autoLoop: false
             }
         ];
 
@@ -121,6 +122,13 @@ class SystemView {
                         }
                         ship.cargo = 0;
                         if (typeof renderHangar === 'function') renderHangar();
+
+                        // AUTO-FARM LOGIC: If autoLoop is on, re-deploy after arrival and save
+                        if (ship.autoLoop && ship.miningTarget) {
+                            setTimeout(() => {
+                                if (window.handleShipCommand) window.handleShipCommand(ship.id, 'deploy');
+                            }, 3000); // 3-second refuel delay
+                        }
                     }
                     return; // Wait for animation
                 }
