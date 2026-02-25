@@ -10,10 +10,11 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Connect to Database
-if (process.env.MONGODB_URI) {
+const dbUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+if (dbUri) {
     connectDB();
 } else {
-    console.warn('[RAVEN SERVER] WARNING: MONGODB_URI not found. Persistence is disabled.');
+    console.warn('[RAVEN SERVER] WARNING: Database URI not found. Persistence is disabled.');
 }
 
 // Middleware

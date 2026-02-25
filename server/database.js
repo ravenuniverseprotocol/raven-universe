@@ -16,7 +16,8 @@ const User = mongoose.model('User', userSchema);
 
 const connectDB = async () => {
     try {
-        const conn = await mongoose.connect(process.env.MONGODB_URI);
+        const dbUri = process.env.MONGODB_URI || process.env.MONGO_URI;
+        const conn = await mongoose.connect(dbUri);
         console.log(`[RAVEN DATA] Neural Link established: ${conn.connection.host}`);
     } catch (error) {
         console.error(`[RAVEN DATA] Connection Failure: ${error.message}`);
