@@ -211,9 +211,9 @@ O projeto foi modularizado para garantir estabilidade e facilidade de expansão:
 
 ### 1. Neural Cloud (MongoDB Atlas)
 
-* **Username**: `ravenuniverseprotocol_db_user`
-* **Password**: `RavenComando2026`
-* **Connection String**: `mongodb+srv://ravenuniverseprotocol_db_user:RavenComando2026@raven-cluster.ch30ame.mongodb.net/raven_universe?appName=Raven-Cluster`
+* **Username**: `raven_admin`
+* **Password**: `1234` (Ou a password que definiste no Atlas)
+* **Connection String**: `mongodb+srv://raven_admin:1234@ravenuniverse.4p9njow.mongodb.net/?appName=RavenUniverse`
 
 ### 2. Intelligence Hub (Local)
 
