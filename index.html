@@ -329,8 +329,14 @@
         </div>
     </div>
 
-    <!-- Global Debug Flags -->
-    <script>window.DEBUG_RESET = true;</script>
+    <!-- Global Debug Flags & Hard Reset -->
+    <script>
+        window.DEBUG_RESET = true;
+        if (window.DEBUG_RESET) {
+            console.warn("[RAVEN] DEBUG RESET ACTIVE - PURGING SESSION DATA");
+            localStorage.clear();
+        }
+    </script>
 
     <!-- Modules Loading -->
     <script src="modules/AuthModule.js"></script>

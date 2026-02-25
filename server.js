@@ -9,6 +9,12 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Security fallback for JWT
+if (!process.env.JWT_SECRET) {
+    console.warn('[RAVEN SERVER] WARNING: JWT_SECRET not found in environment. Using development fallback.');
+    process.env.JWT_SECRET = 'RAVEN_PROJECT_SECRET_KEY_2026';
+}
+
 // Connect to Database
 const dbUri = process.env.MONGODB_URI || process.env.MONGO_URI;
 if (dbUri) {
