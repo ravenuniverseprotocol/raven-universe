@@ -1,5 +1,4 @@
 // Core Engine Diagnostic
-window.DEBUG_RESET = true; // [TEMPORARY] Set to true to reset game state on every refresh
 window.onerror = function (msg, url, line, col, error) {
     alert(`ENGINE ERROR: ${msg}\nAt: ${url}\nLine: ${line}`);
     console.error(msg, url, line, col, error);
