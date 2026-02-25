@@ -6,7 +6,10 @@ class GalaxyMap {
 
         this.galaxyName = "NEBULIS PRIME";
         this.systems = [];
-        this.currentSystemId = "S10.05.29"; // Home system
+
+        // Get dynamic home data from skillManager
+        const homeName = window.skillManager ? window.skillManager.homeSystem : "10.05.29";
+        this.currentSystemId = `S${homeName}`;
 
         this.offset = { x: 0, y: 0 };
         this.zoom = 1.0;
@@ -45,19 +48,24 @@ class GalaxyMap {
 
     initGalaxyData() {
         const seededRandom = this.createSeededRandom(777); // Fixed seed for systems
-        // Generate 100 systems
         const count = 100;
         const spread = 2000;
 
-        // Ensure "10.05.29" is the first one (center)
+        // Dynamic Home Node from SkillManager
+        const homeName = window.skillManager ? window.skillManager.homeSystem : "10.05.29";
+        const homeCoords = window.skillManager ? window.skillManager.homeCoords : { x: 0, y: 0 };
+
         this.systems.push({
-            id: "S10.05.29",
-            name: "10.05.29",
-            x: 0,
-            y: 0,
+            id: `S${homeName}`,
+            name: homeName,
+            x: homeCoords.x,
+            y: homeCoords.y,
             isHome: true,
             owner: "PLAYER"
         });
+
+        // Center view on home node initially
+        this.offset = { x: -homeCoords.x, y: -homeCoords.y };
 
         const npcNames = ["DRAX", "KARA", "VEX", "ZORP", "NOMAD"];
 
@@ -384,7 +392,8 @@ class GalaxyMap {
 
     renderRadarCoverage(ctx) {
         if (!window.skillManager) return;
-        const homeNode = this.systems.find(s => s.id === "S10.05.29");
+        const homeId = `S${window.skillManager.homeSystem}`;
+        const homeNode = this.systems.find(s => s.id === homeId);
         if (!homeNode) return;
 
         const range = window.skillManager.getRadarRange();
@@ -411,7 +420,8 @@ class GalaxyMap {
         if (!window.systemView || !window.systemView.playerShips) return;
         if (!window.npcManager || !window.skillManager) return;
 
-        const playerHomeNode = this.systems.find(s => s.id === "S10.05.29");
+        const homeId = `S${window.skillManager.homeSystem}`;
+        const playerHomeNode = this.systems.find(s => s.id === homeId);
         if (!playerHomeNode) return;
 
         // Coordinate scaling

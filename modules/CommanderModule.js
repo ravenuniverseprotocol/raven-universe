@@ -38,6 +38,8 @@ class SkillManager {
         this.commanderName = initialState?.username || localStorage.getItem('raven_commander_name') || 'UNIDENTIFIED';
         this.credits = initialState?.credits || parseInt(localStorage.getItem('raven_credits')) || 5000;
         this.inventory = initialState?.inventory || { 'OXYGEN': 500 };
+        this.homeSystem = initialState?.homeSystem || localStorage.getItem('raven_home_system') || "10.05.29";
+        this.homeCoords = initialState?.homeCoords || JSON.parse(localStorage.getItem('raven_home_coords')) || { x: 0, y: 0 };
         this.isOnline = false;
         this.radarUnlocked = false;
         this.radarAnnounced = localStorage.getItem('radar_announced') === 'true';
@@ -294,6 +296,8 @@ class SkillManager {
 
         localStorage.setItem('raven_credits', this.credits);
         localStorage.setItem('raven_inventory', JSON.stringify(this.inventory));
+        localStorage.setItem('raven_home_system', this.homeSystem);
+        localStorage.setItem('raven_home_coords', JSON.stringify(this.homeCoords));
 
         const token = localStorage.getItem('raven_token');
         if (token) {

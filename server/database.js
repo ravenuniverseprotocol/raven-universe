@@ -7,7 +7,12 @@ const userSchema = new mongoose.Schema({
         skills: { type: Map, of: Object, default: {} },
         skillQueue: { type: Array, default: [] },
         credits: { type: Number, default: 5000 },
-        inventory: { type: Map, of: Number, default: { 'OXYGEN': 500 } }
+        inventory: { type: Map, of: Number, default: { 'OXYGEN': 500 } },
+        homeSystem: { type: String, default: "10.05.29" },
+        homeCoords: {
+            x: { type: Number, default: 0 },
+            y: { type: Number, default: 0 }
+        }
     },
     lastLogin: { type: Date, default: Date.now }
 });

@@ -136,6 +136,12 @@ function init(initialState) {
     initBuffers();
 
     initCommander(initialState);
+
+    // Set initial system name in HUD
+    const homeName = window.skillManager ? window.skillManager.homeSystem : "10.05.29";
+    const hudSys = document.getElementById('hud-system-name');
+    if (hudSys) hudSys.textContent = homeName;
+
     initMap();
     initMarket();
     initHangar();
