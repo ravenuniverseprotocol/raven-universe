@@ -238,7 +238,7 @@ html {
 
 .radar-visual {
     position: absolute;
-    left: calc(50% - 95px);
+    left: calc(50% - 82px);
     /* Restored closer to station edge */
     top: 50%;
     transform: translateY(-50%);
