@@ -22,6 +22,7 @@ router.get('/state', authenticate, async (req, res) => {
         if (!user) return res.status(404).json({ message: 'USER NOT FOUND' });
         res.json(user.gameState);
     } catch (err) {
+        console.error('[GAME ERROR] State Fetch Failure:', err);
         res.status(500).json({ message: 'ERROR FETCHING STATE' });
     }
 });
@@ -36,6 +37,7 @@ router.post('/state', authenticate, async (req, res) => {
         await user.save();
         res.json({ message: 'STATE SYNCED' });
     } catch (err) {
+        console.error('[GAME ERROR] State Sync Failure:', err);
         res.status(500).json({ message: 'ERROR SAVING STATE' });
     }
 });
