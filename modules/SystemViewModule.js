@@ -127,7 +127,8 @@ class SystemView {
             }
 
             // 2. MOVEMENT LOGIC
-            if (dist > 5) {
+            const stopDist = ship.status === 'RETURNING' ? 1 : 5;
+            if (dist > stopDist) {
                 const angleToTarget = Math.atan2(dy, dx);
                 let angleDiff = angleToTarget - ship.angle;
                 while (angleDiff < -Math.PI) angleDiff += Math.PI * 2;
@@ -143,6 +144,11 @@ class SystemView {
                 if (ship.status === 'IDLE') ship.status = 'TRANSIT';
             } else {
                 // ARRIVAL AT TARGET
+                if (ship.status === 'RETURNING') {
+                    // Force absolute zero for perfect docking alignment
+                    ship.x = 0; ship.y = 0;
+                }
+
                 if (ship.status === 'LAUNCHING' || ship.status === 'TRANSIT') {
                     if (ship.miningTarget) {
                         ship.status = 'MINING';
@@ -371,14 +377,14 @@ class SystemView {
         ctx.restore();
     }
 
+    // Unified background draw for main screen
     drawBackgroundShips(mainCtx, w, height) {
         mainCtx.save();
         mainCtx.translate(w / 2, height / 2);
-        // ONLY draw if actually within the main screen bounds
         this.playerShips.forEach(ship => {
             if (ship.docked) return;
             if (this.isVisibleOnMainScreen(ship.x, ship.y)) {
-                this.drawSingleShip(mainCtx, ship, true);
+                this.drawSingleShip(mainCtx, ship, false); // No tactical labels
             }
         });
         mainCtx.restore();
@@ -488,55 +494,63 @@ class SystemView {
         });
     }
 
-    drawBackgroundShips(mainCtx, w, height) {
-        mainCtx.save();
-        mainCtx.translate(w / 2, height / 2);
-        this.drawShips(mainCtx, false); // Draw on background (no labels)
-        mainCtx.restore();
-    }
+    // Method removed to avoid duplication
 
-    drawShips(ctx, isTactical, singleShip = null) {
-        const range = window.skillManager ? window.skillManager.getRadarRange() : 10000;
+    drawSingleShip(ctx, ship, isTactical) {
+        const shipColor = this.playerShips.includes(ship) ? '#00ff88' : '#ffcc00';
+        const s = isTactical ? (10 / this.zoom) : 10;
 
-        let shipsToDraw = singleShip ? [singleShip] : [...this.playerShips];
+        ctx.save();
+        ctx.translate(ship.x, ship.y);
+        ctx.rotate(ship.angle);
 
-        // Add NPC ships if not specifically drawing a single ship
-        if (!singleShip && window.npcManager) {
-            shipsToDraw = shipsToDraw.concat(window.npcManager.getAllShips());
+        if (this.minerImg.complete) {
+            ctx.save();
+            ctx.globalAlpha = ship.alpha || 1.0;
+            ctx.shadowBlur = 15;
+            ctx.shadowColor = shipColor;
+            ctx.drawImage(this.minerImg, -s, -s, s * 2, s * 2);
+            ctx.restore();
+        } else {
+            ctx.fillStyle = shipColor;
+            ctx.beginPath();
+            ctx.moveTo(s, 0); ctx.lineTo(-s, s * 0.7); ctx.lineTo(-s * 0.5, 0); ctx.lineTo(-s, -s * 0.7);
+            ctx.closePath();
+            ctx.fill();
         }
 
-        const worldToScreenScale = 1;
+        if (isTactical && ship.selected) {
+            ctx.strokeStyle = '#00ccff';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(-s * 1.5, -s * 1.5, s * 3, s * 3);
+        }
+        ctx.restore();
+    }
+
+    drawShips(ctx, isTactical) {
+        const range = window.skillManager ? window.skillManager.getRadarRange() : 10000;
+        let shipsToDraw = [...this.playerShips];
+
+        if (window.npcManager) {
+            shipsToDraw = shipsToDraw.concat(window.npcManager.getAllShips());
+        }
 
         shipsToDraw.forEach(ship => {
             if (ship.docked) return;
 
             const distFromCamera = Math.sqrt((ship.x - this.viewCenter.x) ** 2 + (ship.y - this.viewCenter.y) ** 2);
             const isPlayer = this.playerShips.includes(ship);
-            const shipColor = isPlayer ? '#00ff88' : '#ffcc00';
-
-            // VISIBILITY RULE: Only show ships in the current "observed" sector
-            // Unless it's a player ship (always tracked) or an NPC visiting player space
             const isNearPlayer = Math.sqrt(ship.x * ship.x + ship.y * ship.y) < 3000;
+
             if (distFromCamera > 3000 && !isPlayer && !isNearPlayer) return;
 
-            // ENTRY PROTOCOL ALERT
-            if (!isPlayer && isNearPlayer && !ship.permissionGranted && ship.status === 'TRADING') {
-                if (typeof showGameNotification === 'function' && Math.random() < 0.001) {
-                    showGameNotification(`IFF ALERT: ${ship.id} REQUESTING PERMISSION TO ENTER PLAYER SPACE`);
-                }
-            }
-
-            // TACTICAL WINDOW RULE: If ship is visible on main screen, hide it from tactical window
             if (isTactical && this.isVisibleOnMainScreen(ship.x, ship.y)) return;
 
-            // If it's further than radar, only show if it's a player ship or relatively close NPC
+            const dist = Math.sqrt(ship.x * ship.x + ship.y * ship.y);
             if (isTactical && dist > range) {
                 if (ship.onMap) return;
-                // NPCs only show SIGNAL LOST if they are within a "border" range (e.g. 2000)
-                if (!isPlayer && dist > range * 2) return;
-
                 ctx.save();
-                ctx.translate(ship.x * worldToScreenScale, ship.y * worldToScreenScale);
+                ctx.translate(ship.x, ship.y);
                 ctx.fillStyle = isPlayer ? 'rgba(0, 255, 136, 0.2)' : 'rgba(255, 204, 0, 0.2)';
                 ctx.font = `${8 / this.zoom}px monospace`;
                 ctx.fillText("SIGNAL LOST", 10, 0);
@@ -547,38 +561,7 @@ class SystemView {
                 return;
             };
 
-            ctx.save();
-            ctx.translate(ship.x * worldToScreenScale, ship.y * worldToScreenScale);
-            ctx.rotate(ship.angle);
-
-            const s = isTactical ? (10 / this.zoom) : 10;
-
-            if (this.minerImg.complete) {
-                ctx.save();
-                ctx.globalAlpha = ship.alpha || 1.0;
-                ctx.shadowBlur = 15;
-                ctx.shadowColor = shipColor;
-
-                // Color tinting NPCs (SVG filter or globalCompositeOperation)
-                // For now, just change shadow color. 
-                // To actually change image color we'd need a canvas buffer, but shadow is enough for IFF.
-                ctx.drawImage(this.minerImg, -s, -s, s * 2, s * 2);
-                ctx.restore();
-            } else {
-                ctx.fillStyle = shipColor;
-                ctx.beginPath();
-                ctx.moveTo(s, 0); ctx.lineTo(-s, s * 0.7); ctx.lineTo(-s * 0.5, 0); ctx.lineTo(-s, -s * 0.7);
-                ctx.closePath();
-                ctx.fill();
-            }
-
-            if (isTactical && ship.selected) {
-                ctx.strokeStyle = '#00ccff';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(-s * 1.5, -s * 1.5, s * 3, s * 3);
-            }
-
-            ctx.restore();
+            this.drawSingleShip(ctx, ship, isTactical);
         });
     }
 

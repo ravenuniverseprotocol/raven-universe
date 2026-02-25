@@ -238,12 +238,12 @@ html {
 
 .radar-visual {
     position: absolute;
-    left: calc(50% - 140px);
-    /* Shifted 10px right from -150px */
+    left: calc(50% - 95px);
+    /* Restored closer to station edge */
     top: 50%;
     transform: translateY(-50%);
-    max-width: 30px;
-    /* Reduced by 10px from 40px */
+    max-width: 35px;
+    /* Slightly increased visibility */
     height: auto;
     z-index: 4;
     pointer-events: none;

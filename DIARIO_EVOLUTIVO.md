@@ -190,46 +190,46 @@ O projeto foi modularizado para garantir estabilidade e facilidade de expansão:
   * **Identificação IFF**: Integração visual de naves NPC em cor âmbar no radar e mapa tático, permitindo a coexistência e competição por recursos.
     * **Autonomia Operacional**: NPCs tomam decisões independentes de treino de habilidades e rotas de mineração baseadas na rentabilidade do mercado.
 
-### Fase 9: Migração Fullstack & Neural Cloud Link (MongoDB)
+### Fase 10: A Ascensão à Nuvem (Deployment Final)
 
-* **Arquitetura Intelligence Hub (Backend)**:
-  * **Cérebro Central (`server.js`)**: Transição de uma aplicação puramente cliente para uma infraestrutura Client-Server baseada em Node.js e Express.
-  * **Segurança de Dados (Auth Gate)**: Implementação de um protocolo de identificação obrigatório (`AuthModule.js`) com encriptação Bcrypt e tokens JWT para acesso à estação.
-  * **Sincronização em Nuvem**: Refatoração do `CommanderModule.js` e `main.js` para persistência em tempo real via API assíncrona, eliminando a dependência exclusiva do `localStorage`.
-* **Persistência Galáctica (MongoDB Atlas)**:
-  * **Migração de Dados**: Abandono do armazenamento em ficheiros JSON locais em favor de um cluster de base de dados NoSQL na nuvem, garantindo persistência 24/7.
-  * **Esquema de Comandante**: Estruturação de dados para suporte multi-utilizador, permitindo que diferentes comandantes operem na mesma galáxia com progressos independentes.
-* **Acesso Externo & Tunneling**:
-  * **Protocolo Ngrok**: Integração de túneis seguros para permitir que dispositivos externos acedam à estação via HTTPS sem necessidade de configuração de router.
+* **Hospedagem Permanente (Render.com)**:
+  * **Migração de Produção**: O código foi movido do ambiente local para os servidores do Render, garantindo disponibilidade 24/7 sem necessidade de manter o PC ligado.
+  * **Neural Cloud Link Final**: Ajuste da infraestrutura para suportar conexões globais via MongoDB Atlas, com whitelisting de IPs (`0.0.0.0/0`) para permitir acesso de qualquer ponto da galáxia.
+* **Estabilização de Segurança**: Sincronização de segredos JWT em ambiente de produção, permitindo que a identificação de comandantes (como o Comandante Fuso) persista de forma segura.
+* **Independência Operacional**: A estação agora é servida via HTTPS seguro, com persistência total em nuvem, marcando o fim da dependência do Ngrok e do servidor local.
 
 ---
 
 ## 🔐 Infraestrutura & Credenciais de Acesso (DADOS CRÍTICOS)
 
-> [!CAUTION]
-> **ACESSO RESTRITO:** Estas credenciais são necessárias para a manutenção do Cérebro da Estação e integridade dos dados.
+> [!IMPORTANT]
+> **ACESSO DE PRODUÇÃO:** Estes dados garantem o controlo total sobre a infraestrutura em nuvem.
 
-### 1. Neural Cloud (MongoDB Atlas)
+### 1. Neural Cloud (MongoDB Atlas - Produção)
 
 * **Username**: `raven_admin`
-* **Password**: `1234` (Ou a password que definiste no Atlas)
-* **Connection String**: `mongodb+srv://raven_admin:1234@ravenuniverse.4p9njow.mongodb.net/?appName=RavenUniverse`
+* **Password**: `1234`
+* **Cluster**: `ravenuniverse.4p9njow.mongodb.net`
+* **Database**: `raven_universe`
+* **Connection String**: `mongodb+srv://raven_admin:1234@ravenuniverse.4p9njow.mongodb.net/raven_universe?appName=RavenUniverse`
 
-### 2. Intelligence Hub (Local)
+### 2. Intelligence Hub (Render Production)
 
-* **Porta**: `3000` (Node.js)
-* **Comando de Arranque**: `node server.js`
-* **Túnel Ngrok**: `ngrok http 3000`
+* **URL Oficial**: [https://raven-universe.onrender.com](https://raven-universe.onrender.com)
+* **Status**: 24/7 Live
+* **JWT Secret**: `RAVEN_PROJECT_SECRET_KEY_2026`
 
-### 3. Segurança JWT
+### 3. Credenciais de Teste (Comandante Alfa)
 
-* **Secret Key**: `RAVEN_PROJECT_SECRET_KEY_2026` (Configurado em `.env`)
+* **Name**: `Fuso`
+* **Key**: `1234`
 
 ---
 
-## 🚀 Roteiro Futuro (Atualizado)
+## 🚀 Roteiro Futuro
 
 * [x] **Migração Fullstack**: Backend ativo com persistência cloud.
-* [x] **Acesso Remoto**: Testado e funcional via Ngrok.
-* [ ] **Deployment 24/7 (Render)**: Migração do código para hosting permanente (Pendente: GitHub Repo).
+* [x] **Acesso Remoto**: Testado e funcional via Ngrok e Render.
+* [x] **Deployment 24/7 (Render)**: Migração concluída com sucesso.
 * [ ] **Multiplayer Real-time**: Visualização de outros comandantes humanos no mesmo sistema via WebSockets.
+* [ ] **Sistemas de Combate PvE**: Incursões de piratas e drones defensivos.
