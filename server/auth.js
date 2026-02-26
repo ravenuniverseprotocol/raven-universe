@@ -17,19 +17,28 @@ router.post('/register', async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Procedural System Generation
-        const p1 = Math.floor(Math.random() * 99).toString().padStart(2, '0');
-        const p2 = Math.floor(Math.random() * 99).toString().padStart(2, '0');
-        const p3 = Math.floor(Math.random() * 99).toString().padStart(2, '0');
-        const systemName = `${p1}.${p2}.${p3}`;
+        let systemName = "";
+        let coords = {};
+        let isUnique = false;
 
-        // Random Galaxy Coords (Radius 500-2500 for variety)
-        const angle = Math.random() * Math.PI * 2;
-        const radius = 500 + Math.random() * 2000;
-        const coords = {
-            x: Math.cos(angle) * radius,
-            y: Math.sin(angle) * radius
-        };
+        // Collision Check Loop
+        while (!isUnique) {
+            const p1 = Math.floor(Math.random() * 99).toString().padStart(2, '0');
+            const p2 = Math.floor(Math.random() * 99).toString().padStart(2, '0');
+            const p3 = Math.floor(Math.random() * 99).toString().padStart(2, '0');
+            systemName = `${p1}.${p2}.${p3}`;
+
+            const existingSystem = await User.findOne({ 'gameState.homeSystem': systemName });
+            if (!existingSystem) {
+                const angle = Math.random() * Math.PI * 2;
+                const radius = 500 + Math.random() * 2000;
+                coords = {
+                    x: Math.cos(angle) * radius,
+                    y: Math.sin(angle) * radius
+                };
+                isUnique = true;
+            }
+        }
 
         const newUser = new User({
             username: normalizedUsername,

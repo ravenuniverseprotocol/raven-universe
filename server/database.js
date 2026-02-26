@@ -8,10 +8,10 @@ const userSchema = new mongoose.Schema({
         skillQueue: { type: Array, default: [] },
         credits: { type: Number, default: 5000 },
         inventory: { type: Map, of: Number, default: { 'OXYGEN': 500 } },
-        homeSystem: { type: String, default: "10.05.29" },
+        homeSystem: { type: String, required: true },
         homeCoords: {
-            x: { type: Number, default: 0 },
-            y: { type: Number, default: 0 }
+            x: { type: Number, required: true },
+            y: { type: Number, required: true }
         }
     },
     lastLogin: { type: Date, default: Date.now }
