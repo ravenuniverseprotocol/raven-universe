@@ -127,6 +127,10 @@ class GalaxyMap {
 
                 // Check if already in list (could be generated or already fetched)
                 let sys = this.systems.find(s => s.id === sysId);
+
+                // CRITICAL FIX: If this is the local home system, do NOT overwrite it
+                if (sys && sys.isHome) return;
+
                 if (!sys) {
                     sys = {
                         id: sysId,
