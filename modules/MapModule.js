@@ -94,12 +94,6 @@ class GalaxyMap {
                 // isNPCBase removed as per user request
             }
 
-            // SIMULATE OTHER PLAYERS: Mark a few systems as other players for visual testing
-            if (i > 0 && i < 4) {
-                sys.isOtherPlayer = true;
-                sys.owner = `PLAYER_${i}`;
-            }
-
             this.systems.push(sys);
         }
     }
