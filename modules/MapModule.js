@@ -478,8 +478,8 @@ class GalaxyMap {
 
         // 1. Draw Player Ships (Relative to their home)
         window.systemView.playerShips.forEach(ship => {
-            if (ship.docked) return; // Draw if undocked, regardless of onMap flag
-            this.drawMapShip(ctx, playerHomeNode, ship, mapScale, '#00ff88');
+            if (ship.docked || !ship.onMap) return; // Only show if undocked and outside local screen
+            this.drawMapShip(ctx, playerHomeNode, ship, mapScale, '#00ccff');
         });
 
         // 2. Draw NPC Ships section removed as per user request (legacy test data)
@@ -495,14 +495,15 @@ class GalaxyMap {
         ctx.shadowBlur = 10;
         ctx.shadowColor = color;
 
+        // FIXED SIZE: Don't divide by zoom to ensure visibility at all scales (especially at 500% zoom)
         ctx.beginPath();
-        ctx.arc(sx, sy, 3 / this.zoom, 0, Math.PI * 2);
+        ctx.arc(sx, sy, 4, 0, Math.PI * 2);
         ctx.fill();
 
         // Outer pulse ring
-        ctx.strokeStyle = `rgba(${color === '#00ff88' ? '0, 255, 136' : '255, 204, 0'}, ${0.5 - pulse * 0.3})`;
+        ctx.strokeStyle = `rgba(0, 204, 255, ${0.5 - pulse * 0.3})`;
         ctx.beginPath();
-        ctx.arc(sx, sy, (5 + pulse * 5) / this.zoom, 0, Math.PI * 2);
+        ctx.arc(sx, sy, 8 + pulse * 6, 0, Math.PI * 2);
         ctx.stroke();
 
         ctx.shadowBlur = 0;
