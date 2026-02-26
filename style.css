@@ -1276,9 +1276,9 @@ html {
     border-radius: 50%;
 }
 
-.dot.blue {
-    background: #00ccff;
-    box-shadow: 0 0 5px #00ccff;
+.dot.orange {
+    background: #ff9900;
+    box-shadow: 0 0 5px #ff9900;
 }
 
 .dot.white {

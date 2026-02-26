@@ -320,7 +320,7 @@ class GalaxyMap {
                 const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, glowSize);
 
                 let color = 'rgba(255, 255, 255,';
-                if (s.isHome) color = 'rgba(0, 204, 255,';
+                if (s.isHome) color = 'rgba(255, 153, 0,'; // Changed from blue to Raven Orange
                 if (s.isNPCBase) color = 'rgba(255, 180, 0,';
 
                 grad.addColorStop(0, color + (0.4 + pulse * 0.1) + ')');
@@ -339,7 +339,7 @@ class GalaxyMap {
             if (s.isNPCBase) {
                 ctx.fillStyle = '#ffbb00';
             } else {
-                ctx.fillStyle = s.isHome ? '#00ccff' : (isSelected ? '#fff' : 'rgba(255,255,255,0.4)');
+                ctx.fillStyle = s.isHome ? '#ff9900' : (isSelected ? '#fff' : 'rgba(255,255,255,0.4)');
             }
 
             ctx.beginPath();
