@@ -388,6 +388,10 @@ class GalaxyMap {
                 ctx.fillStyle = '#00ccff'; // My Station = Blue
             } else if (s.isOtherPlayer) {
                 ctx.fillStyle = '#ff9900'; // Others = Orange
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, isSelected ? 5 : 4, 0, Math.PI * 2);
+                ctx.fill();
+                return; // Skip the generic circle below
             } else {
                 ctx.fillStyle = isSelected ? '#fff' : 'rgba(255,255,255,0.4)';
             }
@@ -397,8 +401,8 @@ class GalaxyMap {
             ctx.fill();
 
             // Labels
-            if (this.zoom > 0.45) {
-                ctx.globalAlpha = Math.min(1, (this.zoom - 0.45) * 2);
+            if (this.zoom > 0.3) {
+                ctx.globalAlpha = Math.min(1, (this.zoom - 0.3) * 3);
 
                 ctx.textAlign = 'center';
                 if (s.isNPCBase) {

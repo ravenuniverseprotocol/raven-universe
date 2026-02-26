@@ -3,6 +3,7 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const { User } = require('./database');
+const { getAvailableSystem } = require('./systems');
 
 // Register
 router.post('/register', async (req, res) => {
@@ -17,28 +18,8 @@ router.post('/register', async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        let systemName = "";
-        let coords = {};
-        let isUnique = false;
-
-        // Collision Check Loop
-        while (!isUnique) {
-            const p1 = Math.floor(Math.random() * 99).toString().padStart(2, '0');
-            const p2 = Math.floor(Math.random() * 99).toString().padStart(2, '0');
-            const p3 = Math.floor(Math.random() * 99).toString().padStart(2, '0');
-            systemName = `${p1}.${p2}.${p3}`;
-
-            const existingSystem = await User.findOne({ 'gameState.homeSystem': systemName });
-            if (!existingSystem) {
-                const angle = Math.random() * Math.PI * 2;
-                const radius = 500 + Math.random() * 2000;
-                coords = {
-                    x: Math.cos(angle) * radius,
-                    y: Math.sin(angle) * radius
-                };
-                isUnique = true;
-            }
-        }
+        // Use Automatic Unique System Assignment
+        const { systemName, coords } = await getAvailableSystem();
 
         const newUser = new User({
             username: normalizedUsername,
