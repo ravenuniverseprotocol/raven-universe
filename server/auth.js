@@ -58,6 +58,11 @@ router.post('/register', async (req, res) => {
 router.post('/login', async (req, res) => {
     try {
         const { username, password } = req.body;
+
+        if (!username || !password) {
+            return res.status(400).json({ message: 'MISSING LOGIN DATA' });
+        }
+
         const normalizedUsername = username.toUpperCase();
 
         const user = await User.findOne({ username: normalizedUsername });

@@ -73,7 +73,10 @@ class AuthModule {
         status.innerText = "AUTHENTICATING...";
 
         try {
-            const apiPath = `/api/auth/${type}`;
+            const isLocalFile = window.location.protocol === 'file:';
+            const apiBase = isLocalFile ? 'https://raven-universe.onrender.com' : '';
+            const apiPath = `${apiBase}/api/auth/${type}`;
+
             console.log(`[RAVEN AUTH] Attempting ${type} via ${apiPath}`);
             const response = await fetch(apiPath, {
                 method: 'POST',
@@ -98,17 +101,17 @@ class AuthModule {
         } catch (err) {
             console.error('[RAVEN AUTH] Fetch Error:', err);
             status.innerText = "CONNECTION FAILURE: LINK TO HUB DISRUPTED";
-            // Check if we are running from a local file which breaks relative fetches
-            if (window.location.protocol === 'file:') {
-                status.innerText = "ERROR: HUB ACCESS DENIED VIA LOCAL FILE";
-            }
         }
     }
 
     async checkAutoLogin() {
         if (this.isAuth) {
             try {
-                const response = await fetch('/api/game/state', {
+                const isLocalFile = window.location.protocol === 'file:';
+                const apiBase = isLocalFile ? 'https://raven-universe.onrender.com' : '';
+                const apiPath = `${apiBase}/api/game/state`;
+
+                const response = await fetch(apiPath, {
                     headers: { 'Authorization': this.token }
                 });
                 if (response.ok) {
