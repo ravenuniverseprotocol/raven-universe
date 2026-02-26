@@ -466,7 +466,7 @@ class GalaxyMap {
 
     drawPlayerActivity(ctx) {
         if (!window.systemView || !window.systemView.playerShips) return;
-        if (!window.npcManager || !window.skillManager) return;
+        if (!window.skillManager) return;
 
         const homeId = `S${window.skillManager.homeSystem}`;
         const playerHomeNode = this.systems.find(s => s.id === homeId);
