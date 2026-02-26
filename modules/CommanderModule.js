@@ -287,22 +287,45 @@ class SkillManager {
     }
 
     async save() {
-        const state = {
-            skills: this.skills,
-            skillQueue: this.queue,
-            credits: this.credits,
-            inventory: this.inventory
-        };
+        // Anti-spam throttling: Only save to server once every 5 seconds max for auto-saves
+        const now = Date.now();
+        if (this.lastServerSave && (now - this.lastServerSave < 5000)) {
+            // Still save to localStorage for immediate persistence
+            this.persistToLocal();
+            return;
+        }
+        this.lastServerSave = now;
+        await this.persistToRemote();
+    }
 
+    persistToLocal() {
         localStorage.setItem('raven_credits', this.credits);
         localStorage.setItem('raven_inventory', JSON.stringify(this.inventory));
+        localStorage.setItem('raven_skills', JSON.stringify(this.skills));
+        localStorage.setItem('raven_skill_queue', JSON.stringify(this.queue));
         localStorage.setItem('raven_home_system', this.homeSystem);
         localStorage.setItem('raven_home_coords', JSON.stringify(this.homeCoords));
+    }
+
+    async persistToRemote() {
+        this.persistToLocal();
+        const state = {
+            skills: Object.fromEntries(Object.entries(this.skills).map(([k, v]) => [k, { level: v.level }])),
+            skillQueue: this.queue,
+            credits: this.credits,
+            inventory: this.inventory,
+            homeSystem: this.homeSystem,
+            homeCoords: this.homeCoords
+        };
 
         const token = localStorage.getItem('raven_token');
         if (token) {
             try {
-                await fetch('/api/game/state', {
+                const isLocalFile = window.location.protocol === 'file:';
+                const apiBase = isLocalFile ? 'https://raven-universe.onrender.com' : '';
+                const apiPath = `${apiBase}/api/game/state`;
+
+                await fetch(apiPath, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
@@ -620,13 +643,28 @@ class SkillManager {
     }
 
     renderQueue() {
+        const commanderModal = document.getElementById('skill-window');
+        // Optimization: Only render if the window is actually visible
+        if (commanderModal && commanderModal.style.display === 'none') return;
+
         const container = document.getElementById('skill-queue-list');
         if (!container) return;
 
         if (this.queue.length === 0) {
-            container.innerHTML = '<div style="color:#555;font-size:11px;">Fila vazia</div>';
+            if (container.innerHTML !== '<div style="color:#555;font-size:11px;">Fila vazia</div>') {
+                container.innerHTML = '<div style="color:#555;font-size:11px;">Fila vazia</div>';
+            }
             return;
         }
+
+        // Only rebuild the entire HTML if the queue structure changed or every second for the timer
+        // This stops the 60fps flickering
+        const now = Date.now();
+        if (this.lastRenderTime && (now - this.lastRenderTime < 1000) && this.queue.length === this.lastQueueLength) {
+            return;
+        }
+        this.lastRenderTime = now;
+        this.lastQueueLength = this.queue.length;
 
         container.innerHTML = '';
         this.queue.forEach((q, index) => {
