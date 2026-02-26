@@ -393,13 +393,7 @@ class GalaxyMap {
                 ctx.globalAlpha = Math.min(1, (this.zoom - 0.3) * 3);
 
                 ctx.textAlign = 'center';
-                if (s.isNPCBase) {
-                    ctx.fillStyle = '#ffcc00';
-                    ctx.font = 'bold 9px Courier New';
-                    const npc = window.npcManager ? window.npcManager.npcs.find(n => n.name === s.owner) : null;
-                    const label = npc ? `${npc.stationName}` : s.name;
-                    ctx.fillText(label, s.x, s.y + 18);
-                } else if (s.isOtherPlayer) {
+                if (s.isOtherPlayer) {
                     ctx.fillStyle = '#ff9900';
                     ctx.font = 'bold 12px Courier New';
                     ctx.fillText(`CMDR ${s.owner}`, s.x, s.y + 18);

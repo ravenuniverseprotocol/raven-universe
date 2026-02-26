@@ -122,8 +122,6 @@ class TacticalRadar {
             }
         };
         add(5 + Math.floor(seededRandom() * 10), 'asteroid');
-        add(2 + Math.floor(seededRandom() * 3), 'hostile', [0.003, 0.011]);
-        add(Math.floor(seededRandom() * 3), 'missile', [0.08, 0.13]);
     }
 
     update(dt) {

@@ -179,7 +179,6 @@ function resize() {
 
 function update(dt) {
     if (window.tacticalRadar) window.tacticalRadar.update(dt);
-    if (window.npcManager) window.npcManager.update(dt);
 }
 
 function draw() {
