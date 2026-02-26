@@ -228,13 +228,12 @@ html {
     pointer-events: auto;
     /* Enable dragging */
     transition: all 1s ease;
-    filter: brightness(0.5) saturate(0.2);
-    opacity: 0;
-    /* Hidden by default */
+    filter: brightness(0.3) saturate(0) blur(1px);
+    opacity: 0.4;
 }
 
 .missile-launcher-visual.active {
-    filter: brightness(1) saturate(1) drop-shadow(0 0 10px rgba(255, 153, 0, 0.5));
+    filter: brightness(1) saturate(1) blur(0) drop-shadow(0 0 10px rgba(255, 153, 0, 0.5));
     opacity: 1;
 }
 
