@@ -115,14 +115,25 @@ class SkillManager {
         const launcher = document.getElementById('missile-launcher');
         if (!launcher) return;
 
+        // Requires Power Grid Lvl 4 AND ALL 4 Orbital Weapons skills at Lvl 1+
         const gridLvl = this.skills['power_grid_calibration'] ? this.skills['power_grid_calibration'].level : 0;
-        const ignitionLvl = this.skills['ordnance_systems_ignition'] ? this.skills['ordnance_systems_ignition'].level : 0;
 
-        // Requires Power Grid Lvl 4 AND Ignition Lvl 1
-        if (gridLvl >= 4 && ignitionLvl >= 1) {
+        const weaponSkills = SKILL_DATA["Orbital Weapons"];
+        const weaponsFunctional = weaponSkills.every(s => this.skills[s.id] && this.skills[s.id].level >= 1);
+
+        if (gridLvl >= 4 && weaponsFunctional) {
             launcher.classList.add('active');
         } else {
             launcher.classList.remove('active');
+        }
+
+        // Load saved position
+        if (!launcher.dataset.posLoaded) {
+            const savedLeft = localStorage.getItem('missile_pos_left');
+            const savedTop = localStorage.getItem('missile_pos_top');
+            if (savedLeft) launcher.style.left = savedLeft;
+            if (savedTop) launcher.style.top = savedTop;
+            launcher.dataset.posLoaded = "true";
         }
     }
 
@@ -793,5 +804,17 @@ function initCommander(initialState) {
         const savedTop = localStorage.getItem('radar_pos_top');
         if (savedLeft) radarVisual.style.left = savedLeft;
         if (savedTop) radarVisual.style.top = savedTop;
+    }
+
+    // MISSILE LAUNCHER: Make it draggable
+    const launcher = document.getElementById('missile-launcher');
+    if (launcher && typeof makeDraggable === 'function') {
+        makeDraggable(launcher);
+
+        launcher.addEventListener('mouseup', () => {
+            localStorage.setItem('missile_pos_left', launcher.style.left);
+            localStorage.setItem('missile_pos_top', launcher.style.top);
+            console.log("Missile launcher position saved:", launcher.style.left, launcher.style.top);
+        });
     }
 }
