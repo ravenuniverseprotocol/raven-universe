@@ -31,20 +31,20 @@ const BASE_TIME = 10;
 
 class SkillManager {
     constructor(initialState = null) {
-        this.skills = this.loadSkills(initialState?.skills);
-        this.queue = initialState?.skillQueue || [];
+        this.skills = this.loadSkills(null); // Always fresh
+        this.queue = []; // Always empty
         this.lastUpdateTime = Date.now();
-        this.onlineAnnounced = localStorage.getItem('raven_online_announced') === 'true';
-        this.commanderName = initialState?.username || localStorage.getItem('raven_commander_name') || 'UNIDENTIFIED';
-        this.credits = initialState?.credits || parseInt(localStorage.getItem('raven_credits')) || 5000;
-        this.inventory = initialState?.inventory || { 'OXYGEN': 500 };
-        this.homeSystem = initialState?.homeSystem || localStorage.getItem('raven_home_system') || "10.05.29";
-        this.homeCoords = initialState?.homeCoords || JSON.parse(localStorage.getItem('raven_home_coords')) || { x: 0, y: 0 };
+        this.onlineAnnounced = false; // Reset
+        this.commanderName = 'UNIDENTIFIED'; // Reset
+        this.credits = 5000; // Reset
+        this.inventory = { 'OXYGEN': 500 }; // Reset
+        this.homeSystem = "10.05.29"; // Reset
+        this.homeCoords = { x: 0, y: 0 }; // Reset
         this.isOnline = false;
         this.radarUnlocked = false;
-        this.radarAnnounced = localStorage.getItem('radar_announced') === 'true';
+        this.radarAnnounced = false; // Reset
         this.expandedStates = { "Station Operations": true, "Radar Systems": true, "Shield Systems": true };
-        this.storefront = this.loadStorefront();
+        this.storefront = []; // Reset
 
         // Initial state check
         this.checkOnlineStatus(true);
@@ -286,57 +286,9 @@ class SkillManager {
         return queue.filter(q => this.getSkillInfo(q.id));
     }
 
-    async save() {
-        // Anti-spam throttling: Only save to server once every 5 seconds max for auto-saves
-        const now = Date.now();
-        if (this.lastServerSave && (now - this.lastServerSave < 5000)) {
-            // Still save to localStorage for immediate persistence
-            this.persistToLocal();
-            return;
-        }
-        this.lastServerSave = now;
-        await this.persistToRemote();
-    }
-
-    persistToLocal() {
-        localStorage.setItem('raven_credits', this.credits);
-        localStorage.setItem('raven_inventory', JSON.stringify(this.inventory));
-        localStorage.setItem('raven_skills', JSON.stringify(this.skills));
-        localStorage.setItem('raven_skill_queue', JSON.stringify(this.queue));
-        localStorage.setItem('raven_home_system', this.homeSystem);
-        localStorage.setItem('raven_home_coords', JSON.stringify(this.homeCoords));
-    }
-
-    async persistToRemote() {
-        this.persistToLocal();
-        const state = {
-            skills: Object.fromEntries(Object.entries(this.skills).map(([k, v]) => [k, { level: v.level }])),
-            skillQueue: this.queue,
-            credits: this.credits,
-            inventory: this.inventory,
-            homeSystem: this.homeSystem,
-            homeCoords: this.homeCoords
-        };
-
-        const token = localStorage.getItem('raven_token');
-        if (token) {
-            try {
-                const isLocalFile = window.location.protocol === 'file:';
-                const apiBase = isLocalFile ? 'https://raven-universe.onrender.com' : '';
-                const apiPath = `${apiBase}/api/game/state`;
-
-                await fetch(apiPath, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': token
-                    },
-                    body: JSON.stringify(state)
-                });
-            } catch (err) {
-                console.warn("SYNC FAILED: SERVER OFFLINE");
-            }
-        }
+    save() {
+        // Progression persistence disabled by user request.
+        // Values will now reset on refresh.
     }
 
     listForSale(resourceId, qty, price) {
@@ -793,13 +745,7 @@ function initCommander(initialState) {
 
     setInterval(() => skillManager.update(), 100);
 
-    // HEARTBEAT PROTOCOL: Sends a save every 10min to prevent Render from sleeping
-    setInterval(() => {
-        if (skillManager.isOnline) {
-            console.log("[RAVEN HEARTBEAT] Pulse Sent - Station Online");
-            skillManager.save();
-        }
-    }, 600000); // 10 minutes
+    // HEARTBEAT PROTOCOL DISABLED: No longer saving progress.
 
     window.skillManager = skillManager;
 
