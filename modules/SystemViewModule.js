@@ -121,7 +121,7 @@ class SystemView {
                             }
                         }
                         ship.cargo = 0;
-                        if (typeof renderHangar === 'function') renderHangar();
+                        // renderHangar() removed from 60fps loop to fix UI interaction bugs
 
                         // AUTO-FARM LOGIC: If autoLoop is on, re-deploy after arrival and save
                         if (ship.autoLoop && ship.miningTarget) {
@@ -206,7 +206,7 @@ class SystemView {
                 ship.onMap = false;
             }
 
-            if (typeof renderHangar === 'function') renderHangar();
+            // renderHangar() removed from 60fps loop to fix UI interaction bugs
         });
     }
 

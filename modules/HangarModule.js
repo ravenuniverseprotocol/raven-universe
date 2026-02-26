@@ -40,19 +40,20 @@ function renderHangar() {
     const ships = window.systemView.playerShips || [];
     if (shipCountSpan) shipCountSpan.innerText = ships.length;
 
-    listContainer.innerHTML = '';
-
+    // Maintain a reference to existing rows to avoid redraw flicker
     ships.forEach(ship => {
-        const tr = document.createElement('tr');
+        let row = document.getElementById(`hangar-row-${ship.id}`);
+        if (!row) {
+            row = document.createElement('tr');
+            row.id = `hangar-row-${ship.id}`;
+            listContainer.appendChild(row);
+        }
 
         const statusClass = ship.docked ? 'status-idle' : (ship.status === 'MINING' ? 'status-active' : (ship.status === 'IDLE' ? 'status-idle' : 'status-transit'));
         const statusText = ship.status || 'IDLE';
-
-        // Ship Thumbnail
         const shipImgSrc = ship.type === 'miner' ? 'assets/media/MinerRaven.png' : '';
-
-        // Mineral options
         const minerals = ['IRON', 'TITANIUM', 'FUSION_CELLS', 'OXYGEN'];
+
         const targetSelect = ship.docked
             ? `<select class="market-select" style="background:#050a0f; color:#ff9900; border:1px solid rgba(255,153,0,0.3); font-size:10px; padding:2px;" 
                 onchange="window.updateMiningTarget('${ship.id}', this.value)">
@@ -69,13 +70,14 @@ function renderHangar() {
         const autoBg = ship.autoLoop ? 'rgba(0,255,136,0.1)' : '#222';
         const autoBorder = ship.autoLoop ? 'rgba(0,255,136,0.4)' : '#444';
         const autoLabel = ship.autoLoop ? 'AUTO: ON' : 'AUTO: OFF';
-        const autoBtn = `<button style="padding:3px 7px;font-size:9px;font-family:monospace;background:${autoBg};color:${autoColor};border:1px solid ${autoBorder};cursor:pointer;border-radius:2px;" onclick="window.toggleAutoFarm('${ship.id}')">${autoLabel}</button>`;
+        const autoBtn = `<button id="auto-toggle-${ship.id}" style="padding:3px 7px;font-size:9px;font-family:monospace;background:${autoBg};color:${autoColor};border:1px solid ${autoBorder};cursor:pointer;border-radius:2px;" onclick="window.toggleAutoFarm('${ship.id}')">${autoLabel}</button>`;
 
         const coordsCell = ship.status === 'DOCKED'
             ? '<span style="color:#666;">[STATION]</span>'
             : `<span style="color:#ff9900;">SEC ${Math.round(ship.x / 10)}, ${Math.round(ship.y / 10)}</span>`;
 
-        tr.innerHTML = `
+        // Update row content without wiping the element (preserving click highlights etc)
+        const newHTML = `
             <td><div class="hangar-ship-thumb"><img src="${shipImgSrc}" alt="${ship.id}"></div></td>
             <td><div class="ship-id">${ship.id}</div><div class="ship-desc">${ship.description || ''}</div></td>
             <td><div style="font-weight:bold">${ship.type.toUpperCase()}</div><div class="ship-class">${ship.shipClass || ''}</div></td>
@@ -85,7 +87,11 @@ function renderHangar() {
             <td>${coordsCell}</td>
             <td style="white-space:nowrap">${dockBtn}${autoBtn}</td>
         `;
-        listContainer.appendChild(tr);
+
+        // Conditional update to prevent input focus loss
+        if (row.innerHTML !== newHTML) {
+            row.innerHTML = newHTML;
+        }
     });
 }
 
