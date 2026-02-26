@@ -468,7 +468,8 @@ class GalaxyMap {
         if (!window.systemView || !window.systemView.playerShips) return;
         if (!window.skillManager) return;
 
-        const homeId = `S${window.skillManager.homeSystem}`;
+        const homeSystem = window.skillManager ? window.skillManager.homeSystem.toString().trim() : "10.05.29";
+        const homeId = `S${homeSystem}`;
         const playerHomeNode = this.systems.find(s => s.id === homeId);
         if (!playerHomeNode) return;
 
@@ -478,8 +479,8 @@ class GalaxyMap {
 
         // 1. Draw Player Ships (Relative to their home)
         window.systemView.playerShips.forEach(ship => {
-            if (ship.docked) return; // ALWAYS SHOW if undocked - removed !onMap to ensure immediate visibility
-            this.drawMapShip(ctx, playerHomeNode, ship, mapScale, '#00ccff');
+            if (ship.docked) return; // ALWAYS SHOW if undocked
+            this.drawMapShip(ctx, playerHomeNode, ship, mapScale, '#00ccff'); // PONTO AZUL as requested
         });
 
         // 2. Draw NPC Ships section removed as per user request (legacy test data)
@@ -497,14 +498,14 @@ class GalaxyMap {
         ctx.fillStyle = '#ffffff'; // White core stands out against station blue
 
         ctx.beginPath();
-        ctx.arc(sx, sy, 5, 0, Math.PI * 2); // Larger radius
+        ctx.arc(sx, sy, 2, 0, Math.PI * 2); // Small point
         ctx.fill();
 
         // High intensity pulse ring
         ctx.strokeStyle = `rgba(0, 204, 255, ${0.8 - pulse * 0.5})`;
-        ctx.lineWidth = 2;
+        ctx.lineWidth = 1.5;
         ctx.beginPath();
-        ctx.arc(sx, sy, 10 + pulse * 8, 0, Math.PI * 2);
+        ctx.arc(sx, sy, 4 + pulse * 4, 0, Math.PI * 2);
         ctx.stroke();
 
         ctx.shadowBlur = 0;
