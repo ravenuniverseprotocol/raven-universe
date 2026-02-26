@@ -73,7 +73,9 @@ class AuthModule {
         status.innerText = "AUTHENTICATING...";
 
         try {
-            const response = await fetch(`/api/auth/${type}`, {
+            const apiPath = `/api/auth/${type}`;
+            console.log(`[RAVEN AUTH] Attempting ${type} via ${apiPath}`);
+            const response = await fetch(apiPath, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ username, password })
@@ -91,11 +93,15 @@ class AuthModule {
                 status.innerText = "IDENTIFICATION GRANTED";
                 setTimeout(() => this.hideGate(), 1000);
             } else {
-                status.innerText = `ERROR: ${data.message}`;
+                status.innerText = `ERROR: ${data.message || 'AUTHENTICATION REJECTED'}`;
             }
         } catch (err) {
-            status.innerText = "CONNECTION FAILURE: SERVER OFFLINE";
-            console.error(err);
+            console.error('[RAVEN AUTH] Fetch Error:', err);
+            status.innerText = "CONNECTION FAILURE: LINK TO HUB DISRUPTED";
+            // Check if we are running from a local file which breaks relative fetches
+            if (window.location.protocol === 'file:') {
+                status.innerText = "ERROR: HUB ACCESS DENIED VIA LOCAL FILE";
+            }
         }
     }
 
