@@ -61,35 +61,29 @@ function renderHangar() {
                </select>`
             : `<span style="color:#5096c8; font-size:11px; font-weight:bold;">${ship.miningTarget || 'N/A'}</span>`;
 
+        const dockBtn = ship.docked
+            ? `<button class="market-action-btn" style="margin-right:4px" onclick="handleShipCommand('${ship.id}', 'deploy')">UNDOCK</button>`
+            : `<button class="market-action-btn sell" style="margin-right:4px" onclick="handleShipCommand('${ship.id}', 'recall')">RECALL</button>`;
+
+        const autoColor = ship.autoLoop ? '#00ff88' : '#888';
+        const autoBg = ship.autoLoop ? 'rgba(0,255,136,0.1)' : '#222';
+        const autoBorder = ship.autoLoop ? 'rgba(0,255,136,0.4)' : '#444';
+        const autoLabel = ship.autoLoop ? 'AUTO: ON' : 'AUTO: OFF';
+        const autoBtn = `<button style="padding:3px 7px;font-size:9px;font-family:monospace;background:${autoBg};color:${autoColor};border:1px solid ${autoBorder};cursor:pointer;border-radius:2px;" onclick="window.toggleAutoFarm('${ship.id}')">${autoLabel}</button>`;
+
+        const coordsCell = ship.status === 'DOCKED'
+            ? '<span style="color:#666;">[STATION]</span>'
+            : `<span style="color:#ff9900;">SEC ${Math.round(ship.x / 10)}, ${Math.round(ship.y / 10)}</span>`;
+
         tr.innerHTML = `
-            <td>
-                <div class="hangar-ship-thumb">
-                    <img src="${shipImgSrc}" alt="${ship.id}">
-                </div>
-            </td>
-            <td>
-                <div class="ship-id">${ship.id}</div>
-                <div class="ship-desc">${ship.description || ''}</div>
-            </td>
-            <td>
-                <div style="font-weight:bold">${ship.type.toUpperCase()}</div>
-                <div class="ship-class">${ship.shipClass || ''}</div>
-            </td>
+            <td><div class="hangar-ship-thumb"><img src="${shipImgSrc}" alt="${ship.id}"></div></td>
+            <td><div class="ship-id">${ship.id}</div><div class="ship-desc">${ship.description || ''}</div></td>
+            <td><div style="font-weight:bold">${ship.type.toUpperCase()}</div><div class="ship-class">${ship.shipClass || ''}</div></td>
             <td>${targetSelect}</td>
             <td><span class="${statusClass}">${statusText}</span></td>
             <td style="font-family:monospace; color:#00ff88">${Math.floor(ship.cargo || 0)} / ${ship.capacity || 100}</td>
-            <td>${ship.status === 'DOCKED' ? '<span style="color:#666;">[STATION]</span>' : `<span style="color:#ff9900;">SEC ${Math.round(ship.x / 10)}, ${Math.round(ship.y / 10)}</span>`}</td>
-            <td>
-                ${ship.docked
-                ? `<button class="market-action-btn" style="margin-right:0" onclick="handleShipCommand('${ship.id}', 'deploy')">UNDOCK</button>`
-                : `<button class="market-action-btn sell" style="margin-right:0" onclick="handleShipCommand('${ship.id}', 'recall')">RECALL</button>`
-            }
-                <button class="market-action-btn ${ship.autoLoop ? '' : 'disabled'}" 
-                    style="margin-left:5px; padding: 2px 5px; font-size:9px; background: ${ship.autoLoop ? '#00ff8833' : '#333'}; color: ${ship.autoLoop ? '#00ff88' : '#888'}; border-color: ${ship.autoLoop ? '#00ff8855' : '#444'}" 
-                    onclick="window.toggleAutoFarm('${ship.id}')">
-                    AUTO: ${ship.autoLoop ? 'ON' : 'OFF'}
-                </button>
-            </td>
+            <td>${coordsCell}</td>
+            <td style="white-space:nowrap">${dockBtn}${autoBtn}</td>
         `;
         listContainer.appendChild(tr);
     });
