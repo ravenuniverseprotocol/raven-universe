@@ -91,7 +91,7 @@ class GalaxyMap {
             if (npcNames.length > 0 && r > 1000 && i % 15 === 0) {
                 const name = npcNames.shift();
                 sys.owner = name;
-                sys.isNPCBase = true;
+                // isNPCBase removed as per user request
                 // Update the NPCManager's record for this NPC
                 if (window.npcManager) {
                     const npc = window.npcManager.npcs.find(n => n.name === name);
@@ -315,13 +315,13 @@ class GalaxyMap {
             const pulse = (Math.sin(this.pulseTime * 4) + 1) / 2;
 
             // DRAW BASE GLOW
-            if (isSelected || s.isHome || s.isNPCBase) {
+            if (isSelected || s.isHome) { // isNPCBase removed
                 const glowSize = (isSelected ? 15 : 10) + (pulse * 5);
                 const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, glowSize);
 
                 let color = 'rgba(255, 255, 255,';
                 if (s.isHome) color = 'rgba(255, 153, 0,'; // Changed from blue to Raven Orange
-                if (s.isNPCBase) color = 'rgba(255, 180, 0,';
+                // NPC Base highlighting removed
 
                 grad.addColorStop(0, color + (0.4 + pulse * 0.1) + ')');
                 grad.addColorStop(1, color + '0)');
@@ -336,14 +336,14 @@ class GalaxyMap {
             }
 
             // CORE
-            if (s.isNPCBase) {
-                ctx.fillStyle = '#ffbb00';
+            if (s.isHome) {
+                ctx.fillStyle = '#ff9900';
             } else {
-                ctx.fillStyle = s.isHome ? '#ff9900' : (isSelected ? '#fff' : 'rgba(255,255,255,0.4)');
+                ctx.fillStyle = isSelected ? '#fff' : 'rgba(255,255,255,0.4)';
             }
 
             ctx.beginPath();
-            ctx.arc(s.x, s.y, (isSelected || s.isNPCBase) ? 4 : 2, 0, Math.PI * 2);
+            ctx.arc(s.x, s.y, isSelected ? 4 : 2, 0, Math.PI * 2);
             ctx.fill();
 
             // Labels
