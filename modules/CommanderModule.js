@@ -291,6 +291,25 @@ class SkillManager {
         // Values will now reset on refresh.
     }
 
+    async heartbeat() {
+        const token = localStorage.getItem('raven_token');
+        if (!token) return;
+
+        const API_BASE_URL = window.location.protocol === 'file:' ? 'https://raven-universe.onrender.com' : '';
+
+        try {
+            await fetch(`${API_BASE_URL}/api/game/heartbeat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': token
+                }
+            });
+        } catch (err) {
+            console.error('[HEARTBEAT] Connection failed:', err);
+        }
+    }
+
     listForSale(resourceId, qty, price) {
         const id = resourceId.toUpperCase();
         if (this.removeFromInventory(id, qty)) {
@@ -745,7 +764,10 @@ function initCommander(initialState) {
 
     setInterval(() => skillManager.update(), 100);
 
-    // HEARTBEAT PROTOCOL DISABLED: No longer saving progress.
+    // HEARTBEAT PROTOCOL: Track online status (no state saving)
+    setInterval(() => skillManager.heartbeat(), 60000);
+    // Initial heartbeat
+    setTimeout(() => skillManager.heartbeat(), 2000);
 
     window.skillManager = skillManager;
 

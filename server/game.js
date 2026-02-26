@@ -27,18 +27,18 @@ router.get('/state', authenticate, async (req, res) => {
     }
 });
 
-// Save Game State
-router.post('/state', authenticate, async (req, res) => {
+// Heartbeat to update lastLogin (online status) without saving state
+router.post('/heartbeat', authenticate, async (req, res) => {
     try {
         const user = await User.findById(req.userId);
         if (!user) return res.status(404).json({ message: 'USER NOT FOUND' });
 
-        user.gameState = req.body;
+        user.lastLogin = Date.now();
         await user.save();
-        res.json({ message: 'STATE SYNCED' });
+        res.json({ message: 'HEARTBEAT RECEIVED' });
     } catch (err) {
-        console.error('[GAME ERROR] State Sync Failure:', err);
-        res.status(500).json({ message: 'ERROR SAVING STATE' });
+        console.error('[GAME ERROR] Heartbeat Failure:', err);
+        res.status(500).json({ message: 'ERROR UPDATING HEARTBEAT' });
     }
 });
 
