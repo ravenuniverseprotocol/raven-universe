@@ -356,8 +356,8 @@ class GalaxyMap {
                 const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, glowSize);
 
                 let color = 'rgba(255, 255, 255,';
-                if (s.isHome) color = 'rgba(0, 204, 255,'; // Local Player = Blue
-                if (s.isOtherPlayer) color = 'rgba(255, 153, 0,'; // Other Players = Orange
+                if (s.isHome) color = 'rgba(0, 204, 255,'; // Home = Cyan/Blue
+                else if (s.isOtherPlayer) color = 'rgba(255, 153, 0,'; // Other Players = Orange
 
                 grad.addColorStop(0, color + (0.4 + pulse * 0.1) + ')');
                 grad.addColorStop(1, color + '0)');
@@ -474,7 +474,7 @@ class GalaxyMap {
 
         // 1. Draw Player Ships (Relative to their home)
         window.systemView.playerShips.forEach(ship => {
-            if (ship.docked || !ship.onMap) return;
+            if (ship.docked) return; // Draw if undocked, regardless of onMap flag
             this.drawMapShip(ctx, playerHomeNode, ship, mapScale, '#00ff88');
         });
 
