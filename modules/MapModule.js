@@ -498,14 +498,14 @@ class GalaxyMap {
         ctx.fillStyle = '#ffffff'; // White core stands out against station blue
 
         ctx.beginPath();
-        ctx.arc(sx, sy, 2, 0, Math.PI * 2); // Small point
+        ctx.arc(sx, sy, 3 / this.zoom, 0, Math.PI * 2); // RE-SCALED: Tiny point as it was
         ctx.fill();
 
         // High intensity pulse ring
         ctx.strokeStyle = `rgba(0, 204, 255, ${0.8 - pulse * 0.5})`;
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 1 / this.zoom;
         ctx.beginPath();
-        ctx.arc(sx, sy, 4 + pulse * 4, 0, Math.PI * 2);
+        ctx.arc(sx, sy, (5 + pulse * 5) / this.zoom, 0, Math.PI * 2);
         ctx.stroke();
 
         ctx.shadowBlur = 0;
