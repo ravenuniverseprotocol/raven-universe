@@ -235,6 +235,7 @@ html {
 .missile-launcher-visual.active {
     filter: brightness(1) saturate(1) blur(0) drop-shadow(0 0 10px rgba(255, 153, 0, 0.5));
     opacity: 1;
+    border: none;
 }
 
 .radar-visual {
