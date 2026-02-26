@@ -222,14 +222,20 @@ html {
     left: 45%;
     top: 55%;
     transform: translate(-50%, -50%);
-    max-width: 45px;
+    max-width: 50px;
+    /* Slightly larger */
     height: auto;
     z-index: 7;
     pointer-events: auto;
     /* Enable dragging */
-    transition: all 1s ease;
-    filter: brightness(0.3) saturate(0) blur(1px);
-    opacity: 0.4;
+    transition: transform 0.2s ease;
+    /* Snappier dragging */
+    filter: brightness(0.8) saturate(0.8) drop-shadow(0 0 5px rgba(255, 153, 0, 0.4));
+    opacity: 0.85;
+    /* Clearly visible */
+    border: 1px dashed rgba(255, 153, 0, 0.5);
+    /* Position indicator */
+    cursor: move;
 }
 
 .missile-launcher-visual.active {
