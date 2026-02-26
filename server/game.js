@@ -42,4 +42,25 @@ router.post('/heartbeat', authenticate, async (req, res) => {
     }
 });
 
+// Get all active players (last 60 mins) for map visibility
+router.get('/players', authenticate, async (req, res) => {
+    try {
+        const sixtyMinsAgo = new Date(Date.now() - 60 * 60 * 1000);
+        const players = await User.find({
+            lastLogin: { $gte: sixtyMinsAgo }
+        }).select('username gameState.homeSystem gameState.homeCoords');
+
+        const formatted = players.map(p => ({
+            username: p.username,
+            homeSystem: p.gameState.homeSystem,
+            homeCoords: p.gameState.homeCoords
+        }));
+
+        res.json(formatted);
+    } catch (err) {
+        console.error('[GAME ERROR] Player Fetch Failure:', err);
+        res.status(500).json({ message: 'ERROR FETCHING PLAYERS' });
+    }
+});
+
 module.exports = router;

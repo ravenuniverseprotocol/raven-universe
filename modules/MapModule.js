@@ -24,9 +24,15 @@ class GalaxyMap {
         this.initVisualDecor();
         this.setupEvents();
         this.resize();
+        this.lastPlayerFetchTime = 0;
 
         window.addEventListener('resize', () => this.resize());
+        this.lastPlayerFetchTime = 0;
         this.startAnimation();
+
+        // Initial fetch and periodic refresh
+        this.fetchOtherPlayers();
+        setInterval(() => this.fetchOtherPlayers(), 60000);
     }
 
     createSeededRandom(seed) {
@@ -95,6 +101,52 @@ class GalaxyMap {
             }
 
             this.systems.push(sys);
+        }
+    }
+
+    async fetchOtherPlayers() {
+        const token = localStorage.getItem('raven_token');
+        if (!token) return;
+
+        const API_BASE_URL = window.location.protocol === 'file:' ? 'https://raven-universe.onrender.com' : '';
+
+        try {
+            const resp = await fetch(`${API_BASE_URL}/api/game/players`, {
+                headers: { 'Authorization': token }
+            });
+            if (!resp.ok) return;
+
+            const players = await resp.json();
+            const localUsername = (window.skillManager && window.skillManager.commanderName) ? window.skillManager.commanderName.toUpperCase() : null;
+
+            players.forEach(p => {
+                const username = p.username.toUpperCase();
+                if (username === localUsername) return; // Skip self
+
+                const sysId = `S${p.homeSystem}`;
+
+                // Check if already in list (could be generated or already fetched)
+                let sys = this.systems.find(s => s.id === sysId);
+                if (!sys) {
+                    sys = {
+                        id: sysId,
+                        name: p.homeSystem,
+                        x: p.homeCoords.x,
+                        y: p.homeCoords.y,
+                        isHome: false,
+                        owner: username
+                    };
+                    this.systems.push(sys);
+                }
+
+                // Update properties for real player visibility
+                sys.isOtherPlayer = true;
+                sys.owner = username;
+            });
+
+            this.render(); // Redraw with new data
+        } catch (err) {
+            console.error('[MAP] Error fetching other players:', err);
         }
     }
 
@@ -354,7 +406,15 @@ class GalaxyMap {
                 } else {
                     ctx.fillStyle = isSelected ? '#fff' : 'rgba(200, 220, 255, 0.6)';
                     ctx.font = isSelected ? 'bold 10px Courier New' : '8px Courier New';
-                    ctx.fillText(s.name, s.x, s.y + 14);
+
+                    const label = s.isOtherPlayer ? `CMDR ${s.owner}` : s.name;
+                    ctx.fillText(label, s.x, s.y + 14);
+
+                    if (s.isOtherPlayer) {
+                        ctx.font = '7px Courier New';
+                        ctx.fillStyle = 'rgba(255, 153, 0, 0.6)';
+                        ctx.fillText(s.name, s.x, s.y + 24);
+                    }
                 }
                 ctx.globalAlpha = 1.0;
             }
