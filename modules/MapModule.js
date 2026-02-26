@@ -391,7 +391,7 @@ class GalaxyMap {
                 ctx.beginPath();
                 ctx.arc(s.x, s.y, isSelected ? 5 : 4, 0, Math.PI * 2);
                 ctx.fill();
-                return; // Skip the generic circle below
+                // removed return to allow labels to draw
             } else {
                 ctx.fillStyle = isSelected ? '#fff' : 'rgba(255,255,255,0.4)';
             }
@@ -410,19 +410,19 @@ class GalaxyMap {
                     ctx.font = 'bold 9px Courier New';
                     const npc = window.npcManager ? window.npcManager.npcs.find(n => n.name === s.owner) : null;
                     const label = npc ? `${npc.stationName}` : s.name;
-                    ctx.fillText(label, s.x, s.y + 16);
+                    ctx.fillText(label, s.x, s.y + 18);
+                } else if (s.isOtherPlayer) {
+                    ctx.fillStyle = '#ff9900';
+                    ctx.font = 'bold 12px Courier New';
+                    ctx.fillText(`CMDR ${s.owner}`, s.x, s.y + 18);
+
+                    ctx.font = '10px Courier New';
+                    ctx.fillStyle = 'rgba(255, 153, 0, 0.8)';
+                    ctx.fillText(s.name, s.x, s.y + 32);
                 } else {
-                    ctx.fillStyle = isSelected ? '#fff' : 'rgba(200, 220, 255, 0.6)';
-                    ctx.font = isSelected ? 'bold 10px Courier New' : '8px Courier New';
-
-                    const label = s.isOtherPlayer ? `CMDR ${s.owner}` : s.name;
-                    ctx.fillText(label, s.x, s.y + 14);
-
-                    if (s.isOtherPlayer) {
-                        ctx.font = '7px Courier New';
-                        ctx.fillStyle = 'rgba(255, 153, 0, 0.6)';
-                        ctx.fillText(s.name, s.x, s.y + 24);
-                    }
+                    ctx.fillStyle = isSelected ? '#fff' : 'rgba(200, 220, 255, 0.8)';
+                    ctx.font = isSelected ? 'bold 12px Courier New' : '10px Courier New';
+                    ctx.fillText(s.name, s.x, s.y + 18);
                 }
                 ctx.globalAlpha = 1.0;
             }
