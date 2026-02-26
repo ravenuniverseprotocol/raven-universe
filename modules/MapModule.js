@@ -428,30 +428,7 @@ class GalaxyMap {
             this.drawMapShip(ctx, playerHomeNode, ship, mapScale, '#00ff88');
         });
 
-        // 2. Draw NPC Ships (Relative to their respective Home bases)
-        if (window.npcManager && window.npcManager.npcs) {
-            window.npcManager.npcs.forEach(npc => {
-                const npcHomeNode = this.systems.find(s => s.owner === npc.name);
-                if (!npcHomeNode) return;
-
-                npc.ships.forEach(ship => {
-                    const distFromHome = Math.sqrt((ship.x - npc.homeX) ** 2 + (ship.y - npc.homeY) ** 2);
-                    const distFromPlayer = Math.sqrt(ship.x * ship.x + ship.y * ship.y);
-
-                    // SHOW CRITERIA: Near home base OR visiting player OR traveling to trade
-                    if (distFromHome < 300 || distFromPlayer < 300 || ship.status === 'TRADING') {
-                        // For the math to work in drawMapShip, we need to pass the system's map coordinates
-                        // and the ship's world coordinates RELATIVE to that system.
-                        const relativeShip = {
-                            id: ship.id,
-                            x: ship.x - npc.homeX,
-                            y: ship.y - npc.homeY
-                        };
-                        this.drawMapShip(ctx, npcHomeNode, relativeShip, mapScale, '#ffcc00');
-                    }
-                });
-            });
-        }
+        // 2. Draw NPC Ships section removed as per user request (legacy test data)
     }
 
     drawMapShip(ctx, homeNode, ship, mapScale, color) {
