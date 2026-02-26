@@ -489,21 +489,22 @@ class GalaxyMap {
         const sx = homeNode.x + (ship.x * mapScale);
         const sy = homeNode.y + (ship.y * mapScale);
 
-        const pulse = (Math.sin(this.pulseTime * 8) + 1) / 2;
+        const pulse = (Math.sin(this.pulseTime * 10) + 1) / 2; // Faster pulse for ships
 
-        ctx.fillStyle = color;
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = color;
+        // GLOW
+        ctx.shadowBlur = 15;
+        ctx.shadowColor = '#00ccff';
+        ctx.fillStyle = '#ffffff'; // White core stands out against station blue
 
-        // FIXED SIZE: Don't divide by zoom to ensure visibility at all scales (especially at 500% zoom)
         ctx.beginPath();
-        ctx.arc(sx, sy, 4, 0, Math.PI * 2);
+        ctx.arc(sx, sy, 5, 0, Math.PI * 2); // Larger radius
         ctx.fill();
 
-        // Outer pulse ring
-        ctx.strokeStyle = `rgba(0, 204, 255, ${0.5 - pulse * 0.3})`;
+        // High intensity pulse ring
+        ctx.strokeStyle = `rgba(0, 204, 255, ${0.8 - pulse * 0.5})`;
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.arc(sx, sy, 8 + pulse * 6, 0, Math.PI * 2);
+        ctx.arc(sx, sy, 10 + pulse * 8, 0, Math.PI * 2);
         ctx.stroke();
 
         ctx.shadowBlur = 0;
