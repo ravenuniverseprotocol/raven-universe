@@ -127,12 +127,16 @@ class SkillManager {
             launcher.classList.remove('active');
         }
 
-        // Load saved position
+        // Load saved position (fallback to hardcoded CSS)
         if (!launcher.dataset.posLoaded) {
             const savedLeft = localStorage.getItem('missile_pos_left');
             const savedTop = localStorage.getItem('missile_pos_top');
             if (savedLeft) launcher.style.left = savedLeft;
+            else launcher.style.left = "134px";
+
             if (savedTop) launcher.style.top = savedTop;
+            else launcher.style.top = "87px";
+
             launcher.dataset.posLoaded = "true";
         }
     }
@@ -806,15 +810,12 @@ function initCommander(initialState) {
         if (savedTop) radarVisual.style.top = savedTop;
     }
 
-    // MISSILE LAUNCHER: Make it draggable
+    // MISSILE LAUNCHER: Position persistence (drag disabled per request)
     const launcher = document.getElementById('missile-launcher');
-    if (launcher && typeof makeDraggable === 'function') {
-        makeDraggable(launcher);
-
-        launcher.addEventListener('mouseup', () => {
-            localStorage.setItem('missile_pos_left', launcher.style.left);
-            localStorage.setItem('missile_pos_top', launcher.style.top);
-            console.log("Missile launcher position saved:", launcher.style.left, launcher.style.top);
-        });
+    if (launcher) {
+        const savedLeft = localStorage.getItem('missile_pos_left') || "134px";
+        const savedTop = localStorage.getItem('missile_pos_top') || "87px";
+        launcher.style.left = savedLeft;
+        launcher.style.top = savedTop;
     }
 }
