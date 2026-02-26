@@ -92,14 +92,12 @@ class GalaxyMap {
                 const name = npcNames.shift();
                 sys.owner = name;
                 // isNPCBase removed as per user request
-                // Update the NPCManager's record for this NPC
-                if (window.npcManager) {
-                    const npc = window.npcManager.npcs.find(n => n.name === name);
-                    if (npc) {
-                        npc.homeX = sys.x;
-                        npc.homeY = sys.y;
-                    }
-                }
+            }
+
+            // SIMULATE OTHER PLAYERS: Mark a few systems as other players for visual testing
+            if (i > 0 && i < 4) {
+                sys.isOtherPlayer = true;
+                sys.owner = `PLAYER_${i}`;
             }
 
             this.systems.push(sys);
@@ -315,13 +313,13 @@ class GalaxyMap {
             const pulse = (Math.sin(this.pulseTime * 4) + 1) / 2;
 
             // DRAW BASE GLOW
-            if (isSelected || s.isHome) { // isNPCBase removed
+            if (isSelected || s.isHome || s.isOtherPlayer) {
                 const glowSize = (isSelected ? 15 : 10) + (pulse * 5);
                 const grad = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, glowSize);
 
                 let color = 'rgba(255, 255, 255,';
-                if (s.isHome) color = 'rgba(255, 153, 0,'; // Changed from blue to Raven Orange
-                // NPC Base highlighting removed
+                if (s.isHome) color = 'rgba(0, 204, 255,'; // Local Player = Blue
+                if (s.isOtherPlayer) color = 'rgba(255, 153, 0,'; // Other Players = Orange
 
                 grad.addColorStop(0, color + (0.4 + pulse * 0.1) + ')');
                 grad.addColorStop(1, color + '0)');
@@ -337,7 +335,9 @@ class GalaxyMap {
 
             // CORE
             if (s.isHome) {
-                ctx.fillStyle = '#ff9900';
+                ctx.fillStyle = '#00ccff'; // My Station = Blue
+            } else if (s.isOtherPlayer) {
+                ctx.fillStyle = '#ff9900'; // Others = Orange
             } else {
                 ctx.fillStyle = isSelected ? '#fff' : 'rgba(255,255,255,0.4)';
             }
