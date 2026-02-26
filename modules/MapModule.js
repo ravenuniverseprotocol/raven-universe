@@ -53,55 +53,48 @@ class GalaxyMap {
     }
 
     initGalaxyData() {
-        const seededRandom = this.createSeededRandom(777); // Fixed seed for systems
+        const seededRandom = this.createSeededRandom(777); // Match server/systems.js
         const count = 100;
         const spread = 2000;
 
-        // Dynamic Home Node from SkillManager
+        // Dynamic Home Data from SkillManager (determined by server on registration)
         const homeName = window.skillManager ? window.skillManager.homeSystem : "10.05.29";
         const homeCoords = window.skillManager ? window.skillManager.homeCoords : { x: 0, y: 0 };
 
+        // 1. Generate Index 0 (Fixed Center)
         this.systems.push({
-            id: `S${homeName}`,
-            name: homeName,
-            x: homeCoords.x,
-            y: homeCoords.y,
-            isHome: true,
-            owner: "PLAYER"
+            id: "S10.05.29",
+            name: "10.05.29",
+            x: 0,
+            y: 0,
+            isHome: (homeName === "10.05.29"),
+            owner: (homeName === "10.05.29") ? "PLAYER" : null
         });
 
-        // Center view on home node initially
-        this.offset = { x: -homeCoords.x, y: -homeCoords.y };
-
-        const npcNames = ["DRAX", "KARA", "VEX", "ZORP", "NOMAD"];
-
+        // 2. Generate remaining 99 Procedural Systems
         for (let i = 1; i < count; i++) {
             const a = seededRandom() * Math.PI * 2;
             const r = Math.sqrt(seededRandom()) * spread;
 
-            // Random technical name format XX.XX.XX
             const p1 = Math.floor(seededRandom() * 99).toString().padStart(2, '0');
             const p2 = Math.floor(seededRandom() * 99).toString().padStart(2, '0');
             const p3 = Math.floor(seededRandom() * 99).toString().padStart(2, '0');
+            const systemName = `${p1}.${p2}.${p3}`;
 
             const sys = {
-                id: `S${p1}.${p2}.${p3}`,
-                name: `${p1}.${p2}.${p3}`,
+                id: `S${systemName}`,
+                name: systemName,
                 x: Math.cos(a) * r,
                 y: Math.sin(a) * r,
-                isHome: false,
-                owner: null
+                isHome: (homeName === systemName),
+                owner: (homeName === systemName) ? "PLAYER" : null
             };
-
-            // Assign to NPC if it's one of their designated slots and distant
-            if (npcNames.length > 0 && r > 1000 && i % 15 === 0) {
-                const name = npcNames.shift();
-                sys.owner = name;
-                // isNPCBase removed as per user request
-            }
 
             this.systems.push(sys);
         }
+
+        // Center view on home node
+        this.offset = { x: -homeCoords.x, y: -homeCoords.y };
     }
 
     async fetchOtherPlayers() {
@@ -124,26 +117,21 @@ class GalaxyMap {
                 if (username === localUsername) return; // Skip self
 
                 const sysId = `S${p.homeSystem}`;
-
-                // Check if already in list (could be generated or already fetched)
                 let sys = this.systems.find(s => s.id === sysId);
 
-                // CRITICAL FIX: If this is the local home system, do NOT overwrite it
-                if (sys && sys.isHome) return;
-
                 if (!sys) {
+                    // Fallback: If for some reason a player is in a system not in our deterministic 100
                     sys = {
                         id: sysId,
                         name: p.homeSystem,
                         x: p.homeCoords.x,
                         y: p.homeCoords.y,
-                        isHome: false,
-                        owner: username
+                        isHome: false
                     };
                     this.systems.push(sys);
                 }
 
-                // Update properties for real player visibility
+                // Mark for rendering
                 sys.isOtherPlayer = true;
                 sys.owner = username;
             });

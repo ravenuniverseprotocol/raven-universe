@@ -10,15 +10,20 @@ function createSeededRandom(seed) {
 
 /**
  * Procedurally generates the 100 systems of the galaxy.
+ * Must perfectly match MapModule.js
  */
 function getProcessedPool() {
     const seededRandom = createSeededRandom(777);
     const spread = 2000;
     const pool = [];
 
-    // Iteration 0 (Match MapModule.js home logic if necessary, but we focus on the 99 procedural ones)
-    // MapModule pushes home manually, then loops 1 to 100.
+    // System Index 0 - Fixed Center (Historical Home)
+    pool.push({
+        name: "10.05.29",
+        coords: { x: 0, y: 0 }
+    });
 
+    // Remaining 99 - Deterministic Randoms
     for (let i = 1; i < 100; i++) {
         const a = seededRandom() * Math.PI * 2;
         const r = Math.sqrt(seededRandom()) * spread;
@@ -39,10 +44,11 @@ function getProcessedPool() {
 
 /**
  * Isolation Protocol: Finds the system that is FURTHEST away from all currently occupied systems.
+ * No manual logic, purely mathematical.
  */
 async function getAvailableSystem() {
     const pool = getProcessedPool();
-    const occupiedUsers = await User.find({}).select('gameState.homeSystem gameState.homeCoords username');
+    const occupiedUsers = await User.find({}).select('gameState.homeSystem gameState.homeCoords');
 
     const occupiedList = occupiedUsers.map(u => ({
         name: u.gameState.homeSystem,
@@ -55,9 +61,10 @@ async function getAvailableSystem() {
 
     // Filter out already occupied systems and find the most isolated one
     for (const sys of pool) {
+        // Skip if this specific system name is already taken
         if (occupiedList.some(o => o.name === sys.name)) continue;
 
-        // Calculate distance to the nearest player
+        // Calculate distance to the nearest existing player
         let minDistanceToAnyPlayer = Infinity;
         for (const player of occupiedList) {
             const dx = sys.coords.x - player.x;
@@ -68,10 +75,8 @@ async function getAvailableSystem() {
             }
         }
 
-        // If there are no players yet, just pick the first one
-        if (occupiedList.length === 0) {
-            return { systemName: sys.name, coords: sys.coords };
-        }
+        // If no players exist (impossible as FUSO at least is there), pick anything
+        if (occupiedList.length === 0) return { systemName: sys.name, coords: sys.coords };
 
         // We want to MAXIMIZE the MINIMUM distance to any existing player
         if (minDistanceToAnyPlayer > maxMinDistance) {
@@ -88,4 +93,4 @@ async function getAvailableSystem() {
     throw new Error("No free systems found in the procedural pool.");
 }
 
-module.exports = { getAvailableSystem };
+module.exports = { getAvailableSystem, getProcessedPool };
