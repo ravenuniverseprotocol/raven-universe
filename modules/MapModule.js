@@ -114,7 +114,11 @@ class GalaxyMap {
 
             players.forEach(p => {
                 const username = p.username.toUpperCase();
-                if (username === localUsername) return; // Skip self
+                const localHome = window.skillManager ? window.skillManager.homeSystem : null;
+
+                // CRITICAL SAFEGUARD: Skip if it's the local player or the local home system
+                if (username === localUsername) return;
+                if (localHome && p.homeSystem === localHome) return;
 
                 const sysId = `S${p.homeSystem}`;
                 let sys = this.systems.find(s => s.id === sysId);
