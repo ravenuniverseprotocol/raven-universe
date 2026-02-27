@@ -14,6 +14,7 @@ ESTAS REGRAS SAO ABSOLUTAS E DEVEM SER LIDAS ANTES DE QUALQUER ATUALIZACAO:
 6. PROIBIDO REMOVER FOTOS DE PERFIL OU DADOS DE PERSONALIZAÇÃO: Nunca remover, limpar ou substituir fotos/dados carregados pelo utilizador, mesmo em processos de limpeza ou resets.
 7. QUANDO NAO SABE FAZER, ESTA TOTALMENTE PROIBIDO DE INVENTAR OU ALTERAR O QUE SEJA.
 8. PROIBIDO DE ESTRAGAR QUALQUER BOM FUNCIONAMENTO EM TODA A LOGICA DE CADA MODULO EXISTENTE NO PROJETO!
+9. PROIBIDO ALTERAR LÓGICA BLOQUEADA: Toda a lógica marcada como "BLOQUEADA" no DIÁRIO EVOLUTIVO ou no código está terminantemente proibida de sofrer qualquer alteração, modificação ou remoção, independentemente de futuras necessidades de otimização ou limpeza.
 
 ---
 
@@ -159,6 +160,8 @@ O projeto foi modularizado para garantir estabilidade e facilidade de expansão:
   * **Perímetro Táctico**: Implementação do anel de alcance ciano pulsante.
   * **Inteligência IFF**: Diferenciação visual de alvos (Verde/Laranja/Vermelho) e assinaturas térmicas.
   * **Filtragem e Rastro**: Remoção de estática em cinturões e adição de rastros de movimento (Ghost Trails).
+* **Defesa e Armamento (Sincronização Final)**:
+  * **Feedback Auditivo**: Integração do comando de voz "Weapons Systems Activated" ao atingir Nível 4 de Power e Nível 1 de Armas.
 
 ---
 
@@ -200,7 +203,30 @@ O projeto foi modularizado para garantir estabilidade e facilidade de expansão:
 
 ---
 
-## 🔐 Infraestrutura & Credenciais de Acesso (DADOS CRÍTICOS)
+## � LÓGICA BLOQUEADA (RESTRIÇÃO ABSOLUTA - PROIBIDO MEXER)
+
+As funcionalidades abaixo foram seladas por ordem direta do Comandante e estão sob a **REGRA 9** do Protocolo de Subordinação. Nenhuma IA ou desenvolvedor tem autorização para alterar estes blocos:
+
+### 1. Motor de Desenho de Naves no Mapa (`MapModule.js`)
+
+* **Lógica**: `drawMapShip` e o loop em `drawPlayerActivity`.
+* **Padrão Bloqueado**: Escalonamento `3 / this.zoom`, Raio base 3, Núcleo `#ffffff`, Aura `#00ccff`.
+* **Trigger**: A nave deve ser desenhada mal o estado seja diferente de `docked`.
+
+### 2. Identificação de Jogador e Cores (`MapModule.js`)
+
+* **Lógica**: Salvaguardas de `isHome` e `isOtherPlayer` no método `render` e `fetchOtherPlayers`.
+* **Padrão Bloqueado**: Uso obrigatório de `.toString().trim().toUpperCase()` na comparação de nomes e IDs de sistema para evitar falsos negativos.
+* **Prioridade**: `isHome` tem prioridade absoluta sobre qualquer outra flag de cor.
+
+### 3. Ausência de NPCs (Limpeza Completa)
+
+* **Lógica**: Supressão de qualquer referência ao `NPCManager` ou lógica de frotas inimigas/mineiros AI no `MapModule.js` e `RadarModule.js`.
+* **Padrão Bloqueado**: O jogo deve correr "Headless" e purgado de entidades NPC até nova ordem.
+
+---
+
+## �🔐 Infraestrutura & Credenciais de Acesso (DADOS CRÍTICOS)
 
 > [!IMPORTANT]
 > **ACESSO DE PRODUÇÃO:** Estes dados garantem o controlo total sobre a infraestrutura em nuvem.

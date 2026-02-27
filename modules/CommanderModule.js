@@ -42,7 +42,9 @@ class SkillManager {
         this.homeCoords = { x: 0, y: 0 }; // Reset
         this.isOnline = false;
         this.radarUnlocked = false;
-        this.radarAnnounced = false; // Reset
+        this.radarAnnounced = localStorage.getItem('radar_announced') === 'true';
+        this.shieldsAnnounced = localStorage.getItem('shields_announced') === 'true';
+        this.weaponsAnnounced = localStorage.getItem('weapons_announced') === 'true';
         this.expandedStates = { "Station Operations": true, "Radar Systems": true, "Shield Systems": true };
         this.storefront = []; // Reset
 
@@ -123,6 +125,12 @@ class SkillManager {
 
         if (gridLvl >= 4 && weaponsFunctional) {
             launcher.classList.add('active');
+
+            if (!this.weaponsAnnounced) {
+                this.playWeaponsOnlineSound();
+                this.weaponsAnnounced = true;
+                localStorage.setItem('weapons_announced', 'true');
+            }
         } else {
             launcher.classList.remove('active');
         }
@@ -185,6 +193,15 @@ class SkillManager {
     playRadarOnlineSound() {
         const audio = new Audio('assets/media/Radar Sistem Online.mp3');
         audio.play().catch(e => console.error("Erro ao reproduzir som do radar:", e));
+    }
+
+    playWeaponsOnlineSound() {
+        const audio = new Audio('assets/media/Weapons System Activated.mp3');
+        audio.play().catch(e => console.error("Erro ao reproduzir som de armamento:", e));
+
+        if (typeof showGameNotification === 'function') {
+            showGameNotification("WEAPONS SYSTEMS ACTIVATED - ORDNANCE READY");
+        }
     }
 
     checkRadarStatus() {
