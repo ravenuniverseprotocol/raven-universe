@@ -188,8 +188,8 @@ html {
 
 .station-image {
     position: relative;
-    z-index: 5;
-    /* In front of components (z-index 1) */
+    z-index: 10;
+    /* Explicitly on top of everything in container */
     max-width: 200px;
     max-height: 60vh;
     object-fit: contain;
