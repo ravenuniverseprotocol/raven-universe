@@ -187,6 +187,9 @@ html {
 }
 
 .station-image {
+    position: relative;
+    z-index: 5;
+    /* In front of components (z-index 1) */
     max-width: 200px;
     max-height: 60vh;
     object-fit: contain;
@@ -244,14 +247,14 @@ html {
 
 .radar-visual {
     position: absolute;
-    left: calc(50% - 72px);
-    /* Restored closer to station edge */
+    left: calc(50% - 67px);
+    /* Moved 5px right from -72px */
     top: calc(50% - 5px);
     transform: translateY(-50%);
     max-width: 35px;
-    /* Slightly increased visibility */
     height: auto;
-    z-index: 4;
+    z-index: 1;
+    /* Moved behind station */
     pointer-events: none;
     transition: opacity 1s ease;
     filter: brightness(0.3) saturate(0.1);
