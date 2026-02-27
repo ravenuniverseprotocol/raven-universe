@@ -252,7 +252,30 @@ As funcionalidades abaixo foram seladas por ordem direta do Comandante e estão 
 
 ---
 
-## 🚀 Roteiro Futuro
+## �️ Manual de Ativação (Bringing Online)
+
+Para reativar o ecossistema Raven Universe, segue estes passos literais:
+
+### A. Ambiente Local (Desenvolvimento/Teste)
+
+1. **Terminal 1 (Backend)**: Navega até à pasta raiz e executa `npm start`. Confirma que vês a mensagem `[SERVER] Neural Cloud connected`.
+2. **Terminal 2 (Frontend)**: Executa `npx live-server` ou abre o ficheiro `index.html` diretamente num browser com suporte a `localStorage`.
+3. **Acesso**: Abre `http://127.0.0.1:5500` (se usares live-server).
+
+### B. Ambiente de Produção (Live)
+
+1. **Render.com**: Aceder ao dashboard do Render e confirmar que o serviço `raven-universe` está em estado `Live`. Se estiver offline, clicar em **Manual Deploy -> Clear Build Cache & Deploy**.
+2. **MongoDB Atlas**: Verificar se o Cluster está ativo e se o IP atual está na Whitelist (Network Access).
+3. **Acesso Global**: [https://raven-universe.onrender.com](https://raven-universe.onrender.com)
+
+### C. Reset de Emergência (Se os subsistemas falharem)
+
+1. **Consola do Browser (F12)**: Executa `localStorage.clear(); location.reload();`.
+2. Isso forçará o re-treino das skills de Station Operations e a re-identificação do Comandante.
+
+---
+
+## �🚀 Roteiro Futuro
 
 * [x] **Migração Fullstack**: Backend ativo com persistência cloud.
 * [x] **Acesso Remoto**: Testado e funcional via Ngrok e Render.

@@ -33,8 +33,8 @@ class TacticalRadar {
             void main() {
                 float r = a_dist * u_radarRadius;
                 vec2 worldPos = vec2(cos(a_angle), sin(a_angle)) * r;
-                // Radar is 220x220, center is 110,110
-                vec2 clipPos = ((worldPos + 110.0) / 220.0) * 2.0 - 1.0;
+                // Radar is 180x180, center is 90,90
+                vec2 clipPos = ((worldPos + 90.0) / 180.0) * 2.0 - 1.0;
                 gl_Position = vec4(clipPos * vec2(1, -1), 0, 1);
                 gl_PointSize = 4.0;
                 v_alpha = a_alpha;
@@ -94,7 +94,7 @@ class TacticalRadar {
     }
 
     resize() {
-        const size = 220;
+        const size = 180;
         this.width = size;
         this.height = size;
         const dpr = window.devicePixelRatio || 1;
@@ -126,6 +126,7 @@ class TacticalRadar {
 
     update(dt) {
         if (!window.skillManager || !window.skillManager.checkRadarStatus()) return;
+
         const sweepSkill = window.skillManager.skills['sweep_velocity']?.level || 0;
         this.angle += dt * 1.5 * (1 + (sweepSkill * 0.5));
         if (this.angle > Math.PI * 2) this.angle -= Math.PI * 2;
@@ -133,12 +134,38 @@ class TacticalRadar {
         const rangeSkill = window.skillManager.skills['scanner_range']?.level || 1;
         const visibleRange = 0.4 + (rangeSkill * 0.12);
 
-        this.entities.forEach(ent => {
+        const trackingCap = window.skillManager.getTrackingCapacity();
+
+        // 1. Filter entities within range
+        let inRange = this.entities.filter(ent => ent.dist < visibleRange);
+
+        // 2. Prioritize: Hostile > Distance (Priority for closer targets)
+        inRange.sort((a, b) => {
+            if (a.type === 'hostile' && b.type !== 'hostile') return -1;
+            if (b.type === 'hostile' && a.type !== 'hostile') return 1;
+            return a.dist - b.dist;
+        });
+
+        // 3. Mark Tracked vs Ghost
+        inRange.forEach((ent, index) => {
+            ent.isTracked = index < trackingCap;
+
             if (ent.speed) ent.angle += ent.speed * dt;
             const diff = (this.angle - ent.angle + Math.PI * 2) % (Math.PI * 2);
-            if (diff < 0.2 && ent.dist < visibleRange) ent.alpha = 1.0;
-            else ent.alpha *= 0.98;
+
+            if (diff < 0.2) {
+                ent.alpha = 1.0;
+            } else {
+                ent.alpha *= 0.98;
+            }
         });
+
+        // Update UI
+        const trackedCount = Math.min(inRange.length, trackingCap);
+        const countSpan = document.getElementById('radar-tracked-count');
+        const maxSpan = document.getElementById('radar-max-slots');
+        if (countSpan) countSpan.innerText = trackedCount;
+        if (maxSpan) maxSpan.innerText = trackingCap;
     }
 
     draw() {
@@ -156,18 +183,33 @@ class TacticalRadar {
         gl.bindVertexArray(this.vao);
 
         const resSkill = window.skillManager.skills['signal_resolution']?.level || 1;
-        const data = new Float32Array(this.entities.length * 6);
+        // Draw only entities within range
+        const visibleEntities = this.entities.filter(ent => ent.alpha > 0.01);
+        const data = new Float32Array(visibleEntities.length * 6);
 
-        this.entities.forEach((ent, i) => {
+        visibleEntities.forEach((ent, i) => {
             data[i * 6] = ent.dist;
             data[i * 6 + 1] = ent.angle;
-            data[i * 6 + 2] = ent.alpha;
+
+            // Effect: Untracked entities are 70% dimmer and flicker
+            let finalAlpha = ent.alpha;
+            if (!ent.isTracked) {
+                finalAlpha *= 0.3 * (0.8 + Math.random() * 0.4);
+            }
+            data[i * 6 + 2] = finalAlpha;
+
             let color = [0.31, 0.58, 0.78]; // #5096c8
-            if (resSkill >= 3) {
+
+            // Identification only works if tracked AND resolution is high enough
+            if (ent.isTracked && resSkill >= 3) {
                 if (ent.type === 'hostile') color = [1.0, 0.26, 0.26];
                 else if (ent.type === 'player') color = [0.0, 1.0, 0.53];
                 else if (ent.type === 'asteroid') color = [0.53, 0.53, 0.53];
+            } else if (!ent.isTracked) {
+                // Ghost signals are monochrome/greyish
+                color = [0.4, 0.4, 0.4];
             }
+
             data[i * 6 + 3] = color[0];
             data[i * 6 + 4] = color[1];
             data[i * 6 + 5] = color[2];
@@ -177,7 +219,7 @@ class TacticalRadar {
         gl.bufferData(gl.ARRAY_BUFFER, data, gl.DYNAMIC_DRAW);
 
         gl.uniform1f(gl.getUniformLocation(this.program, "u_radarRadius"), 100.0);
-        gl.drawArrays(gl.POINTS, 0, this.entities.length);
+        gl.drawArrays(gl.POINTS, 0, visibleEntities.length);
     }
 }
 

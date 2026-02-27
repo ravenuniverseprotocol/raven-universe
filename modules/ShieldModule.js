@@ -3,6 +3,8 @@ class ShieldEngine {
         this.maxStrength = 1000;
         this.currentStrength = 1000;
         this.regenRate = 0;
+        this.regenDelay = 10000; // Default 10s
+        this.lastDamageTime = 0;
         this.lastUpdate = Date.now();
 
         this.elements = {
@@ -32,6 +34,18 @@ class ShieldEngine {
         const mgmtLvl = skills['shield_management'] ? skills['shield_management'].level : 0;
         const compLvl = skills['shield_compensation'] ? skills['shield_compensation'].level : 0;
         this.regenRate = (mgmtLvl * 5) + (compLvl * 2);
+
+        // Tactical Shield Manipulation: Reduces regen delay from 10s to 0.5s
+        const tacticalLvl = skills['tactical_shield_manipulation'] ? skills['tactical_shield_manipulation'].level : 0;
+        // Scaling: 10s, 8s, 6s, 4s, 2s, 0.5s
+        const delays = [10000, 8000, 6000, 4000, 2000, 500];
+        this.regenDelay = delays[tacticalLvl] || 10000;
+    }
+
+    takeDamage(amount) {
+        this.currentStrength = Math.max(0, this.currentStrength - amount);
+        this.lastDamageTime = Date.now();
+        this.render();
     }
 
     update() {
@@ -39,8 +53,8 @@ class ShieldEngine {
         const dt = (now - this.lastUpdate) / 1000;
         this.lastUpdate = now;
 
-        // Handle Regen
-        if (this.currentStrength < this.maxStrength) {
+        // Handle Regen ONLY if outside damage delay window
+        if (this.currentStrength < this.maxStrength && (now - this.lastDamageTime > this.regenDelay)) {
             this.currentStrength = Math.min(this.maxStrength, this.currentStrength + (this.regenRate * dt));
         }
 

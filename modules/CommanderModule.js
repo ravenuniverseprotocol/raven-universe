@@ -20,10 +20,10 @@ const SKILL_DATA = {
         { id: 'shield_compensation', name: 'Shield Compensation', multiplier: 1.0, description: "" }
     ],
     "Orbital Weapons": [
-        { id: "ordnance_systems_ignition", name: "Ordnance Systems Ignition", multiplier: 1.0, description: "Master OS ignition protocol. Requer Power Grid Lvl 4. Ativa o lança-mísseis." },
-        { id: "warhead_optimization", name: "Warhead Optimization", multiplier: 1.2, description: "Aumenta o yield das ogivas planetárias." },
-        { id: "target_lock_speed", name: "Target Lock Speed", multiplier: 1.2, description: "Reduz o tempo de trancagem de alvos (Lock-on)." },
-        { id: "missile_propulsion", name: "Propulsion Calibration", multiplier: 1.1, description: "Aumenta a velocidade de viagem dos projéteis." }
+        { id: "ordnance_systems_ignition", name: "Ordnance Systems Ignition", multiplier: 1.0, description: "Master OS ignition protocol. Requires Power Grid Lvl 4. Activates the missile launcher." },
+        { id: "warhead_optimization", name: "Warhead Optimization", multiplier: 1.2, description: "Increases planetary warhead yield." },
+        { id: "target_lock_speed", name: "Target Lock Speed", multiplier: 1.2, description: "Reduces target lock-on time." },
+        { id: "missile_propulsion", name: "Propulsion Calibration", multiplier: 1.1, description: "Increases projectile flight speed." }
     ]
 };
 
@@ -60,7 +60,7 @@ class SkillManager {
         const currentSkills = savedSkills || {};
 
         const cleanedSkills = {};
-        // APENAS carregar skills que existem no SKILL_DATA atual
+        // ONLY load skills that exist in current SKILL_DATA
         Object.values(SKILL_DATA).flat().forEach(s => {
             cleanedSkills[s.id] = currentSkills[s.id] || {
                 id: s.id,
@@ -99,13 +99,10 @@ class SkillManager {
                 this.radarUnlocked = true;
                 this.renderCategories();
             }
-
-            // Check Missile Launcher Visuals
-            this.checkMissileStatus();
         } else {
             this.isOnline = false;
             stationImg.classList.add('offline');
-            // Se as skills foram resetadas, resetar também o anúncio
+            // If skills were reset, also reset the announcement
             if (this.onlineAnnounced) {
                 this.onlineAnnounced = false;
                 localStorage.removeItem('raven_online_announced');
@@ -124,15 +121,26 @@ class SkillManager {
         const weaponsFunctional = weaponSkills.every(s => this.skills[s.id] && this.skills[s.id].level >= 1);
 
         if (gridLvl >= 4 && weaponsFunctional) {
-            launcher.classList.add('active');
+            if (!launcher.classList.contains('active')) {
+                console.log("[WEAPONS] Activating Missile Launcher Systems...");
+                launcher.classList.add('active');
+            }
 
             if (!this.weaponsAnnounced) {
+                console.log("[WEAPONS] Playing 'Weapons System Activated' audio...");
                 this.playWeaponsOnlineSound();
                 this.weaponsAnnounced = true;
                 localStorage.setItem('weapons_announced', 'true');
             }
         } else {
-            launcher.classList.remove('active');
+            if (launcher.classList.contains('active')) {
+                console.log("[WEAPONS] Deactivating Missile Launcher Systems.");
+                launcher.classList.remove('active');
+            }
+            if (this.weaponsAnnounced) {
+                this.weaponsAnnounced = false;
+                localStorage.removeItem('weapons_announced');
+            }
         }
 
         // Load saved position (fallback to hardcoded CSS)
@@ -182,22 +190,29 @@ class SkillManager {
 
     playWelcomeSound() {
         const audio = new Audio('assets/media/Welcome Comander.mp3');
-        audio.play().catch(e => console.error("Erro ao reproduzir som de boas-vindas:", e));
+        audio.play().catch(e => console.error("Error playing welcome sound:", e));
     }
 
     playOnlineSound() {
         const audio = new Audio('assets/media/Sistems Online.mp3');
-        audio.play().catch(e => console.error("Erro ao reproduzir som:", e));
+        audio.play().catch(e => console.error("Error playing sound:", e));
     }
 
     playRadarOnlineSound() {
         const audio = new Audio('assets/media/Radar Sistem Online.mp3');
-        audio.play().catch(e => console.error("Erro ao reproduzir som do radar:", e));
+        audio.play().catch(e => console.error("Error playing radar sound:", e));
     }
 
     playWeaponsOnlineSound() {
-        const audio = new Audio('assets/media/Weapons System Activated.mp3');
-        audio.play().catch(e => console.error("Erro ao reproduzir som de armamento:", e));
+        // Use encoded URI to handle spaces in filename correctly
+        const audioPath = encodeURI('assets/media/Weapons System Activated.mp3');
+        const audio = new Audio(audioPath);
+        audio.play().catch(e => {
+            console.error("[WEAPONS] Audio Playback Error:", e);
+            if (e.name === 'NotAllowedError') {
+                console.warn("[WEAPONS] Interaction required before audio can play.");
+            }
+        });
 
         if (typeof showGameNotification === 'function') {
             showGameNotification("WEAPONS SYSTEMS ACTIVATED - ORDNANCE READY");
@@ -511,7 +526,7 @@ class SkillManager {
     addToQueue(id) {
         const info = this.getSkillInfo(id);
         if (!info) {
-            console.error(`Skill ID ${id} não é oficial e foi bloqueada.`);
+            console.error(`Skill ID ${id} is not official and was blocked.`);
             return;
         }
 
@@ -543,7 +558,7 @@ class SkillManager {
         }
 
         const currentTask = this.queue[0];
-        // Garantia extra: se por algum motivo um fantasma chegar aqui, removemos
+        // Extra guarantee: if for some reason a ghost gets here, we remove it
         if (!this.getSkillInfo(currentTask.id)) {
             this.queue.shift();
             this.save();
@@ -559,6 +574,7 @@ class SkillManager {
             this.checkOnlineStatus();
             this.checkRadarStatus();
             this.checkShieldStatus();
+            this.checkMissileStatus();
 
             this.renderCategories();
             if (typeof window.recalculateShields === 'function') window.recalculateShields();
@@ -654,8 +670,8 @@ class SkillManager {
         if (!container) return;
 
         if (this.queue.length === 0) {
-            if (container.innerHTML !== '<div style="color:#555;font-size:11px;">Fila vazia</div>') {
-                container.innerHTML = '<div style="color:#555;font-size:11px;">Fila vazia</div>';
+            if (container.innerHTML !== '<div style="color:#555;font-size:11px;">Queue empty</div>') {
+                container.innerHTML = '<div style="color:#555;font-size:11px;">Queue empty</div>';
             }
             return;
         }
@@ -672,7 +688,7 @@ class SkillManager {
         container.innerHTML = '';
         this.queue.forEach((q, index) => {
             const info = this.getSkillInfo(q.id);
-            if (!info) return; // BLOQUEIO FINAL: Não renderiza se não for oficial
+            if (!info) return; // FINAL BLOCK: Do not render if not official
 
             const item = document.createElement('div');
             item.className = 'queue-item';
@@ -685,7 +701,7 @@ class SkillManager {
             }
             item.innerHTML = `
                 <div class="queue-name">${info.name} ${q.level}</div>
-                <div class="queue-time">${index === 0 ? timeStr : 'A aguardar...'}</div>
+                <div class="queue-time">${index === 0 ? timeStr : 'Waiting...'}</div>
                 <div class="queue-progress-squares">${squaresHtml}</div>
             `;
             container.appendChild(item);

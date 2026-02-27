@@ -250,6 +250,8 @@
     <!-- RADAR SYSTEM (Tactical View) -->
     <div id="radar-container">
         <div class="radar-label">TACTICAL SURVEILLANCE</div>
+        <div id="radar-tracking-readout" class="radar-tracking-readout">TRACKING: <span
+                id="radar-tracked-count">0</span>/<span id="radar-max-slots">0</span></div>
         <canvas id="radarCanvas"></canvas>
         <div class="radar-overlay"></div>
     </div>
@@ -325,6 +327,7 @@
                     <div id="oxygen-bar-fill" class="oxygen-bar-fill"></div>
                 </div>
                 <div class="oxygen-label">O<small>2</small></div>
+                <div id="o2-burn-readout" class="o2-burn-readout">BURN: <span id="o2-burn-value">0.00</span>/s</div>
             </div>
         </div>
     </div>

@@ -1089,8 +1089,8 @@ html {
     position: fixed;
     bottom: 30px;
     right: 30px;
-    width: 220px;
-    height: 220px;
+    width: 180px;
+    height: 180px;
     background: radial-gradient(circle, rgba(10, 20, 30, 0.8) 0%, rgba(0, 0, 0, 0.9) 100%);
     border: 1px solid rgba(80, 150, 200, 0.3);
     border-radius: 50%;
@@ -1113,6 +1113,18 @@ html {
     letter-spacing: 2px;
     white-space: nowrap;
     font-weight: bold;
+}
+
+.radar-tracking-readout {
+    position: absolute;
+    bottom: -20px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 8px;
+    color: #ff9900;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    font-family: monospace;
 }
 
 .radar-overlay {
@@ -1933,6 +1945,19 @@ html {
     font-weight: bold;
     text-shadow: 0 0 5px rgba(0, 212, 255, 0.3);
     letter-spacing: 1px;
+}
+
+.o2-burn-readout {
+    font-family: monospace;
+    font-size: 8px;
+    color: #ff9900;
+    margin-top: 4px;
+    white-space: nowrap;
+    text-shadow: 0 0 5px rgba(255, 153, 0, 0.3);
+}
+
+.o2-burn-readout span {
+    font-weight: bold;
 }
 
 @keyframes emergencyBlink {

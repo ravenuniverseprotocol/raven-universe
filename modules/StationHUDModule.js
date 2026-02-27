@@ -74,22 +74,43 @@ class StationHUD {
 
     initOxygenConsumption() {
         setInterval(() => {
-            if (!window.skillManager || !window.skillManager.isOnline) return;
+            if (!window.skillManager || !window.skillManager.isOnline) {
+                const burnValue = document.getElementById('o2-burn-value');
+                if (burnValue) burnValue.innerText = "0.00";
+                return;
+            }
 
             const scrubLvl = window.skillManager.skills['atmospheric_scrubbing'] ? window.skillManager.skills['atmospheric_scrubbing'].level : 1;
 
-            // Consumo em Tempo Real: Probabilidade por segundo baseada no nível de scrubbing.
-            // No Nível 1, há 12.5% de chance de consumir 1 unidade a cada segundo.
-            // No Nível 5 (Mastery), garantimos um consumo residual mínimo de 1%.
-            const consumptionProb = Math.max(0.01, (1 - (scrubLvl * 0.2)) * 0.125);
+            // Base Rate: 0.5 units per second
+            // Formula: Base * (1 - (Lvl * 0.19))
+            // Lvl 1: 0.5 * 0.81 = 0.405/s
+            // Lvl 5: 0.5 * 0.05 = 0.025/s
+            const baseRate = 0.5;
+            const efficiency = 1 - (scrubLvl * 0.19);
+            const currentBurn = baseRate * efficiency;
 
-            if (Math.random() < consumptionProb) {
-                if (window.skillManager.inventory['OXYGEN'] > 0) {
-                    window.skillManager.inventory['OXYGEN'] -= 1;
-                    window.skillManager.save();
+            // Update UI Readout
+            const burnValue = document.getElementById('o2-burn-value');
+            if (burnValue) {
+                burnValue.innerText = currentBurn.toFixed(3);
+                const readout = document.getElementById('o2-burn-readout');
+                if (readout) {
+                    readout.style.color = currentBurn > 0.3 ? '#ff9900' : '#00ff88';
                 }
             }
-        }, 1000); // Check every 1s (Real-time)
+
+            // Continuous Consumption
+            if (window.skillManager.inventory['OXYGEN'] > 0) {
+                window.skillManager.inventory['OXYGEN'] -= currentBurn;
+                if (window.skillManager.inventory['OXYGEN'] < 0) window.skillManager.inventory['OXYGEN'] = 0;
+
+                // Save occasionally or on every tick? 
+                // To avoid excessive IO, we save every tick but it's local storage.
+                // In a heavier game, we'd throttle this.
+                window.skillManager.save();
+            }
+        }, 1000); // Check every 1s
     }
 
     updateOxygenHUD() {

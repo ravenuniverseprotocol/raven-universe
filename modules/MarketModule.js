@@ -80,7 +80,7 @@ function renderMarket() {
             tr.innerHTML = `
                 <td><div style="font-weight:bold; color:#5096c8;">${res.name}</div></td>
                 <td><div style="font-size:10px; color:#555;">${res.desc}</div></td>
-                <td style="text-align:center; font-weight:bold; color:#ff9900;">${myStock}</td>
+                <td style="text-align:center; font-weight:bold; color:#ff9900;">${Math.floor(myStock)}</td>
                 <td>
                     <button class="market-action-btn" onclick="window.openListingModal('${res.id}', '${res.name}', ${myStock})">LIST FOR SALE</button>
                 </td>
@@ -130,7 +130,7 @@ function renderMarket() {
                 <td><span style="color:#ff9900; font-weight:bold;">${contract.qty} ${contract.resource}</span></td>
                 <td><span class="price-value">${contract.payment.toLocaleString()}</span> <span style="font-size:9px; color:#555;">RUC</span></td>
                 <td style="text-align:center;">
-                    <div style="font-size:10px; color:${canFulfill ? '#00ff88' : '#ff3300'}">${myStock} / ${contract.qty}</div>
+                    <div style="font-size:10px; color:${canFulfill ? '#00ff88' : '#ff3300'}">${Math.floor(myStock)} / ${contract.qty}</div>
                 </td>
                 <td>
                     <button class="market-action-btn sell" 
