@@ -7,7 +7,10 @@ class AdminModule {
 
     init() {
         this.renderAdminUI();
-        this.setupEvents();
+        // Only setup events if the UI actually rendered (Security Gate passed)
+        if (this.container) {
+            this.setupEvents();
+        }
     }
 
     renderAdminUI() {
