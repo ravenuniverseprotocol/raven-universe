@@ -2100,7 +2100,7 @@ html {
 
 .weapons-layout {
     position: absolute;
-    top: 20px;
+    bottom: 25px;
     left: 20px;
     font-family: 'Courier New', Courier, monospace;
 }
@@ -2139,7 +2139,6 @@ html {
     height: 1px;
     background-color: #ff0000;
     width: 600px;
-    /* Long line to the right */
 }
 
 .weapons-box-large {
@@ -2148,21 +2147,16 @@ html {
     border: 1px solid #ff0000;
     margin-bottom: 3px;
     position: relative;
-    overflow: hidden;
-    /* Key for cropping the image */
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
 .weapons-missile-img {
-    position: absolute;
-    left: -15px;
-    /* Offset to crop */
+    height: 90%;
+    width: auto;
     max-width: none;
-    height: 80%;
     filter: none;
-    /* No dropshadow */
     opacity: 0.9;
 }
 
