@@ -182,6 +182,42 @@ class WeaponsModule {
 
         if (!constructionBox || !percentageTxt) return;
 
+        // --- RESOURCE CHECK & DEDUCTION ---
+        if (!window.skillManager) {
+            console.error("[WEAPONS] SkillManager not found.");
+            return;
+        }
+
+        const requiredIron = 250;
+        const requiredTitanium = 100;
+        const requiredRUC = 10000;
+
+        const hasIron = window.skillManager.getOwned("IRON") >= requiredIron;
+        const hasTitanium = window.skillManager.getOwned("TITANIUM") >= requiredTitanium;
+        const hasRUC = window.skillManager.credits >= requiredRUC;
+
+        if (!hasIron || !hasTitanium || !hasRUC) {
+            if (typeof showGameNotification === 'function') {
+                showGameNotification("INSUFFICIENT RESOURCES FOR FABRICATION");
+            }
+
+            percentageTxt.innerText = "INSUFFICIENT RESOURCES";
+            percentageTxt.style.color = "#ff4444";
+            setTimeout(() => {
+                if (!this.isConstructing) {
+                    percentageTxt.innerText = "READY TO FABRICATE";
+                    percentageTxt.style.color = "#00ffaa";
+                }
+            }, 3000);
+            return;
+        }
+
+        // Deduct resources
+        window.skillManager.removeFromInventory("IRON", requiredIron);
+        window.skillManager.removeFromInventory("TITANIUM", requiredTitanium);
+        window.skillManager.spendCredits(requiredRUC);
+
+        // --- START CONSTRUCTION ---
         this.isConstructing = true;
         let progress = 0;
         percentageTxt.innerText = "0%";
