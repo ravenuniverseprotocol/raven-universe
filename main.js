@@ -149,6 +149,7 @@ function init(initialState) {
     initRadar();
     initStationHUD();
     initWeapons();
+    if (typeof initAdmin === 'function') initAdmin();
     if (typeof initSystemView === 'function') initSystemView();
 
     document.querySelectorAll('.close-btn').forEach(btn => {
