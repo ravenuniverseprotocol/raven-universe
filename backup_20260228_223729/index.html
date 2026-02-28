@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raven Universe</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <canvas id="gameCanvas"></canvas>
+    <canvas id="foregroundCanvas"></canvas>
+
+    <!-- NAVIGATION HUD (Top Right) -->
+    <div id="navigation-hud">
+        <div class="hud-plate">
+            <div class="hud-top-bar"></div>
+            <div class="hud-content">
+                <span class="galaxy-label">GALAXY</span>
+                <span id="hud-galaxy-name" class="galaxy-value">NEBULIS PRIME</span>
+                <span class="system-separator">/</span>
+                <span class="system-label">SYSTEM</span>
+                <span id="hud-system-name" class="system-value">10.05.29</span>
+                <span class="system-separator">|</span>
+                <span class="wallet-label">WALLET</span>
+                <span id="hud-wallet-value" class="wallet-value">5,000</span>
+                <span class="currency-label">RUC</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="logo-container">
+        <img src="assets/media/boa config.webp" alt="Raven Universe" class="logo-image">
+    </div>
+    <div class="station-container">
+        <div id="shield-core" class="shield-core"></div>
+        <div id="shield-bubble" class="shield-bubble"></div>
+        <img id="radar-visual" src="assets/media/Radar.png" alt="Radar System" class="radar-visual">
+        <img id="missile-launcher" src="assets/media/missile_launcher.png" alt="Missile Launcher"
+            class="missile-launcher-visual">
+        <img src="assets/media/StationRaven.webp" alt="Raven Station" class="station-image">
+    </div>
+    <nav class="sidebar">
+        <ul class="menu-list">
+            <li class="menu-item" title="Commander">
+                <div class="icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                </div>
+            </li>
+            <li class="menu-separator"></li>
+            <li class="menu-item" title="Map">
+                <div class="icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <polygon points="1 6 1 22 8 18 16 22 23 18 23 2 16 6 8 2 1 6"></polygon>
+                        <line x1="8" y1="2" x2="8" y2="18"></line>
+                        <line x1="16" y1="6" x2="16" y2="22"></line>
+                    </svg>
+                </div>
+            </li>
+            <li class="menu-item" title="Market">
+                <div class="icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <line x1="12" y1="1" x2="12" y2="23"></line>
+                        <path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path>
+                    </svg>
+                </div>
+            </li>
+            <li class="menu-item" title="Hangar" id="hangar-menu-btn">
+                <div class="icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M12 2L2 7l10 5 10-5-10-5z"></path>
+                        <path d="M2 17l10 5 10-5"></path>
+                        <path d="M2 12l10 5 10-5"></path>
+                    </svg>
+                </div>
+            </li>
+            <li class="menu-item" title="Weapons" id="weapons-menu-btn">
+                <div class="icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="22" y1="12" x2="18" y2="12"></line>
+                        <line x1="6" y1="12" x2="2" y2="12"></line>
+                        <line x1="12" y1="6" x2="12" y2="2"></line>
+                        <line x1="12" y1="22" x2="12" y2="18"></line>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                </div>
+            </li>
+            <li class="menu-item spacer"></li>
+            <li class="menu-item" title="Settings">
+                <div class="icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="3"></circle>
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 5 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z">
+                        </path>
+                    </svg>
+                </div>
+            </li>
+        </ul>
+    </nav>
+    <div id="skill-window" class="window-modal">
+        <div class="window-header">
+            <span>COMMANDER</span>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="window-content">
+            <div class="profile-section">
+                <div class="profile-icon-container" title="Click to upload profile picture">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round">
+                        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <input type="file" id="profile-upload" accept="image/*" style="display: none;">
+                </div>
+                <div id="commander-name" class="commander-name">UNIDENTIFIED</div>
+            </div>
+            <div class="skill-queue-section">
+                <h3>TRAINING QUEUE</h3>
+                <div id="skill-queue-list"></div>
+            </div>
+            <div id="skill-categories" class="skill-tree-section">
+                <!-- Commander skills tree -->
+            </div>
+            <div class="mastery-history-section">
+                <h3>MASTERY HISTORY</h3>
+                <div id="mastery-list"></div>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- GALAXY MAP WINDOW -->
+    <div id="map-window" class="window-modal map-modal">
+        <div class="window-header">
+            <span>NEBULIS PRIME - TACTICAL STELLAR MAP</span>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="window-content map-content">
+            <div class="map-controls">
+                <button id="map-reset-btn" class="action-btn small">RESET VIEW</button>
+                <div class="map-legend">
+                    <span class="legend-item"><i class="dot blue"></i> MINHA ESTAÇÃO</span>
+                    <span class="legend-item"><i class="dot orange"></i> OUTROS PLAYERS</span>
+                </div>
+            </div>
+            <canvas id="galaxyMapCanvas"></canvas>
+        </div>
+    </div>
+
+    <!-- NAME INPUT POPUP -->
+    <div id="identify-modal" class="window-modal name-entry-modal">
+        <div class="window-header">
+            <span>IDENTIFICATION REQUIRED</span>
+        </div>
+        <div class="window-content name-entry-content">
+            <p>System Online. Identify yourself, Commander:</p>
+            <input type="text" id="commander-name-input" placeholder="ENTER NAME..." maxlength="20">
+            <button id="confirm-name-btn" class="action-btn">ESTABLISH IDENTITY</button>
+        </div>
+    </div>
+
+
+    <!-- MARKET WINDOW -->
+    <div id="market-window" class="window-modal">
+        <div class="window-header">
+            <span>GALACTIC LOGISTICS & CONTRACTS</span>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="market-header-info">
+            <div class="market-location">LOCAL HUB: RAVEN STATION</div>
+            <div class="market-wallet">BALANCE: <span id="market-wallet-value">5,000</span> RUC</div>
+        </div>
+
+        <div class="market-tabs"
+            style="display:flex; gap:10px; margin-bottom:15px; border-bottom:1px solid rgba(80,150,200,0.3); padding-bottom:5px;">
+            <button class="tab-btn active" onclick="window.switchMarketTab('storage')"
+                style="background:none; border:none; color:#00ff88; cursor:pointer; font-family:'Outfit', sans-serif; font-size:12px; font-weight:bold;">MY
+                STORAGE</button>
+            <button class="tab-btn" onclick="window.switchMarketTab('storefront')"
+                style="background:none; border:none; color:#5096c8; cursor:pointer; font-family:'Outfit', sans-serif; font-size:12px;">STATION
+                STOREFRONT</button>
+            <button class="tab-btn" onclick="window.switchMarketTab('contracts')"
+                style="background:none; border:none; color:#5096c8; cursor:pointer; font-family:'Outfit', sans-serif; font-size:12px;">CONTRACTS</button>
+        </div>
+
+        <div class="market-grid-container">
+            <table class="market-table">
+                <thead id="market-table-head">
+                    <!-- Dynamic headers -->
+                </thead>
+                <tbody id="market-items-list">
+                    <!-- Dynamic content -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+    </div>
+
+    <!-- LISTING MODAL -->
+    <div id="listing-modal" class="window-modal" style="display:none; width:300px; z-index:200;">
+        <div class="window-header">
+            <span>LIST FOR SALE</span>
+            <button class="close-btn"
+                onclick="document.getElementById('listing-modal').style.display='none'">&times;</button>
+        </div>
+        <div class="window-content" style="padding:20px; display:flex; flex-direction:column; gap:10px;">
+            <div id="listing-resource-name" style="color:#ff9900; font-weight:bold; font-size:14px;">RESOURCE</div>
+            <input type="hidden" id="listing-resource-id">
+            <div style="font-size:11px;">QUANTITY (MAX: <span id="listing-max-qty">0</span>)</div>
+            <input type="number" id="listing-qty" class="market-select" style="width:100%; box-sizing:border-box;">
+            <div style="font-size:11px;">PRICE PER UNIT (RUC)</div>
+            <input type="number" id="listing-price" class="market-select" style="width:100%; box-sizing:border-box;">
+            <button class="market-action-btn" onclick="window.confirmListing()"
+                style="width:100%; margin-top:10px;">CONFIRM LISTING</button>
+        </div>
+    </div>
+
+    <!-- WEAPONS WINDOW -->
+    <div id="weapons-window" class="window-modal">
+        <div class="window-header">
+            <span>ORDNANCE CONTROL - WEAPONS SYSTEMS</span>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="window-content weapons-content" id="weapons-main-content">
+            <div class="weapons-layout">
+
+                <!-- MAIN STORAGE BLOCK -->
+                <div class="weapons-label">ORDNANCE STORAGE</div>
+                <div class="weapons-storage-container" id="weapons-storage-grid">
+                    <!-- Dynamic Items will appear here -->
+                    <div id="storage-empty-msg" style="color: #666; font-size: 10px; font-style: italic;">STORAGE BAY
+                        EMPTY</div>
+                </div>
+
+                <!-- DIVIDER BLOCK -->
+                <div class="weapons-divider-container" style="margin-top: 20px;">
+                    <div class="weapons-label">FABRICATION</div>
+                    <div class="weapons-divider-line"></div>
+                </div>
+
+                <!-- CONSTRUCTION BLOCK -->
+                <div class="weapons-label">CONSTRUCTION</div>
+                <div class="weapons-details-wrapper">
+                    <div id="weapons-construction-wrapper">
+                        <div id="weapons-construction-box" class="weapons-box-large"
+                            onclick="window.weaponsModule.startConstruction()">
+                            <img id="weapons-construction-img" src="assets/media/mk1%20-%20pulse%20missile.png"
+                                class="weapons-missile-img" style="display: none;">
+                        </div>
+                        <div id="weapons-construction-percentage" class="weapons-percentage" style="display: none;">
+                            AWAITING SCHEMATICS</div>
+                    </div>
+                    <div id="weapons-construction-details" class="weapons-details">
+                        <div class="weapons-title">MK1 Pulse Missile</div>
+                        <div class="weapons-resource">250 Iron</div>
+                        <div class="weapons-resource">100 Titanium</div>
+                        <div class="weapons-resource">10 000 RUs</div>
+                    </div>
+                </div>
+
+                <!-- DIVIDER BLOCK -->
+                <div class="weapons-divider-container" style="margin-top: 10px;">
+                    <div class="weapons-label">DEVELOPMENT</div>
+                    <div class="weapons-divider-line"></div>
+                </div>
+
+                <!-- RESEARCH BLOCK -->
+                <div class="weapons-label">RESEARCH</div>
+                <div id="weapons-research-wrapper">
+                    <div id="weapons-research-box" class="weapons-box-large"
+                        onclick="window.weaponsModule.startResearch()">
+                        <img src="assets/media/mk1%20-%20pulse%20missile.png" class="weapons-missile-img">
+                    </div>
+                    <div id="weapons-research-percentage" class="weapons-percentage">0%</div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- HANGAR WINDOW -->
+    <div id="hangar-window" class="window-modal">
+        <div class="window-header">
+            <span>HANGAR OPERATIONS - FLEET OVERSIGHT</span>
+            <button class="close-btn">&times;</button>
+        </div>
+        <div class="window-content hangar-content">
+            <div class="hangar-header-info">
+                <div class="hangar-location">RAVEN STATION - SECTOR ZERO</div>
+                <div class="hangar-count">ACTIVE UNITS: <span id="hangar-ship-count">0</span></div>
+            </div>
+            <div class="hangar-grid-container">
+                <table class="hangar-table">
+                    <thead>
+                        <tr>
+                            <th style="width:40px"></th>
+                            <th>IDENTIFIER</th>
+                            <th>CLASS</th>
+                            <th>TARGET</th>
+                            <th>STATUS</th>
+                            <th>CARGO</th>
+                            <th>COORDINATES</th>
+                            <th>ACTIONS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="hangar-fleet-list">
+                        <!-- Dynamic fleet data -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- RADAR SYSTEM (Tactical View) -->
+    <div id="radar-container">
+        <div class="radar-label">TACTICAL SURVEILLANCE</div>
+        <div id="radar-tracking-readout" class="radar-tracking-readout">TRACKING: <span
+                id="radar-tracked-count">0</span>/<span id="radar-max-slots">0</span></div>
+        <canvas id="radarCanvas"></canvas>
+        <div class="radar-overlay"></div>
+    </div>
+
+    <!-- TRIPLE-A COCKPIT HUD (Structural Realism Overhaul) -->
+    <div id="tactical-hud" class="hud-cockpit-root">
+        <!-- SVG Definitions for complex glows and filters -->
+        <svg style="width:0; height:0; position:absolute;">
+            <defs>
+                <filter id="hud-glass-distortion">
+                    <feTurbulence type="fractalNoise" baseFrequency="0.01" numOctaves="3" result="noise" />
+                    <feDisplacementMap in="SourceGraphic" in2="noise" scale="2" xChannelSelector="R"
+                        yChannelSelector="G" />
+                </filter>
+                <linearGradient id="bracket-gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                    <stop offset="0%" style="stop-color:#333;stop-opacity:1" />
+                    <stop offset="50%" style="stop-color:#111;stop-opacity:1" />
+                    <stop offset="100%" style="stop-color:#000;stop-opacity:1" />
+                </linearGradient>
+            </defs>
+        </svg>
+
+        <div class="hud-perspective-container">
+            <!-- Mechanical Base Frame -->
+            <div class="hud-mechanical-frame">
+                <div class="frame-left-bracket"></div>
+                <div class="frame-right-bracket"></div>
+                <div class="frame-center-base"></div>
+            </div>
+
+            <!-- Holographic Arcs Layer -->
+            <div class="hud-glass-canopy">
+                <svg class="hud-arcs-svg" viewBox="0 0 320 200">
+                    <!-- Background Tracks (Dashed/Mechanical) -->
+                    <path class="arc-track" d="M 60,160 A 100,100 0 0,1 260,160" />
+                    <path class="arc-track" d="M 45,160 A 115,115 0 0,1 275,160" />
+                    <path class="arc-track" d="M 30,160 A 130,130 0 0,1 290,160" />
+
+                    <!-- Active Segments -->
+                    <path id="hull-arc" class="arc-segment hull" d="M 60,160 A 100,100 0 0,1 260,160" />
+                    <path id="armor-arc" class="arc-segment armor" d="M 45,160 A 115,115 0 0,1 275,160" />
+                    <path id="shield-arc" class="arc-segment shield" d="M 30,160 A 130,130 0 0,1 290,160" />
+
+                    <!-- Tick Marks -->
+                    <g class="hud-tick-marks">
+                        <!-- Redrawn dynamically or via complex SVG -->
+                    </g>
+                </svg>
+
+                <div class="hud-reactor-core">
+                    <canvas id="hudCoreCanvas"></canvas>
+
+                    <div class="core-readout">
+                        <div class="readout-label">REACTOR YIELD</div>
+                        <div class="readout-value"><span id="hud-power-percent">0</span><small>%</small></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Indicator Lights -->
+            <div class="hud-led-array">
+                <div class="led-item shd">SHD<div class="led"></div>
+                </div>
+                <div class="led-item arm">ARM<div class="led"></div>
+                </div>
+                <div class="led-item hul">HUL<div class="led"></div>
+                </div>
+            </div>
+
+            <!-- Oxygen Support Bar -->
+            <div id="oxygen-hud" class="oxygen-hud-container">
+                <div class="oxygen-bar-outer">
+                    <div id="oxygen-bar-fill" class="oxygen-bar-fill"></div>
+                </div>
+                <div class="oxygen-label">O<small>2</small></div>
+                <div id="o2-burn-readout" class="o2-burn-readout">BURN: <span id="o2-burn-value">0.00</span>/s</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Global Debug Flags & Hard Reset -->
+    <script>
+        window.DEBUG_RESET = true;
+        if (window.DEBUG_RESET) {
+            console.warn("[RAVEN] DEBUG RESET ACTIVE - PURGING SESSION DATA");
+            localStorage.clear();
+        }
+    </script>
+
+    <!-- Modules Loading -->
+    <script src="modules/AuthModule.js"></script>
+    <script src="modules/UIUtils.js"></script>
+    <script src="modules/ShieldModule.js"></script>
+    <script src="modules/StationHUDModule.js"></script>
+    <script src="modules/CommanderModule.js"></script>
+    <script src="modules/RadarModule.js"></script>
+    <script src="modules/SystemViewModule.js"></script>
+    <script src="modules/MapModule.js?v=2"></script>
+    <script src="modules/MarketModule.js"></script>
+    <script src="modules/HangarModule.js"></script>
+    <script src="modules/WeaponsModule.js"></script>
+    <script src="modules/SettingsModule.js"></script>
+    <script src="modules/AdminModule.js"></script>
+    <script src="main.js"></script>
+</body>
+
+</html>

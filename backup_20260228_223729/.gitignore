@@ -1,0 +1,11 @@
+node_modules/
+.env
+data/
+backups/
+backup_before_galaxy/
+.gemini/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store

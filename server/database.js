@@ -21,6 +21,14 @@ const userSchema = new mongoose.Schema({
 
 const User = mongoose.model('User', userSchema);
 
+const bannedIPSchema = new mongoose.Schema({
+    ip: { type: String, required: true, unique: true },
+    reason: { type: String, default: 'Multiple accounts or policy violation' },
+    bannedAt: { type: Date, default: Date.now }
+});
+
+const BannedIP = mongoose.model('BannedIP', bannedIPSchema);
+
 const connectDB = async () => {
     try {
         const dbUri = process.env.MONGODB_URI || process.env.MONGO_URI;
@@ -32,4 +40,4 @@ const connectDB = async () => {
     }
 };
 
-module.exports = { User, connectDB };
+module.exports = { User, BannedIP, connectDB };

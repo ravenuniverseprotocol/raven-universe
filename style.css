@@ -85,6 +85,71 @@ html {
     background: rgba(80, 150, 200, 0.03);
 }
 
+.admin-table tr:hover {
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.admin-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.action-btn {
+    padding: 6px 10px;
+    border: 1px solid transparent;
+    border-radius: 2px;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-transform: uppercase;
+}
+
+.action-btn.red {
+    background: rgba(255, 68, 68, 0.1);
+    border-color: rgba(255, 68, 68, 0.3);
+    color: #ff4444;
+}
+
+.action-btn.red:hover {
+    background: #ff4444;
+    color: #fff;
+}
+
+.action-btn.critical {
+    background: rgba(255, 0, 0, 0.2);
+    border-color: #ff0000;
+    color: #fff;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.2);
+}
+
+.action-btn.critical:hover {
+    background: #ff0000;
+    box-shadow: 0 0 15px #ff0000;
+}
+
+.action-btn.cyan {
+    background: rgba(0, 255, 255, 0.1);
+    border-color: rgba(0, 255, 255, 0.4);
+    color: #00ffff;
+}
+
+.action-btn.cyan:hover {
+    background: #00ffff;
+    color: #000;
+}
+
+.admin-ip {
+    font-family: monospace;
+    color: #888;
+}
+
+.admin-date {
+    font-size: 10px;
+    opacity: 0.7;
+}
+
 .ship-id {
     color: #ff9900;
     font-weight: bold;
@@ -2048,19 +2113,54 @@ html {
     text-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
 }
 
+.admin-nav {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 20px;
+}
+
 .admin-nav-btn {
-    background: rgba(80, 150, 200, 0.1);
-    border: 1px solid rgba(80, 150, 200, 0.3);
-    color: #fff;
-    padding: 10px;
+    background: rgba(80, 150, 200, 0.05);
+    border: 1px solid rgba(80, 150, 200, 0.2);
+    color: #888;
+    padding: 12px;
     cursor: pointer;
     font-family: 'Courier New', monospace;
-    transition: all 0.2s;
+    font-size: 11px;
+    text-align: left;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 1px;
 }
 
 .admin-nav-btn:hover {
-    background: rgba(0, 204, 255, 0.2);
+    background: rgba(80, 150, 200, 0.1);
+    color: #fff;
+    border-color: rgba(0, 204, 255, 0.4);
+}
+
+.admin-nav-btn.active {
+    background: rgba(0, 204, 255, 0.15);
     border-color: #00ccff;
+    color: #00ccff;
+    box-shadow: inset 0 0 10px rgba(0, 204, 255, 0.1);
+}
+
+.admin-refresh-btn {
+    margin-top: auto;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #555;
+    padding: 10px;
+    font-size: 9px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    cursor: pointer;
+}
+
+.admin-refresh-btn:hover {
+    color: #aaa;
+    border-color: rgba(255, 255, 255, 0.3);
 }
 
 .admin-main {

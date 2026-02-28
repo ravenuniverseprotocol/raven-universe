@@ -2,11 +2,12 @@ class AdminModule {
     constructor() {
         this.container = null;
         this.userList = [];
+        this.bannedList = [];
+        this.currentTab = 'registry';
         this.init();
     }
 
     init() {
-        // Prevent multiple modals if init is called again
         if (document.getElementById('admin-window')) {
             this.container = document.getElementById('admin-window');
             return;
@@ -27,7 +28,7 @@ class AdminModule {
         const modal = document.createElement('div');
         modal.id = 'admin-window';
         modal.className = 'window-modal glass';
-        modal.style.cssText = 'display: none; width: 900px; height: 600px; z-index: 10000;';
+        modal.style.cssText = 'display: none; width: 1000px; height: 650px; z-index: 10000;';
 
         modal.innerHTML = `
             <div class="window-header">
@@ -40,22 +41,43 @@ class AdminModule {
                         <span class="stat-label">TOTAL COMMANDERS</span>
                         <span id="admin-total-count" class="stat-value">0</span>
                     </div>
-                    <button id="admin-refresh-btn" class="admin-nav-btn active">REFRESH REGISTRY</button>
+                    <nav class="admin-nav">
+                        <button id="nav-registry" class="admin-nav-btn active">COMMANDER REGISTRY</button>
+                        <button id="nav-banned" class="admin-nav-btn">BANNED IP REGISTRY</button>
+                    </nav>
+                    <button id="admin-refresh-btn" class="admin-refresh-btn">REFRESH DATA</button>
                 </div>
                 <div class="admin-main">
-                    <div class="admin-table-container">
-                        <table class="admin-table">
-                            <thead>
-                                <tr>
-                                    <th>COMMANDER</th>
-                                    <th>HOME SYSTEM</th>
-                                    <th>REGISTRATION IP</th>
-                                    <th>DATE IDENTIFIED</th>
-                                    <th>ACTIONS</th>
-                                </tr>
-                            </thead>
-                            <tbody id="admin-user-tbody"></tbody>
-                        </table>
+                    <div id="view-registry" class="admin-view">
+                        <div class="admin-table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>COMMANDER</th>
+                                        <th>HOME SYSTEM</th>
+                                        <th>REGISTRATION IP</th>
+                                        <th>DATE IDENTIFIED</th>
+                                        <th>ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-user-tbody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="view-banned" class="admin-view" style="display:none;">
+                        <div class="admin-table-container">
+                            <table class="admin-table">
+                                <thead>
+                                    <tr>
+                                        <th>BANNED IP</th>
+                                        <th>REASON</th>
+                                        <th>DATE INTERDICTED</th>
+                                        <th>ACTIONS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="admin-banned-tbody"></tbody>
+                            </table>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -75,7 +97,7 @@ class AdminModule {
             li.onclick = () => {
                 if (modal.style.display === 'none' || modal.style.display === '') {
                     modal.style.display = 'flex';
-                    this.fetchUsers();
+                    this.refreshData();
                 } else {
                     modal.style.display = 'none';
                 }
@@ -86,48 +108,78 @@ class AdminModule {
     }
 
     setupEvents() {
-        const closeBtn = this.container.querySelector('#admin-close');
-        if (closeBtn) {
-            closeBtn.onclick = () => {
-                this.container.style.display = 'none';
-            };
-        }
+        this.container.querySelector('#admin-close').onclick = () => {
+            this.container.style.display = 'none';
+        };
 
-        const refreshBtn = this.container.querySelector('#admin-refresh-btn');
-        if (refreshBtn) {
-            refreshBtn.onclick = () => this.fetchUsers();
+        this.container.querySelector('#nav-registry').onclick = () => this.switchTab('registry');
+        this.container.querySelector('#nav-banned').onclick = () => this.switchTab('banned');
+        this.container.querySelector('#admin-refresh-btn').onclick = () => this.refreshData();
+    }
+
+    switchTab(tab) {
+        this.currentTab = tab;
+        this.container.querySelectorAll('.admin-nav-btn').forEach(btn => btn.classList.remove('active'));
+        this.container.querySelectorAll('.admin-view').forEach(view => view.style.display = 'none');
+
+        if (tab === 'registry') {
+            this.container.querySelector('#nav-registry').classList.add('active');
+            this.container.querySelector('#view-registry').style.display = 'block';
+            this.fetchUsers();
+        } else {
+            this.container.querySelector('#nav-banned').classList.add('active');
+            this.container.querySelector('#view-banned').style.display = 'block';
+            this.fetchBannedIPs();
         }
+    }
+
+    refreshData() {
+        if (this.currentTab === 'registry') this.fetchUsers();
+        else this.fetchBannedIPs();
+    }
+
+    getApiBase() {
+        return window.location.protocol === 'file:' ? 'https://raven-universe.onrender.com' : '';
     }
 
     async fetchUsers() {
         const token = localStorage.getItem('raven_token');
         if (!token) return;
 
-        const isLocalFile = window.location.protocol === 'file:';
-        const apiBase = isLocalFile ? 'https://raven-universe.onrender.com' : '';
-        const apiPath = `${apiBase}/api/admin/users`;
-
         try {
-            const response = await fetch(apiPath, {
+            const response = await fetch(`${this.getApiBase()}/api/admin/users`, {
                 headers: { 'Authorization': token }
             });
             if (response.ok) {
                 this.userList = await response.json();
-                this.updateUI();
+                this.updateRegistryUI();
             }
         } catch (err) {
             console.error('[ADMIN] Fetch error:', err);
         }
     }
 
-    async deleteUser(userId, username) {
+    async fetchBannedIPs() {
         const token = localStorage.getItem('raven_token');
-        const isLocalFile = window.location.protocol === 'file:';
-        const apiBase = isLocalFile ? 'https://raven-universe.onrender.com' : '';
-        const apiPath = `${apiBase}/api/admin/users/${userId}`;
+        if (!token) return;
 
         try {
-            const response = await fetch(apiPath, {
+            const response = await fetch(`${this.getApiBase()}/api/admin/banned-ips`, {
+                headers: { 'Authorization': token }
+            });
+            if (response.ok) {
+                this.bannedList = await response.json();
+                this.updateBannedUI();
+            }
+        } catch (err) {
+            console.error('[ADMIN] Banned fetch error:', err);
+        }
+    }
+
+    async deleteUser(userId, username) {
+        const token = localStorage.getItem('raven_token');
+        try {
+            const response = await fetch(`${this.getApiBase()}/api/admin/users/${userId}`, {
                 method: 'DELETE',
                 headers: { 'Authorization': token }
             });
@@ -142,7 +194,53 @@ class AdminModule {
         }
     }
 
-    updateUI() {
+    async banIP(ip, username) {
+        const token = localStorage.getItem('raven_token');
+        if (!ip || ip === 'UNKNOWN') {
+            if (typeof showGameNotification === 'function') showGameNotification("ERROR: CANNOT BAN UNKNOWN IP");
+            return;
+        }
+
+        try {
+            const response = await fetch(`${this.getApiBase()}/api/admin/ban-ip`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': token,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ ip, reason: `Banned via Commander ${username}` })
+            });
+
+            if (response.ok) {
+                if (typeof showGameNotification === 'function') {
+                    showGameNotification(`NEURAL LINK INTERDICTED: IP ${ip} BANNED`);
+                }
+                this.fetchUsers();
+            }
+        } catch (err) {
+            console.error('[ADMIN] Ban error:', err);
+        }
+    }
+
+    async unbanIP(ip) {
+        const token = localStorage.getItem('raven_token');
+        try {
+            const response = await fetch(`${this.getApiBase()}/api/admin/banned-ips/${ip}`, {
+                method: 'DELETE',
+                headers: { 'Authorization': token }
+            });
+            if (response.ok) {
+                if (typeof showGameNotification === 'function') {
+                    showGameNotification(`NEURAL LINK RESTORED: IP ${ip} UNBANNED`);
+                }
+                this.fetchBannedIPs();
+            }
+        } catch (err) {
+            console.error('[ADMIN] Unban error:', err);
+        }
+    }
+
+    updateRegistryUI() {
         const tbody = this.container.querySelector('#admin-user-tbody');
         const countDisplay = this.container.querySelector('#admin-total-count');
         if (!tbody || !countDisplay) return;
@@ -152,16 +250,16 @@ class AdminModule {
 
         this.userList.forEach(user => {
             const row = document.createElement('tr');
-            const date = new Date(user.registrationDate).toLocaleDateString();
-            const time = new Date(user.registrationDate).toLocaleTimeString();
+            const dateStr = new Date(user.registrationDate).toLocaleString();
 
             row.innerHTML = `
                 <td>${user.username}</td>
                 <td>${user.gameState?.homeSystem || 'N/A'}</td>
                 <td class="admin-ip">${user.registrationIp}</td>
-                <td class="admin-date">${date} ${time}</td>
-                <td>
-                    <button class="purge-btn" data-id="${user._id}" data-name="${user.username}">PURGE</button>
+                <td class="admin-date">${dateStr}</td>
+                <td class="admin-actions">
+                    <button class="purge-btn action-btn red" data-id="${user._id}" data-name="${user.username}">PURGE</button>
+                    <button class="ban-btn action-btn critical" data-ip="${user.registrationIp}" data-name="${user.username}">BAN IP</button>
                 </td>
             `;
             tbody.appendChild(row);
@@ -169,6 +267,34 @@ class AdminModule {
 
         tbody.querySelectorAll('.purge-btn').forEach(btn => {
             btn.onclick = () => this.deleteUser(btn.dataset.id, btn.dataset.name);
+        });
+        tbody.querySelectorAll('.ban-btn').forEach(btn => {
+            btn.onclick = () => this.banIP(btn.dataset.ip, btn.dataset.name);
+        });
+    }
+
+    updateBannedUI() {
+        const tbody = this.container.querySelector('#admin-banned-tbody');
+        if (!tbody) return;
+
+        tbody.innerHTML = '';
+        this.bannedList.forEach(item => {
+            const row = document.createElement('tr');
+            const dateStr = new Date(item.bannedAt).toLocaleString();
+
+            row.innerHTML = `
+                <td class="admin-ip">${item.ip}</td>
+                <td>${item.reason}</td>
+                <td class="admin-date">${dateStr}</td>
+                <td class="admin-actions">
+                    <button class="unban-btn action-btn cyan" data-ip="${item.ip}">UNBAN IP</button>
+                </td>
+            `;
+            tbody.appendChild(row);
+        });
+
+        tbody.querySelectorAll('.unban-btn').forEach(btn => {
+            btn.onclick = () => this.unbanIP(btn.dataset.ip);
         });
     }
 }

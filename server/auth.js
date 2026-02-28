@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { User } = require('./database');
+const { User, BannedIP } = require('./database');
 const { getAvailableSystem } = require('./systems');
 
 // Register
@@ -20,6 +20,12 @@ router.post('/register', async (req, res) => {
 
         // Capture Registration IP
         const registrationIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'UNKNOWN';
+
+        // Security Gate: Block Banned IPs
+        const isBanned = await BannedIP.findOne({ ip: registrationIp });
+        if (isBanned) {
+            return res.status(403).json({ message: 'COMMUNICATION LINK BLOCKED: IP ACCESS DENIED' });
+        }
 
         // Use Automatic Unique System Assignment
         const { systemName, coords } = await getAvailableSystem();
@@ -71,6 +77,14 @@ router.post('/login', async (req, res) => {
         }
 
         const token = jwt.sign({ id: user._id.toString() }, process.env.JWT_SECRET, { expiresIn: '7d' });
+
+        // Update Registration IP if it was UNKNOWN (Fix for Fuso/Legacy users)
+        const currentIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'UNKNOWN';
+        if (user.registrationIp === 'UNKNOWN' && currentIp !== 'UNKNOWN') {
+            user.registrationIp = currentIp;
+            await user.save();
+        }
+
         res.status(200).json({
             token,
             user: { id: user._id.toString(), username: user.username },

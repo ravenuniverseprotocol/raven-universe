@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const jwt = require('jsonwebtoken');
-const { User } = require('./database');
+const { User, BannedIP } = require('./database');
 
 // Middleware to verify JWT and Admin rights (Only FUSO)
 async function authenticateAdmin(req, res, next) {
@@ -32,6 +32,39 @@ router.get('/users', authenticateAdmin, async (req, res) => {
     } catch (err) {
         console.error('[ADMIN ERROR] Fetch Failure:', err);
         res.status(500).json({ message: 'ERROR FETCHING USER REGISTRY' });
+    }
+});
+
+// List all banned IPs
+router.get('/banned-ips', authenticateAdmin, async (req, res) => {
+    try {
+        const banned = await BannedIP.find({});
+        res.json(banned);
+    } catch (err) {
+        res.status(500).json({ message: 'ERROR FETCHING BANNED REGISTRY' });
+    }
+});
+
+// Ban an IP
+router.post('/ban-ip', authenticateAdmin, async (req, res) => {
+    try {
+        const { ip, reason } = req.body;
+        const newBan = new BannedIP({ ip, reason });
+        await newBan.save();
+        res.json({ message: 'NEURAL LINK INTERDICTED: IP BANNED' });
+    } catch (err) {
+        res.status(500).json({ message: 'ERROR SECURING IP INTERDICTION' });
+    }
+});
+
+// Unban an IP
+router.delete('/banned-ips/:ip', authenticateAdmin, async (req, res) => {
+    try {
+        const { ip } = req.params;
+        await BannedIP.findOneAndDelete({ ip });
+        res.json({ message: 'NEURAL LINK RESTORED: IP UNBANNED' });
+    } catch (err) {
+        res.status(500).json({ message: 'ERROR RESTORING IP ACCESS' });
     }
 });
 
