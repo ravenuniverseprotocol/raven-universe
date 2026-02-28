@@ -2115,14 +2115,49 @@ html {
     opacity: 0.8;
 }
 
-.weapons-box-small {
-    width: 15px;
-    height: 50px;
-    border: 1px solid #5096c8;
-    background: rgba(10, 25, 40, 0.4);
-    margin-bottom: 15px;
+.weapons-details-wrapper {
+    display: flex;
+    align-items: center;
     position: relative;
-    transition: all 0.3s ease;
+    margin-bottom: 20px;
+}
+
+.weapons-details {
+    display: none;
+    /* Hidden by default */
+    margin-left: 15px;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.weapons-details.active {
+    display: flex;
+}
+
+.weapons-title {
+    color: #aaccff;
+    font-size: 10px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.weapons-resource {
+    color: #5096c8;
+    font-size: 9px;
+    margin-bottom: 3px;
+    display: flex;
+    align-items: center;
+}
+
+.weapons-resource::before {
+    content: '';
+    display: inline-block;
+    width: 3px;
+    height: 3px;
+    background-color: #5096c8;
+    margin-right: 5px;
 }
 
 .weapons-divider-container {

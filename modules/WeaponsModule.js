@@ -145,6 +145,17 @@ class WeaponsModule {
                 // Activate construction section
                 constructionBox.classList.add('construction-ready');
 
+                // Image transfer
+                const researchImg = researchBox.querySelector('.weapons-missile-img');
+                const constructionImg = document.getElementById('weapons-construction-img');
+                const constructionDetails = document.getElementById('weapons-construction-details');
+
+                if (researchImg && constructionImg && constructionDetails) {
+                    researchImg.style.display = 'none';
+                    constructionImg.style.display = 'block';
+                    constructionDetails.classList.add('active');
+                }
+
                 if (typeof showGameNotification === 'function') {
                     showGameNotification("RESEARCH SECURE. SCHEMATICS UPLOADED TO CONSTRUCTION QUEUE.");
                 }
