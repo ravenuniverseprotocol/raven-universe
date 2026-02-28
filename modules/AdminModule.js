@@ -53,16 +53,16 @@ class AdminModule {
         this.container = modal;
 
         // Add Admin button to sidebar if not exists
-        const sidebar = document.querySelector('.sidebar-icons');
+        const sidebar = document.querySelector('.menu-list');
         if (sidebar && !document.getElementById('admin-sidebar-btn')) {
-            const btn = document.createElement('div');
-            btn.id = 'admin-sidebar-btn';
-            btn.className = 'icon-btn admin-btn';
-            btn.title = 'Admin Panel';
-            btn.innerHTML = '<div class="icon">A</div>';
-            sidebar.appendChild(btn);
+            const li = document.createElement('li');
+            li.id = 'admin-sidebar-btn';
+            li.className = 'menu-item admin-btn';
+            li.title = 'Admin Panel';
+            li.innerHTML = '<div class="icon" style="color:#ff6666; border:1px solid #ff6666; border-radius:50%; width:20px; height:20px; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:12px;">A</div>';
+            sidebar.appendChild(li);
 
-            btn.onclick = () => {
+            li.onclick = () => {
                 modal.style.display = 'flex';
                 this.fetchUsers();
             };
