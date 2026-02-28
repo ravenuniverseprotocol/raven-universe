@@ -15,7 +15,10 @@ class TacticalRadar {
         this.initShaders();
         this.initBuffers();
         this.resize();
-        this.generateSystemData("S10.05.29");
+
+        const homeName = window.skillManager ? window.skillManager.homeSystem : "10.05.29";
+        this.generateSystemData(`S${homeName}`);
+
         window.addEventListener('resize', () => this.resize());
     }
 

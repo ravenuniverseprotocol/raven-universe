@@ -296,7 +296,8 @@ class SystemView {
         if (title) title.textContent = `TACTICAL SYSTEM VIEW - ${systemName}`;
 
         // CAMERA LOGIC: Focus on player or NPC base (DRAX)
-        if (systemName === "10.05.29" || systemName === "LOCAL") {
+        const currentHome = window.skillManager ? window.skillManager.homeSystem : "10.05.29";
+        if (systemName === currentHome || systemName === "LOCAL") {
             this.targetSystem = "LOCAL";
             this.viewCenter = { x: 0, y: 0 };
         } else if (window.npcManager) {

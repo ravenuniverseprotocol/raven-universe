@@ -35,11 +35,14 @@ class SkillManager {
         this.queue = []; // Always empty
         this.lastUpdateTime = Date.now();
         this.onlineAnnounced = false; // Reset
-        this.commanderName = 'UNIDENTIFIED'; // Reset
-        this.credits = 5000; // Reset
-        this.inventory = { 'OXYGEN': 500 }; // Reset
-        this.homeSystem = "10.05.29"; // Reset
-        this.homeCoords = { x: 0, y: 0 }; // Reset
+
+        // Identity and State from Server/Login
+        this.commanderName = initialState?.username || 'UNIDENTIFIED';
+        this.credits = initialState?.gameState?.credits || 5000;
+        this.inventory = initialState?.gameState?.inventory || { 'OXYGEN': 500 };
+        this.homeSystem = initialState?.gameState?.homeSystem || "10.05.29";
+        this.homeCoords = initialState?.gameState?.homeCoords || { x: 0, y: 0 };
+
         this.isOnline = false;
         this.radarUnlocked = false;
         this.radarAnnounced = localStorage.getItem('radar_announced') === 'true';
