@@ -37,7 +37,11 @@ router.post('/register', async (req, res) => {
         await newUser.save();
 
         const token = jwt.sign({ id: newUser._id.toString() }, process.env.JWT_SECRET, { expiresIn: '7d' });
-        res.status(201).json({ token, user: { id: newUser._id.toString(), username: newUser.username } });
+        res.status(201).json({
+            token,
+            user: { id: newUser._id.toString(), username: newUser.username },
+            gameState: newUser.gameState
+        });
     } catch (err) {
         console.error('[AUTH ERROR] Registration Failure:', err);
         res.status(500).json({ message: 'SERVER ERROR DURING IDENTIFICATION' });
@@ -62,7 +66,11 @@ router.post('/login', async (req, res) => {
         }
 
         const token = jwt.sign({ id: user._id.toString() }, process.env.JWT_SECRET, { expiresIn: '7d' });
-        res.status(200).json({ token, user: { id: user._id.toString(), username: user.username } });
+        res.status(200).json({
+            token,
+            user: { id: user._id.toString(), username: user.username },
+            gameState: user.gameState
+        });
     } catch (err) {
         console.error('[AUTH ERROR] Login Failure:', err);
         res.status(500).json({ message: 'SERVER CORE ERROR' });

@@ -94,7 +94,7 @@ class AuthModule {
                 this.isAuth = true;
 
                 status.innerText = "IDENTIFICATION GRANTED";
-                setTimeout(() => this.hideGate(), 1000);
+                setTimeout(() => this.hideGate(data.gameState), 1000);
             } else {
                 status.innerText = `ERROR: ${data.message || 'AUTHENTICATION REJECTED'}`;
             }
