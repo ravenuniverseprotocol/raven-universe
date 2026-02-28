@@ -14,6 +14,8 @@ const userSchema = new mongoose.Schema({
             y: { type: Number, required: true }
         }
     },
+    registrationIp: { type: String, default: 'UNKNOWN' },
+    registrationDate: { type: Date, default: Date.now },
     lastLogin: { type: Date, default: Date.now }
 });
 

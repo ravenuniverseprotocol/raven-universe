@@ -31,9 +31,11 @@ app.use(express.static(path.join(__dirname, './'))); // Serve frontend static fi
 // Routes
 const authRoutes = require('./server/auth');
 const gameRoutes = require('./server/game');
+const adminRoutes = require('./server/admin');
 
 app.use('/api/auth', authRoutes);
 app.use('/api/game', gameRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Fallback to index.html for unknown routes (SPA support)
 app.use((req, res) => {

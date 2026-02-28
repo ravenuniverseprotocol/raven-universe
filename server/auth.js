@@ -18,12 +18,17 @@ router.post('/register', async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Capture Registration IP
+        const registrationIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'UNKNOWN';
+
         // Use Automatic Unique System Assignment
         const { systemName, coords } = await getAvailableSystem();
 
         const newUser = new User({
             username: normalizedUsername,
             password: hashedPassword,
+            registrationIp: registrationIp,
+            registrationDate: new Date(),
             gameState: {
                 credits: 5000,
                 inventory: { 'OXYGEN': 500 },
