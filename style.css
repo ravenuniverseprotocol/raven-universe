@@ -2090,4 +2090,118 @@ html {
 }
 
 
+/* WEAPONS NEW LAYOUT STYLES */
+.weapons-layout-container {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    padding-top: 10px;
+}
+
+.weapons-production-col {
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    border-right: 1px solid rgba(255, 0, 0, 0.2);
+    padding-right: 20px;
+    padding-left: 10px;
+}
+
+.weapons-details-col {
+    flex-grow: 1;
+    padding-left: 20px;
+}
+
+.weapons-progress-block {
+    margin-bottom: 20px;
+}
+
+.weapons-progress-label {
+    color: #ff0000;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: bold;
+    margin-bottom: 8px;
+    letter-spacing: 1px;
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+}
+
+.weapons-vertical-bar-container {
+    width: 25px;
+    height: 100px;
+    border: 2px solid #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.4), inset 0 0 10px rgba(255, 0, 0, 0.2);
+    position: relative;
+    overflow: hidden;
+    margin-left: 5px;
+}
+
+.weapons-vertical-bar-container.missile-container {
+    width: 35px;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: rgba(255, 0, 0, 0.05);
+    padding: 10px 0;
+}
+
+.weapon-missile-img {
+    max-height: 100%;
+    max-width: 150%;
+    object-fit: contain;
+    filter: drop-shadow(0 0 8px rgba(255, 0, 0, 0.8));
+    transform: scale(3.5);
+}
+
+.weapons-vertical-bar-fill {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: #ff0000;
+    box-shadow: 0 0 10px rgba(255, 0, 0, 0.8);
+    transition: height 0.5s ease;
+}
+
+.weapons-vertical-bar-fill.construction-fill {
+    height: 0%;
+}
+
+.weapons-divider-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.weapons-divider-label {
+    color: #ff0000;
+    font-family: 'Courier New', monospace;
+    font-size: 10px;
+    font-weight: bold;
+    white-space: nowrap;
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+}
+
+.weapons-divider-line {
+    position: absolute;
+    left: 105px;
+    width: 750px;
+    height: 2px;
+    background-color: #ff0000;
+    box-shadow: 0 0 8px rgba(255, 0, 0, 0.8);
+    z-index: 10;
+}
+
+.weapons-progress-value {
+    color: #ff0000;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+    font-weight: bold;
+    margin-top: 8px;
+    margin-left: 10px;
+    text-shadow: 0 0 5px rgba(255, 0, 0, 0.5);
+}
+
 /* End of file */

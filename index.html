@@ -234,7 +234,40 @@
             <button class="close-btn">&times;</button>
         </div>
         <div class="window-content weapons-content" id="weapons-main-content">
-            <!-- Em branco a aguardar instruções do Comandante -->
+            <div class="weapons-layout-container">
+                <!-- Left Column: Production Status -->
+                <div class="weapons-production-col">
+
+                    <!-- Construction Block -->
+                    <div class="weapons-progress-block">
+                        <div class="weapons-progress-label">CONSTRUCTION</div>
+                        <div class="weapons-vertical-bar-container">
+                            <div class="weapons-vertical-bar-fill construction-fill"></div>
+                        </div>
+                    </div>
+
+                    <!-- Divider -->
+                    <div class="weapons-divider-row">
+                        <div class="weapons-divider-label">START/COMPLETE</div>
+                        <div class="weapons-divider-line"></div>
+                    </div>
+
+                    <!-- Research Block -->
+                    <div class="weapons-progress-block research-block">
+                        <div class="weapons-progress-label">RESEARCH</div>
+                        <div class="weapons-vertical-bar-container missile-container">
+                            <img src="assets/media/mk1 - pulse missile.png" alt="MK1 Pulse Missile"
+                                class="weapon-missile-img">
+                        </div>
+                        <div class="weapons-progress-value">100%</div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Details (Empty for now) -->
+                <div class="weapons-details-col">
+                    <!-- Placeholder for future modules -->
+                </div>
+            </div>
         </div>
     </div>
 
