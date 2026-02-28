@@ -101,8 +101,7 @@ class AdminModule {
     }
 
     async deleteUser(userId, username) {
-        if (!confirm(`CONFIRM NEURAL PURGE OF COMMANDER ${username}?`)) return;
-
+        // Removed native confirm to avoid browser blocking
         const token = localStorage.getItem('raven_token');
         const isLocalFile = window.location.protocol === 'file:';
         const apiBase = isLocalFile ? 'https://raven-universe.onrender.com' : '';
