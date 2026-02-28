@@ -236,12 +236,31 @@
         <div class="window-content weapons-content" id="weapons-main-content">
             <div class="weapons-layout">
 
+                <!-- MAIN STORAGE BLOCK -->
+                <div class="weapons-label">ORDNANCE STORAGE</div>
+                <div class="weapons-storage-container" id="weapons-storage-grid">
+                    <!-- Dynamic Items will appear here -->
+                    <div id="storage-empty-msg" style="color: #666; font-size: 10px; font-style: italic;">STORAGE BAY
+                        EMPTY</div>
+                </div>
+
+                <!-- DIVIDER BLOCK -->
+                <div class="weapons-divider-container" style="margin-top: 20px;">
+                    <div class="weapons-label">FABRICATION</div>
+                    <div class="weapons-divider-line"></div>
+                </div>
+
                 <!-- CONSTRUCTION BLOCK -->
                 <div class="weapons-label">CONSTRUCTION</div>
                 <div class="weapons-details-wrapper">
-                    <div id="weapons-construction-box" class="weapons-box-large">
-                        <img id="weapons-construction-img" src="assets/media/mk1%20-%20pulse%20missile.png"
-                            class="weapons-missile-img" style="display: none;">
+                    <div id="weapons-construction-wrapper">
+                        <div id="weapons-construction-box" class="weapons-box-large"
+                            onclick="window.weaponsModule.startConstruction()">
+                            <img id="weapons-construction-img" src="assets/media/mk1%20-%20pulse%20missile.png"
+                                class="weapons-missile-img" style="display: none;">
+                        </div>
+                        <div id="weapons-construction-percentage" class="weapons-percentage" style="display: none;">
+                            AWAITING SCHEMATICS</div>
                     </div>
                     <div id="weapons-construction-details" class="weapons-details">
                         <div class="weapons-title">MK1 Pulse Missile</div>
@@ -252,17 +271,20 @@
                 </div>
 
                 <!-- DIVIDER BLOCK -->
-                <div class="weapons-divider-container">
-                    <div class="weapons-label">START/COMPLETE</div>
+                <div class="weapons-divider-container" style="margin-top: 10px;">
+                    <div class="weapons-label">DEVELOPMENT</div>
                     <div class="weapons-divider-line"></div>
                 </div>
 
                 <!-- RESEARCH BLOCK -->
                 <div class="weapons-label">RESEARCH</div>
-                <div id="weapons-research-box" class="weapons-box-large" onclick="window.weaponsModule.startResearch()">
-                    <img src="assets/media/mk1%20-%20pulse%20missile.png" class="weapons-missile-img">
+                <div id="weapons-research-wrapper">
+                    <div id="weapons-research-box" class="weapons-box-large"
+                        onclick="window.weaponsModule.startResearch()">
+                        <img src="assets/media/mk1%20-%20pulse%20missile.png" class="weapons-missile-img">
+                    </div>
+                    <div id="weapons-research-percentage" class="weapons-percentage">0%</div>
                 </div>
-                <div id="weapons-research-percentage" class="weapons-percentage">0%</div>
 
             </div>
         </div>
