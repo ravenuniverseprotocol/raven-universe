@@ -11,6 +11,13 @@ class AdminModule {
     }
 
     renderAdminUI() {
+        // SECURITY GATE: Only FUSO can initialize the Admin Interface
+        const user = JSON.parse(localStorage.getItem('raven_user'));
+        if (!user || user.username !== 'FUSO') {
+            console.log("[RAVEN SECURITY] Administration restricted to Prime Commander.");
+            return;
+        }
+
         const modal = document.createElement('div');
         modal.id = 'admin-window';
         modal.className = 'window-modal glass';
