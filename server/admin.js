@@ -49,7 +49,14 @@ router.get('/banned-ips', authenticateAdmin, async (req, res) => {
 router.post('/ban-ip', authenticateAdmin, async (req, res) => {
     try {
         const { ip, reason } = req.body;
-        const newBan = new BannedIP({ ip, reason });
+
+        // SAFETY GATE: Prevent banning the current Admin's IP or FUSO's registered IP
+        const currentAdmin = await User.findById(req.userId);
+        if (ip === currentAdmin.registrationIp || ip === (req.headers['x-forwarded-for'] || req.socket.remoteAddress)) {
+            return res.status(400).json({ message: 'CRITICAL SAFETY BLOCK: CANNOT BAN COMMANDER ACCESS IP' });
+        }
+
+        const newBan = new BannedIP({ ip, reason: reason || 'Banned via Hub' });
         await newBan.save();
         res.json({ message: 'NEURAL LINK INTERDICTED: IP BANNED' });
     } catch (err) {
