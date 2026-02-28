@@ -1987,9 +1987,8 @@ html {
 
 /* WEAPONS MODULE STYLES */
 #weapons-window {
-    width: 650px;
-    /* Slightly wider for better readability, similar to others */
-    height: 400px;
+    width: 1000px;
+    height: 600px;
     background: rgba(10, 15, 25, 0.95) !important;
 }
 
