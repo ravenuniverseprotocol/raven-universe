@@ -155,6 +155,8 @@ class SkillManager {
 
             launcher.dataset.posLoaded = "true";
         }
+
+        return (gridLvl >= 4 && weaponsFunctional);
     }
 
     showNameEntryPopup() {

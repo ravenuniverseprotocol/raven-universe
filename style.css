@@ -1985,107 +1985,110 @@ html {
     animation: emergencyBlink 1s infinite;
 }
 
+/* WEAPONS MODULE STYLES */
+#weapons-window {
+    width: 650px;
+    /* Slightly wider for better readability, similar to others */
+    height: 400px;
+    background: rgba(10, 15, 25, 0.95) !important;
+}
+
+.weapons-content {
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.weapons-header-info {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: rgba(255, 68, 68, 0.05);
+    border-left: 2px solid #ff4444;
+    font-family: 'Courier New', monospace;
+    font-size: 11px;
+}
+
+.weapons-location {
+    color: #888;
+}
+
+.weapons-status {
+    color: #ff4444;
+    font-weight: bold;
+    text-shadow: 0 0 5px rgba(255, 68, 68, 0.3);
+}
+
+.weapons-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.weapon-slot {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-radius: 4px;
+}
+
+.weapon-slot.active {
+    border-color: rgba(255, 153, 0, 0.2);
+    background: rgba(255, 153, 0, 0.03);
+}
+
+.weapon-name {
+    color: #ff9900;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.weapon-type {
+    font-size: 9px;
+    color: #666;
+    letter-spacing: 1px;
+}
+
+.weapon-stats {
+    flex-grow: 1;
+    margin: 0 30px;
+    max-width: 150px;
+}
+
+.stat {
+    font-size: 10px;
+    color: #ccc;
+    margin-bottom: 4px;
+    font-family: monospace;
+}
+
+.ammo-bar {
+    height: 4px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.ammo-fill {
+    height: 100%;
+    background: #ff9900;
+    box-shadow: 0 0 5px rgba(255, 153, 0, 0.5);
+    transition: width 0.3s ease;
+}
+
+#weapons-menu-btn .icon svg {
+    filter: drop-shadow(0 0 5px rgba(255, 68, 0, 0.5));
+    color: #ff6600 !important;
+}
+
+#weapons-menu-btn:hover .icon svg {
+    color: #ffaa00 !important;
+    filter: drop-shadow(0 0 8px rgba(255, 170, 0, 0.8));
+}
+
+
 /* End of file */
- / *   W E A P O N S   M O D U L E   S T Y L E S   * / 
- # w e a p o n s - w i n d o w   { 
-         w i d t h :   5 0 0 p x ; 
-         b a c k g r o u n d :   r g b a ( 1 0 ,   1 5 ,   2 5 ,   0 . 9 5 )   ! i m p o r t a n t ; 
- } 
- 
- . w e a p o n s - c o n t e n t   { 
-         p a d d i n g :   1 5 p x ; 
-         d i s p l a y :   f l e x ; 
-         f l e x - d i r e c t i o n :   c o l u m n ; 
-         g a p :   1 5 p x ; 
- } 
- 
- . w e a p o n s - h e a d e r - i n f o   { 
-         d i s p l a y :   f l e x ; 
-         j u s t i f y - c o n t e n t :   s p a c e - b e t w e e n ; 
-         p a d d i n g :   8 p x   1 2 p x ; 
-         b a c k g r o u n d :   r g b a ( 2 5 5 ,   6 8 ,   6 8 ,   0 . 0 5 ) ; 
-         b o r d e r - l e f t :   2 p x   s o l i d   # f f 4 4 4 4 ; 
-         f o n t - f a m i l y :   ' C o u r i e r   N e w ' ,   m o n o s p a c e ; 
-         f o n t - s i z e :   1 1 p x ; 
- } 
- 
- . w e a p o n s - l o c a t i o n   { 
-         c o l o r :   # 8 8 8 ; 
- } 
- 
- . w e a p o n s - s t a t u s   { 
-         c o l o r :   # f f 4 4 4 4 ; 
-         f o n t - w e i g h t :   b o l d ; 
-         t e x t - s h a d o w :   0   0   5 p x   r g b a ( 2 5 5 ,   6 8 ,   6 8 ,   0 . 3 ) ; 
- } 
- 
- . w e a p o n s - g r i d   { 
-         d i s p l a y :   f l e x ; 
-         f l e x - d i r e c t i o n :   c o l u m n ; 
-         g a p :   1 0 p x ; 
- } 
- 
- . w e a p o n - s l o t   { 
-         b a c k g r o u n d :   r g b a ( 2 5 5 ,   2 5 5 ,   2 5 5 ,   0 . 0 2 ) ; 
-         b o r d e r :   1 p x   s o l i d   r g b a ( 2 5 5 ,   2 5 5 ,   2 5 5 ,   0 . 0 5 ) ; 
-         p a d d i n g :   1 2 p x ; 
-         d i s p l a y :   f l e x ; 
-         j u s t i f y - c o n t e n t :   s p a c e - b e t w e e n ; 
-         a l i g n - i t e m s :   c e n t e r ; 
-         b o r d e r - r a d i u s :   4 p x ; 
- } 
- 
- . w e a p o n - s l o t . a c t i v e   { 
-         b o r d e r - c o l o r :   r g b a ( 2 5 5 ,   1 5 3 ,   0 ,   0 . 2 ) ; 
-         b a c k g r o u n d :   r g b a ( 2 5 5 ,   1 5 3 ,   0 ,   0 . 0 3 ) ; 
- } 
- 
- . w e a p o n - n a m e   { 
-         c o l o r :   # f f 9 9 0 0 ; 
-         f o n t - w e i g h t :   b o l d ; 
-         f o n t - s i z e :   1 4 p x ; 
- } 
- 
- . w e a p o n - t y p e   { 
-         f o n t - s i z e :   9 p x ; 
-         c o l o r :   # 6 6 6 ; 
-         l e t t e r - s p a c i n g :   1 p x ; 
- } 
- 
- . w e a p o n - s t a t s   { 
-         f l e x - g r o w :   1 ; 
-         m a r g i n :   0   3 0 p x ; 
-         m a x - w i d t h :   1 5 0 p x ; 
- } 
- 
- . s t a t   { 
-         f o n t - s i z e :   1 0 p x ; 
-         c o l o r :   # c c c ; 
-         m a r g i n - b o t t o m :   4 p x ; 
-         f o n t - f a m i l y :   m o n o s p a c e ; 
- } 
- 
- . a m m o - b a r   { 
-         h e i g h t :   4 p x ; 
-         b a c k g r o u n d :   r g b a ( 0 ,   0 ,   0 ,   0 . 3 ) ; 
-         b o r d e r - r a d i u s :   2 p x ; 
-         o v e r f l o w :   h i d d e n ; 
- } 
- 
- . a m m o - f i l l   { 
-         h e i g h t :   1 0 0 % ; 
-         b a c k g r o u n d :   # f f 9 9 0 0 ; 
-         b o x - s h a d o w :   0   0   5 p x   r g b a ( 2 5 5 ,   1 5 3 ,   0 ,   0 . 5 ) ; 
-         t r a n s i t i o n :   w i d t h   0 . 3 s   e a s e ; 
- } 
- 
- # w e a p o n s - m e n u - b t n   . i c o n   s v g   { 
-         f i l t e r :   d r o p - s h a d o w ( 0   0   5 p x   r g b a ( 2 5 5 ,   6 8 ,   0 ,   0 . 5 ) ) ; 
-         c o l o r :   # f f 6 6 0 0   ! i m p o r t a n t ; 
- } 
- 
- # w e a p o n s - m e n u - b t n : h o v e r   . i c o n   s v g   { 
-         c o l o r :   # f f a a 0 0   ! i m p o r t a n t ; 
-         f i l t e r :   d r o p - s h a d o w ( 0   0   8 p x   r g b a ( 2 5 5 ,   1 7 0 ,   0 ,   0 . 8 ) ) ; 
- }  
- 

@@ -39,18 +39,16 @@ class WeaponsModule {
     toggleWindow() {
         if (!this.window) return;
 
-        // GATING: Check if Ordnance Systems Ignition is trained
-        if (!window.skillManager || !window.skillManager.checkMissileStatus()) {
-            if (typeof showGameNotification === 'function') {
-                showGameNotification("SYSTEMS LOCKED: ORDNANCE IGNITION REQUIRED");
-            }
-            return;
-        }
-
         const isVisible = this.window.style.display === 'flex';
         this.window.style.display = isVisible ? 'none' : 'flex';
 
         if (!isVisible) {
+            // Notify if locked, but open anyway
+            if (!window.skillManager || !window.skillManager.checkMissileStatus()) {
+                if (typeof showGameNotification === 'function') {
+                    showGameNotification("SYSTEMS LOCKED: ORDNANCE IGNITION REQUIRED");
+                }
+            }
             this.updateUI();
         }
     }
