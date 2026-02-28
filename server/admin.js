@@ -3,6 +3,15 @@ const router = express.Router();
 const jwt = require('jsonwebtoken');
 const { User, BannedIP } = require('./database');
 
+// Helper to extract true client IP
+function extractClientIp(req) {
+    const forwarded = req.headers['x-forwarded-for'];
+    if (forwarded) {
+        return forwarded.split(',')[0].trim();
+    }
+    return req.socket.remoteAddress || 'UNKNOWN';
+}
+
 // Middleware to verify JWT and Admin rights (Only FUSO)
 async function authenticateAdmin(req, res, next) {
     const token = req.headers['authorization'];
@@ -48,11 +57,18 @@ router.get('/banned-ips', authenticateAdmin, async (req, res) => {
 // Ban an IP
 router.post('/ban-ip', authenticateAdmin, async (req, res) => {
     try {
-        const { ip, reason } = req.body;
+        let { ip, reason } = req.body;
+
+        // Normalize the IP to ban (take the first if it's a list)
+        if (ip && ip.includes(',')) {
+            ip = ip.split(',')[0].trim();
+        }
+
+        const currentClientIp = extractClientIp(req);
 
         // SAFETY GATE: Prevent banning the current Admin's IP or FUSO's registered IP
         const currentAdmin = await User.findById(req.userId);
-        if (ip === currentAdmin.registrationIp || ip === (req.headers['x-forwarded-for'] || req.socket.remoteAddress)) {
+        if (ip === currentAdmin.registrationIp || ip === currentClientIp) {
             return res.status(400).json({ message: 'CRITICAL SAFETY BLOCK: CANNOT BAN COMMANDER ACCESS IP' });
         }
 

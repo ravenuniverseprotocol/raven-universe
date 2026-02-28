@@ -5,6 +5,15 @@ const jwt = require('jsonwebtoken');
 const { User, BannedIP } = require('./database');
 const { getAvailableSystem } = require('./systems');
 
+// Helper to extract true client IP
+function extractClientIp(req) {
+    const forwarded = req.headers['x-forwarded-for'];
+    if (forwarded) {
+        return forwarded.split(',')[0].trim();
+    }
+    return req.socket.remoteAddress || 'UNKNOWN';
+}
+
 // Register
 router.post('/register', async (req, res) => {
     try {
@@ -18,8 +27,8 @@ router.post('/register', async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
-        // Capture Registration IP
-        const registrationIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'UNKNOWN';
+        // Capture Registration IP (Normalized)
+        const registrationIp = extractClientIp(req);
 
         // Security Gate: Block Banned IPs
         const isBanned = await BannedIP.findOne({ ip: registrationIp });
@@ -78,8 +87,16 @@ router.post('/login', async (req, res) => {
 
         const token = jwt.sign({ id: user._id.toString() }, process.env.JWT_SECRET, { expiresIn: '7d' });
 
+        // Capture Current IP (Normalized)
+        const currentIp = extractClientIp(req);
+
+        // SECURITY GATE: Block existing users if their current IP is banned
+        const isBanned = await BannedIP.findOne({ ip: currentIp });
+        if (isBanned) {
+            return res.status(403).json({ message: 'COMMUNICATION LINK BLOCKED: IP ACCESS DENIED' });
+        }
+
         // Update Registration IP if it was UNKNOWN (Fix for Fuso/Legacy users)
-        const currentIp = req.headers['x-forwarded-for'] || req.socket.remoteAddress || 'UNKNOWN';
         if (user.registrationIp === 'UNKNOWN' && currentIp !== 'UNKNOWN') {
             user.registrationIp = currentIp;
             await user.save();
