@@ -94,7 +94,12 @@ class AuthModule {
                 this.isAuth = true;
 
                 status.innerText = "IDENTIFICATION GRANTED";
-                setTimeout(() => this.hideGate(data.gameState), 1000);
+                // Pass combined state: user info + game state
+                const fullState = {
+                    username: this.user.username,
+                    gameState: data.gameState
+                };
+                setTimeout(() => this.hideGate(fullState), 1000);
             } else {
                 status.innerText = `ERROR: ${data.message || 'AUTHENTICATION REJECTED'}`;
             }
@@ -120,7 +125,12 @@ class AuthModule {
                         console.log("[RAVEN DEBUG] Bypassing Server State for Clinical Reset.");
                         gameState = null; // Force defaults
                     }
-                    this.hideGate(gameState);
+                    // Combine local user info with server state
+                    const fullState = {
+                        username: this.user ? this.user.username : 'COMMANDER',
+                        gameState: gameState
+                    };
+                    this.hideGate(fullState);
                 } else {
                     this.logout();
                 }
