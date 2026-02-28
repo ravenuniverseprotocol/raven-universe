@@ -129,6 +129,16 @@ O projeto foi modularizado para garantir estabilidade e facilidade de expansão:
   * **Persistência Galáctica (ADN Estelar)**: Implementação de algoritmo `seededRandom` (Seed 777) para garantir que as posições e nomes dos 100 sistemas sejam imutáveis após refresh.
 * **Notificações Táticas**: Sistema de alerta de perda de sinal local e transição para vigilância estelar.
 
+### Fase 11: Módulo de Armamento & UI Modular
+
+* **Lógica de Combate Inicial (`WeaponsModule.js`)**:
+  * **Arquitetura Modular**: Criação de um módulo isolado para gestão de munições e controlo de armamento.
+  * **Gating de Segurança**: Acesso ao menu bloqueado até que o teste de **Ordnance Systems Ignition** (Commander) seja validado.
+  * **Sistema de Recarga**: Implementação de ciclo de recarga cronometrado (4s) para 24 mísseis.
+* **Interface de Defesa (Sidebar Integration)**:
+  * **Novo Ícone de Alvo**: Adição de ícone de mira neon na barra lateral com efeito *glow* laranja.
+  * **Consola de Artilharia**: Janela modal dedicada com indicadores de munição e estado operacional.
+
 ---
 
 ## 🚀 Roteiro Futuro (Roadmap)
@@ -280,5 +290,6 @@ Para reativar o ecossistema Raven Universe, segue estes passos literais:
 * [x] **Migração Fullstack**: Backend ativo com persistência cloud.
 * [x] **Acesso Remoto**: Testado e funcional via Ngrok e Render.
 * [x] **Deployment 24/7 (Render)**: Migração concluída com sucesso.
+* [x] **Módulo de Armamento & UI**: Implementação de consola de artilharia e gating de skills.
 * [ ] **Multiplayer Real-time**: Visualização de outros comandantes humanos no mesmo sistema via WebSockets.
 * [ ] **Sistemas de Combate PvE**: Incursões de piratas e drones defensivos.

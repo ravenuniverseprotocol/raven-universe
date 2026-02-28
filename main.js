@@ -148,6 +148,7 @@ function init(initialState) {
     initSettings();
     initRadar();
     initStationHUD();
+    initWeapons();
     if (typeof initSystemView === 'function') initSystemView();
 
     document.querySelectorAll('.close-btn').forEach(btn => {
