@@ -8,6 +8,11 @@ class WeaponsModule {
         this.maxAmmo = 24;
         this.isReloading = false;
 
+        // Research State
+        this.isResearching = false;
+        this.researchProgress = 0;
+        this.researchComplete = false;
+
         this.init();
     }
 
@@ -28,7 +33,7 @@ class WeaponsModule {
             }
         }
 
-        // Auto-update UI if open
+        // Auto-update UI if open (legacy elements may be gone, keep running just in case)
         setInterval(() => {
             if (this.window && this.window.style.display === 'flex') {
                 this.updateUI();
@@ -96,6 +101,55 @@ class WeaponsModule {
                 this.updateUI();
             }
         }, step);
+    }
+
+    startResearch() {
+        if (this.isResearching || this.researchComplete) return;
+
+        const researchBox = document.getElementById('weapons-research-box');
+        const percentageTxt = document.getElementById('weapons-research-percentage');
+        const constructionBox = document.getElementById('weapons-construction-box');
+
+        if (!researchBox || !percentageTxt || !constructionBox) return;
+
+        this.isResearching = true;
+        this.researchProgress = 0;
+        percentageTxt.innerText = "0%";
+
+        // Add pulsing animation class
+        researchBox.classList.add('research-active');
+
+        if (typeof showGameNotification === 'function') {
+            showGameNotification("INITIATING MK1 PULSE MISSILE RESEARCH...");
+        }
+
+        const totalTime = 10000; // 10 seconds
+        const interval = 100; // Update every 100ms
+        const progressPerTick = (interval / totalTime) * 100;
+
+        const timer = setInterval(() => {
+            this.researchProgress += progressPerTick;
+            let displayPct = Math.floor(this.researchProgress);
+
+            if (displayPct > 100) displayPct = 100;
+            percentageTxt.innerText = `${displayPct}%`;
+
+            if (this.researchProgress >= 100) {
+                clearInterval(timer);
+                this.isResearching = false;
+                this.researchComplete = true;
+
+                percentageTxt.innerText = "100%";
+                researchBox.classList.remove('research-active');
+
+                // Activate construction section
+                constructionBox.classList.add('construction-ready');
+
+                if (typeof showGameNotification === 'function') {
+                    showGameNotification("RESEARCH SECURE. SCHEMATICS UPLOADED TO CONSTRUCTION QUEUE.");
+                }
+            }
+        }, interval);
     }
 }
 
