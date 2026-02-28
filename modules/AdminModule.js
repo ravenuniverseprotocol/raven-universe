@@ -6,15 +6,18 @@ class AdminModule {
     }
 
     init() {
+        // Prevent multiple modals if init is called again
+        if (document.getElementById('admin-window')) {
+            this.container = document.getElementById('admin-window');
+            return;
+        }
         this.renderAdminUI();
-        // Only setup events if the UI actually rendered (Security Gate passed)
         if (this.container) {
             this.setupEvents();
         }
     }
 
     renderAdminUI() {
-        // SECURITY GATE: Only FUSO can initialize the Admin Interface
         const user = JSON.parse(localStorage.getItem('raven_user'));
         if (!user || user.username !== 'FUSO') {
             console.log("[RAVEN SECURITY] Administration restricted to Prime Commander.");
@@ -51,9 +54,7 @@ class AdminModule {
                                     <th>ACTIONS</th>
                                 </tr>
                             </thead>
-                            <tbody id="admin-user-tbody">
-                                <!-- Users injected here -->
-                            </tbody>
+                            <tbody id="admin-user-tbody"></tbody>
                         </table>
                     </div>
                 </div>
@@ -62,7 +63,6 @@ class AdminModule {
         document.body.appendChild(modal);
         this.container = modal;
 
-        // Add Admin button to sidebar if not exists
         const sidebar = document.querySelector('.menu-list');
         if (sidebar && !document.getElementById('admin-sidebar-btn')) {
             const li = document.createElement('li');
@@ -73,8 +73,12 @@ class AdminModule {
             sidebar.appendChild(li);
 
             li.onclick = () => {
-                modal.style.display = 'flex';
-                this.fetchUsers();
+                if (modal.style.display === 'none' || modal.style.display === '') {
+                    modal.style.display = 'flex';
+                    this.fetchUsers();
+                } else {
+                    modal.style.display = 'none';
+                }
             };
         }
 
@@ -82,11 +86,17 @@ class AdminModule {
     }
 
     setupEvents() {
-        document.getElementById('admin-close').onclick = () => {
-            this.container.style.display = 'none';
-        };
+        const closeBtn = this.container.querySelector('#admin-close');
+        if (closeBtn) {
+            closeBtn.onclick = () => {
+                this.container.style.display = 'none';
+            };
+        }
 
-        document.getElementById('admin-refresh-btn').onclick = () => this.fetchUsers();
+        const refreshBtn = this.container.querySelector('#admin-refresh-btn');
+        if (refreshBtn) {
+            refreshBtn.onclick = () => this.fetchUsers();
+        }
     }
 
     async fetchUsers() {
@@ -111,7 +121,6 @@ class AdminModule {
     }
 
     async deleteUser(userId, username) {
-        // Removed native confirm to avoid browser blocking
         const token = localStorage.getItem('raven_token');
         const isLocalFile = window.location.protocol === 'file:';
         const apiBase = isLocalFile ? 'https://raven-universe.onrender.com' : '';
@@ -134,8 +143,8 @@ class AdminModule {
     }
 
     updateUI() {
-        const tbody = document.getElementById('admin-user-tbody');
-        const countDisplay = document.getElementById('admin-total-count');
+        const tbody = this.container.querySelector('#admin-user-tbody');
+        const countDisplay = this.container.querySelector('#admin-total-count');
         if (!tbody || !countDisplay) return;
 
         countDisplay.innerText = this.userList.length;
@@ -158,7 +167,6 @@ class AdminModule {
             tbody.appendChild(row);
         });
 
-        // Event delegation for purge buttons
         tbody.querySelectorAll('.purge-btn').forEach(btn => {
             btn.onclick = () => this.deleteUser(btn.dataset.id, btn.dataset.name);
         });
@@ -166,9 +174,9 @@ class AdminModule {
 }
 
 function initAdmin() {
+    if (window.adminModule) return;
     window.adminModule = new AdminModule();
 }
 
-// Global initialization call if main.js doesn't include it
-if (document.readyState === 'complete') initAdmin();
-else window.addEventListener('load', initAdmin);
+// Redundant call removed to favor main.js orchestration
+// if (document.readyState === 'complete') initAdmin();
