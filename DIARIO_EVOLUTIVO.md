@@ -319,7 +319,7 @@ Para reativar o ecossistema Raven Universe, segue estes passos literais:
 
 ### [2026-03-01] - Expansão de Armamento Estratégico (Sistemas Modulares V2)
 
-- **Base de Dados Tática:** Implementação do `MISSILE_DATABASE` data-driven, suportando 6 classes de mísseis com estatísticas individuais de dano, velocidade e custo.
+* **Base de Dados Tática:** Implementação do `MISSILE_DATABASE` data-driven, suportando 6 classes de mísseis com estatísticas individuais de dano, velocidade e custo.
 * **Especialização de Funções (Roles):**
   * **MK1 Pulse:** Função Anti-Fighter (Baixo custo, Alta cadência).
   * **MK2 Vesta:** Função Precision Interceptor (Ultra-alta velocidade).
