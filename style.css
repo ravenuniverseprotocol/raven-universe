@@ -2328,18 +2328,12 @@ html {
 
 /* WEAPONS NEW LAYOUT STYLES - EVE ONLINE THEME */
 /* --- WEAPONS 4K CINEMATIC REDESIGN --- */
-.weapons-4k-window {
+/* WEAPONS WINDOW OVERRIDES - Ensuring 1:1 match with Logistics */
+#weapons-window {
     width: 1000px !important;
     height: 720px !important;
-    background: rgba(0, 0, 0, 0.3) !important;
-    backdrop-filter: blur(1px) !important;
-    border: 1px solid rgba(255, 153, 0, 0.2) !important;
-    border-top: 2px solid #ff9900 !important;
-    animation: neon-pulse 2s ease-in-out infinite !important;
-    box-shadow: none !important;
     left: calc(50% - 500px) !important;
     top: calc(50% - 360px) !important;
-    overflow: hidden;
 }
 
 .weapons-4k-window .window-header {
@@ -2412,8 +2406,8 @@ html {
 }
 
 .weapons-panel {
-    background: rgba(0, 10, 20, 0.4);
-    border: 1px solid rgba(255, 153, 0, 0.15);
+    background: transparent;
+    border: 1px solid rgba(255, 153, 0, 0.1);
     border-radius: 4px;
     display: flex;
     flex-direction: column;
@@ -2675,8 +2669,8 @@ html {
     align-items: center;
     gap: 4px;
     padding: 8px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: transparent;
+    border: 1px solid rgba(255, 153, 0, 0.1);
     min-width: 60px;
 }
 
