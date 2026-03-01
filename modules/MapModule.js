@@ -6,6 +6,8 @@ class GalaxyMap {
 
         this.galaxyName = "NEBULIS PRIME";
         this.systems = [];
+        this.isStrategicMode = false;
+        this.activeStrikes = [];
 
         // Get dynamic home data from skillManager
         const homeName = window.skillManager ? window.skillManager.homeSystem : "10.05.29";
@@ -29,10 +31,6 @@ class GalaxyMap {
         window.addEventListener('resize', () => this.resize());
         this.lastPlayerFetchTime = 0;
         this.startAnimation();
-
-        // Strategic Mode States
-        this.isStrategicMode = false;
-        this.activeStrikes = [];
 
         // Initial fetch and periodic refresh
         this.fetchOtherPlayers();
