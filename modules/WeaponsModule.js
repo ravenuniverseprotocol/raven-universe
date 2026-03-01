@@ -156,9 +156,10 @@ class WeaponsModule {
     }
 
     injectNavButtons() {
-        // Injecting navigation arrows into the fabrication area
-        const fabWrapper = document.getElementById('weapons-construction-wrapper');
-        if (fabWrapper && !document.getElementById('weapons-nav-left')) {
+        // Injecting navigation arrows into the fabrication panel (parent of wrapper)
+        // to avoid being affected by pointer-events: none on the wrapper
+        const fabPanel = document.querySelector('.fabrication-panel');
+        if (fabPanel && !document.getElementById('weapons-nav-left')) {
             const leftBtn = document.createElement('button');
             leftBtn.id = 'weapons-nav-left';
             leftBtn.className = 'weapons-nav-btn left';
@@ -171,8 +172,8 @@ class WeaponsModule {
             rightBtn.innerHTML = '❯';
             rightBtn.onclick = (e) => { e.stopPropagation(); this.navigate(1); };
 
-            fabWrapper.appendChild(leftBtn);
-            fabWrapper.appendChild(rightBtn);
+            fabPanel.appendChild(leftBtn);
+            fabPanel.appendChild(rightBtn);
         }
     }
 
