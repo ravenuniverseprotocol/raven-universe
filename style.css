@@ -2330,7 +2330,7 @@ html {
 /* --- WEAPONS 4K CINEMATIC REDESIGN --- */
 .weapons-4k-window {
     width: 1000px !important;
-    height: 650px !important;
+    height: 720px !important;
     background: rgba(5, 10, 15, 0.8) !important;
     backdrop-filter: blur(20px) saturate(180%) !important;
     border: 1px solid rgba(80, 150, 200, 0.3) !important;
@@ -2338,7 +2338,7 @@ html {
     box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 204, 255, 0.1) !important;
     overflow: hidden;
     left: calc(50% - 500px) !important;
-    top: calc(50% - 325px) !important;
+    top: calc(50% - 360px) !important;
 }
 
 .weapons-4k-window .window-header {
@@ -2372,7 +2372,7 @@ html {
 
 .weapons-content-4k {
     position: relative;
-    padding: 20px !important;
+    padding: 15px !important;
     display: flex;
     flex-direction: column;
 }
@@ -2427,7 +2427,7 @@ html {
 }
 
 .panel-header {
-    margin-bottom: 20px;
+    margin-bottom: 12px;
 }
 
 .panel-label {
@@ -2516,7 +2516,7 @@ html {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: 15px;
 }
 
 .fab-bracket {
@@ -2557,7 +2557,7 @@ html {
 
 .fab-display-box {
     width: 240px;
-    height: 320px;
+    height: 310px;
     background: radial-gradient(circle, rgba(0, 204, 255, 0.05) 0%, transparent 70%);
     border: 1px solid rgba(0, 204, 255, 0.1);
     position: relative;
@@ -2657,7 +2657,7 @@ html {
 .spec-desc {
     font-size: 10px;
     color: #888;
-    margin: 0 0 20px 0;
+    margin: 0 0 12px 0;
     font-style: italic;
 }
 
@@ -2665,7 +2665,7 @@ html {
     display: flex;
     justify-content: center;
     gap: 15px;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .res-item {
@@ -2720,12 +2720,12 @@ html {
 .research-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 15px;
 }
 
 .research-display-box {
     width: 240px;
-    height: 180px;
+    height: 170px;
     background: rgba(0, 0, 0, 0.4);
     border: 1px solid rgba(80, 150, 200, 0.2);
     display: flex;
