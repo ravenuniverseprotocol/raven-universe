@@ -227,65 +227,133 @@
         </div>
     </div>
 
-    <!-- WEAPONS WINDOW -->
-    <div id="weapons-window" class="window-modal">
+    <div id="weapons-window" class="window-modal weapons-4k-window">
         <div class="window-header">
-            <span>ORDNANCE CONTROL - WEAPONS SYSTEMS</span>
+            <div class="header-titling">
+                <span class="header-icon">⌖</span>
+                <span>ORDNANCE CONTROL - STRATEGIC WEAPONS SYSTEMS</span>
+            </div>
             <button class="close-btn">&times;</button>
         </div>
-        <div class="window-content weapons-content" id="weapons-main-content">
-            <div class="weapons-layout">
 
-                <!-- MAIN STORAGE BLOCK -->
-                <div class="weapons-label">ORDNANCE STORAGE</div>
-                <div class="weapons-storage-container" id="weapons-storage-grid">
-                    <!-- Dynamic Items will appear here -->
-                    <div id="storage-empty-msg" style="color: #666; font-size: 10px; font-style: italic;">STORAGE BAY
-                        EMPTY</div>
-                </div>
+        <div class="window-content weapons-content-4k">
+            <!-- Background Particle Layer -->
+            <canvas id="weapons-particle-canvas"></canvas>
+            <div class="window-scanlines"></div>
 
-                <!-- DIVIDER BLOCK -->
-                <div class="weapons-divider-container" style="margin-top: 20px;">
-                    <div class="weapons-label">FABRICATION</div>
-                    <div class="weapons-divider-line"></div>
-                </div>
-
-                <!-- CONSTRUCTION BLOCK -->
-                <div class="weapons-label">CONSTRUCTION</div>
-                <div class="weapons-details-wrapper">
-                    <div id="weapons-construction-wrapper">
-                        <div id="weapons-construction-box" class="weapons-box-large"
-                            onclick="window.weaponsModule.startConstruction()">
-                            <img id="weapons-construction-img" src="assets/media/mk1%20-%20pulse%20missile.png"
-                                class="weapons-missile-img" style="display: none;">
+            <div class="weapons-grid-layout">
+                <!-- LEFT PANEL: LOGISTICS & STORAGE -->
+                <div class="weapons-panel logistics-panel">
+                    <div class="panel-header">
+                        <span class="panel-label">LOGISTICS & ORDNANCE STORAGE</span>
+                        <div class="panel-line"></div>
+                    </div>
+                    <div class="storage-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">CAPACITY</span>
+                            <span class="stat-value">128/500m³</span>
                         </div>
-                        <div id="weapons-construction-percentage" class="weapons-percentage" style="display: none;">
-                            AWAITING SCHEMATICS</div>
+                        <div class="stat-item">
+                            <span class="stat-label">STATUS</span>
+                            <span class="stat-value text-green">SECURE</span>
+                        </div>
                     </div>
-                    <div id="weapons-construction-details" class="weapons-details">
-                        <div class="weapons-title">MK1 Pulse Missile</div>
-                        <div class="weapons-resource">250 Iron</div>
-                        <div class="weapons-resource">100 Titanium</div>
-                        <div class="weapons-resource">10 000 RUs</div>
+                    <div class="weapons-storage-container-4k" id="weapons-storage-grid">
+                        <div id="storage-empty-msg" class="empty-status-msg">
+                            <div class="scifi-spinner"></div>
+                            <span>AWAITING ORDNANCE DELIVERY...</span>
+                        </div>
                     </div>
                 </div>
 
-                <!-- DIVIDER BLOCK -->
-                <div class="weapons-divider-container" style="margin-top: 10px;">
-                    <div class="weapons-label">DEVELOPMENT</div>
-                    <div class="weapons-divider-line"></div>
-                </div>
-
-                <!-- RESEARCH BLOCK -->
-                <div class="weapons-label">RESEARCH</div>
-                <div id="weapons-research-wrapper">
-                    <div id="weapons-research-box" class="weapons-box-large"
-                        onclick="window.weaponsModule.startResearch()">
-                        <img src="assets/media/mk1%20-%20pulse%20missile.png" class="weapons-missile-img">
+                <!-- CENTER PANEL: FABRICATION (CONSTRUCTION) -->
+                <div class="weapons-panel fabrication-panel">
+                    <div class="panel-header">
+                        <span class="panel-label">FABRICATION QUEUE</span>
+                        <div class="panel-line"></div>
                     </div>
-                    <div id="weapons-research-percentage" class="weapons-percentage">0%</div>
+
+                    <div id="weapons-construction-wrapper" class="fab-wrapper">
+                        <div class="fab-bracket top-left"></div>
+                        <div class="fab-bracket top-right"></div>
+                        <div class="fab-bracket bottom-left"></div>
+                        <div class="fab-bracket bottom-right"></div>
+
+                        <div id="weapons-construction-box" class="fab-display-box"
+                            onclick="window.weaponsModule.startConstruction()">
+                            <!-- Laser Print Effect Layer -->
+                            <div class="laser-print-line"></div>
+                            <img id="weapons-construction-img" src="assets/media/mk1%20-%20pulse%20missile.png"
+                                class="missile-render-4k" style="display: none;">
+                            <div class="construct-overlay">
+                                <span class="overlay-text">INITIATE FABRICATION</span>
+                            </div>
+                        </div>
+
+                        <div class="fab-info">
+                            <div class="missile-specs">
+                                <h2 class="spec-name">MK1 PULSE MISSILE</h2>
+                                <p class="spec-desc">High-velocity kinetic payload with EM pulse capability.</p>
+                            </div>
+                            <div id="weapons-construction-details" class="resource-requirements">
+                                <div class="res-item" data-res="IRON">
+                                    <span class="res-icon">⚙</span>
+                                    <span class="res-val">250</span>
+                                    <span class="res-name">IRON</span>
+                                </div>
+                                <div class="res-item" data-res="TITANIUM">
+                                    <span class="res-icon">🛡</span>
+                                    <span class="res-val">100</span>
+                                    <span class="res-name">TITANIUM</span>
+                                </div>
+                                <div class="res-item" data-res="RUC">
+                                    <span class="res-icon">💳</span>
+                                    <span class="res-val">10.0k</span>
+                                    <span class="res-name">RUC</span>
+                                </div>
+                            </div>
+                            <div id="weapons-construction-percentage" class="fab-status-bar">READY TO FABRICATE</div>
+                        </div>
+                    </div>
                 </div>
 
+                <!-- RIGHT PANEL: LABORATORY (RESEARCH) -->
+                <div class="weapons-panel laboratory-panel">
+                    <div class="panel-header">
+                        <span class="panel-label">R&D LABORATORY</span>
+                        <div class="panel-line"></div>
+                    </div>
+
+                    <div id="weapons-research-wrapper" class="research-wrapper">
+                        <div id="weapons-research-box" class="research-display-box"
+                            onclick="window.weaponsModule.startResearch()">
+                            <div class="scan-effect"></div>
+                            <img src="assets/media/mk1%20-%20pulse%20missile.png"
+                                class="missile-render-4k research-blue">
+                            <div class="research-overlay">
+                                <span class="overlay-text">START RESEARCH</span>
+                            </div>
+                        </div>
+                        <div class="research-readout">
+                            <div class="readout-header">MK1 SCHEMATICS</div>
+                            <div id="weapons-research-percentage" class="readout-value">0%</div>
+                            <div class="readout-progress-bg">
+                                <div id="research-progress-fill" class="progress-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="lab-notes">
+                        <div class="note-item">
+                            <span class="note-bullet">»</span>
+                            <span class="note-text">Analyzing payload stability...</span>
+                        </div>
+                        <div class="note-item">
+                            <span class="note-bullet">»</span>
+                            <span class="note-text">Optimizing EM pulse frequency.</span>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

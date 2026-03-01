@@ -2327,231 +2327,543 @@ html {
 
 
 /* WEAPONS NEW LAYOUT STYLES - EVE ONLINE THEME */
-.weapons-content {
-    position: relative;
-    padding: 0;
-    width: 100%;
-    height: 100%;
+/* --- WEAPONS 4K CINEMATIC REDESIGN --- */
+.weapons-4k-window {
+    width: 1000px !important;
+    height: 650px !important;
+    background: rgba(5, 10, 15, 0.8) !important;
+    backdrop-filter: blur(20px) saturate(180%) !important;
+    border: 1px solid rgba(80, 150, 200, 0.3) !important;
+    border-top: 3px solid #00ccff !important;
+    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 204, 255, 0.1) !important;
+    overflow: hidden;
+    left: calc(50% - 500px) !important;
+    top: calc(50% - 325px) !important;
 }
 
-.weapons-layout {
-    position: absolute;
-    bottom: 25px;
-    left: 20px;
-    font-family: 'Courier New', Courier, monospace;
+.weapons-4k-window .window-header {
+    background: linear-gradient(90deg, rgba(0, 204, 255, 0.1), transparent);
+    border-bottom: 1px solid rgba(0, 204, 255, 0.2);
+    height: 35px;
 }
 
-.weapons-label {
-    color: #aaccff;
-    font-size: 8px;
-    font-weight: normal;
-    letter-spacing: 0;
-    margin-bottom: 3px;
-    position: relative;
-    opacity: 0.8;
-}
-
-.weapons-details-wrapper {
+.header-titling {
     display: flex;
     align-items: center;
+    gap: 10px;
+    color: #00ccff;
+    text-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
+}
+
+.header-icon {
+    font-size: 18px;
+    animation: rotate-slow 10s linear infinite;
+}
+
+@keyframes rotate-slow {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.weapons-content-4k {
     position: relative;
+    padding: 20px !important;
+    display: flex;
+    flex-direction: column;
+}
+
+#weapons-particle-canvas {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 0;
+    opacity: 0.4;
+}
+
+.window-scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(0deg,
+            rgba(0, 0, 0, 0) 0px,
+            rgba(0, 0, 0, 0.05) 1px,
+            rgba(0, 0, 0, 0) 2px);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.weapons-grid-layout {
+    display: grid;
+    grid-template-columns: 280px 1fr 280px;
+    gap: 15px;
+    height: 100%;
+    z-index: 2;
+}
+
+.weapons-panel {
+    background: rgba(0, 20, 30, 0.4);
+    border: 1px solid rgba(80, 150, 200, 0.15);
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    padding: 15px;
+    position: relative;
+    transition: all 0.3s ease;
+}
+
+.weapons-panel:hover {
+    background: rgba(0, 30, 45, 0.5);
+    border-color: rgba(0, 204, 255, 0.3);
+}
+
+.panel-header {
     margin-bottom: 20px;
 }
 
-.weapons-details {
-    display: none;
-    /* Hidden by default */
-    margin-left: 15px;
-    flex-direction: column;
-    justify-content: center;
-}
-
-.weapons-details.active {
-    display: flex;
-}
-
-.weapons-title {
-    color: #aaccff;
+.panel-label {
+    font-family: 'Outfit', sans-serif;
     font-size: 10px;
-    font-weight: bold;
-    margin-bottom: 8px;
+    font-weight: 800;
+    color: #5096c8;
+    letter-spacing: 2px;
     text-transform: uppercase;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.panel-line {
+    height: 2px;
+    background: linear-gradient(90deg, #5096c8, transparent);
+    width: 100%;
+    opacity: 0.3;
+}
+
+/* LOGISTICS PANEL */
+.storage-stats {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.stat-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.stat-label {
+    font-size: 8px;
+    color: #666;
+    margin-bottom: 2px;
+}
+
+.stat-value {
+    font-family: monospace;
+    font-size: 11px;
+    color: #aaa;
+}
+
+.text-green {
+    color: #00ff88;
+}
+
+.weapons-storage-container-4k {
+    flex-grow: 1;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 2px;
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    align-content: flex-start;
+}
+
+.empty-status-msg {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    color: #444;
+    font-size: 9px;
     letter-spacing: 1px;
 }
 
-.weapons-resource {
-    color: #5096c8;
-    font-size: 9px;
-    margin-bottom: 3px;
-    display: flex;
-    align-items: center;
+.scifi-spinner {
+    width: 30px;
+    height: 30px;
+    border: 2px solid rgba(80, 150, 200, 0.1);
+    border-top-color: #5096c8;
+    border-radius: 50%;
+    animation: rotate-slow 2s linear infinite;
 }
 
-.weapons-resource::before {
-    content: '';
-    display: inline-block;
-    width: 3px;
-    height: 3px;
-    background-color: #5096c8;
-    margin-right: 5px;
-}
-
-.weapons-divider-container {
-    display: flex;
-    align-items: center;
+/* FABRICATION PANEL */
+.fab-wrapper {
     position: relative;
-    margin-bottom: 20px;
-}
-
-.weapons-divider-container .weapons-label {
-    margin-bottom: 0;
-    margin-right: 5px;
-    white-space: nowrap;
-}
-
-.weapons-divider-line {
-    height: 1px;
-    background-color: #5096c8;
-    width: 600px;
-    opacity: 0.6;
-}
-
-.weapons-box-large {
-    width: 35px;
-    height: 110px;
-    border: 1px solid #5096c8;
-    background: rgba(10, 25, 40, 0.4);
-    margin-bottom: 3px;
-    position: relative;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    /* To indicate it's clickable for research */
-}
-
-.weapons-box-large:hover {
-    background: rgba(80, 150, 200, 0.1);
-    border-color: #7ab4e0;
-}
-
-.weapons-missile-img {
-    height: 90%;
-    width: auto;
-    max-width: none;
-    filter: none;
-    opacity: 0.85;
-    transition: opacity 0.3s ease;
-}
-
-.weapons-percentage {
-    color: #aaccff;
-    font-size: 8px;
-    text-align: left;
-    margin-left: 2px;
-}
-
-/* Logic Classes */
-@keyframes evePulse {
-    0% {
-        box-shadow: inset 0 0 5px rgba(80, 150, 200, 0.2);
-        border-color: #5096c8;
-    }
-
-    50% {
-        box-shadow: inset 0 0 15px rgba(80, 150, 200, 0.6);
-        border-color: #7ab4e0;
-    }
-
-    100% {
-        box-shadow: inset 0 0 5px rgba(80, 150, 200, 0.2);
-        border-color: #5096c8;
-    }
-}
-
-.research-active {
-    animation: evePulse 1.5s infinite;
-}
-
-.construction-ready {
-    border-color: #00ffaa;
-    background: rgba(0, 255, 170, 0.05);
-    box-shadow: 0 0 5px rgba(0, 255, 170, 0.5);
-}
-
-.construction-ready+.weapons-label {
-    color: #00ffaa;
-}
-
-@keyframes constructorPulse {
-    0% {
-        box-shadow: inset 0 0 5px rgba(255, 153, 0, 0.2);
-        border-color: #ff9900;
-    }
-
-    50% {
-        box-shadow: inset 0 0 15px rgba(255, 153, 0, 0.6);
-        border-color: #ffaa00;
-    }
-
-    100% {
-        box-shadow: inset 0 0 5px rgba(255, 153, 0, 0.2);
-        border-color: #ff9900;
-    }
-}
-
-.construction-active {
-    animation: constructorPulse 1.5s infinite;
-}
-
-#weapons-research-wrapper,
-#weapons-construction-wrapper {
     display: flex;
     flex-direction: column;
     align-items: center;
+    gap: 20px;
 }
 
-/* Storage Grid */
-.weapons-storage-container {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 10px;
-    min-height: 120px;
-    padding: 10px;
-    background: rgba(0, 0, 0, 0.2);
-    border: 1px solid rgba(80, 150, 200, 0.1);
-    align-items: center;
-    justify-content: flex-start;
+.fab-bracket {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(0, 204, 255, 0.4);
+    z-index: 5;
 }
 
-.weapons-storage-item {
-    width: 35px;
-    height: 110px;
-    border: 1px solid #5096c8;
-    background: rgba(10, 25, 40, 0.4);
+.top-left {
+    top: -5px;
+    left: -5px;
+    border-right: none;
+    border-bottom: none;
+}
+
+.top-right {
+    top: -5px;
+    right: -5px;
+    border-left: none;
+    border-bottom: none;
+}
+
+.bottom-left {
+    bottom: -5px;
+    left: -5px;
+    border-right: none;
+    border-top: none;
+}
+
+.bottom-right {
+    bottom: -5px;
+    right: -5px;
+    border-left: none;
+    border-top: none;
+}
+
+.fab-display-box {
+    width: 240px;
+    height: 320px;
+    background: radial-gradient(circle, rgba(0, 204, 255, 0.05) 0%, transparent 70%);
+    border: 1px solid rgba(0, 204, 255, 0.1);
     position: relative;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s ease;
+    cursor: pointer;
+    overflow: hidden;
 }
 
-.weapons-storage-item:hover {
-    background: rgba(80, 150, 200, 0.2);
-    border-color: #7ab4e0;
-    box-shadow: 0 0 10px rgba(80, 150, 200, 0.5);
+.missile-render-4k {
+    height: 85%;
+    filter: drop-shadow(0 0 20px rgba(0, 204, 255, 0.3));
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.weapons-storage-count {
+.fab-display-box:hover .missile-render-4k {
+    transform: scale(1.05) translateY(-5px);
+    filter: drop-shadow(0 0 30px rgba(0, 204, 255, 0.5));
+}
+
+.laser-print-line {
     position: absolute;
-    bottom: -15px;
-    color: #00ffaa;
-    font-size: 9px;
-    font-weight: bold;
-    text-shadow: 0 0 5px rgba(0, 255, 170, 0.5);
+    top: 0;
+    left: -10%;
+    width: 120%;
+    height: 2px;
+    background: #00ccff;
+    box-shadow: 0 0 15px #00ccff;
+    z-index: 10;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.construction-active .laser-print-line {
+    opacity: 1;
+    animation: laser-scan 4s ease-in-out infinite;
+}
+
+@keyframes laser-scan {
+    0% {
+        top: 10%;
+    }
+
+    50% {
+        top: 90%;
+    }
+
+    100% {
+        top: 10%;
+    }
+}
+
+.construct-overlay,
+.research-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 204, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.fab-display-box:hover .construct-overlay,
+.research-display-box:hover .research-overlay {
+    opacity: 1;
+}
+
+.overlay-text {
+    color: #fff;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    padding: 8px 15px;
+    border: 1px solid #fff;
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.fab-info {
     width: 100%;
     text-align: center;
 }
+
+.spec-name {
+    font-family: 'Outfit', sans-serif;
+    font-size: 18px;
+    color: #fff;
+    margin: 0 0 5px 0;
+    letter-spacing: 1px;
+}
+
+.spec-desc {
+    font-size: 10px;
+    color: #888;
+    margin: 0 0 20px 0;
+    font-style: italic;
+}
+
+.resource-requirements {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.res-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    min-width: 60px;
+}
+
+.res-icon {
+    font-size: 14px;
+    margin-bottom: 2px;
+}
+
+.res-val {
+    font-family: monospace;
+    font-size: 14px;
+    font-weight: bold;
+    color: #fff;
+}
+
+.res-name {
+    font-size: 7px;
+    color: #666;
+    letter-spacing: 1px;
+}
+
+.fab-status-bar {
+    width: 100%;
+    padding: 10px;
+    background: rgba(0, 255, 170, 0.05);
+    border: 1px solid rgba(0, 255, 170, 0.2);
+    color: #00ffaa;
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    transition: all 0.3s;
+}
+
+.construction-active .fab-status-bar {
+    background: rgba(255, 153, 0, 0.1);
+    border-color: #ff9900;
+    color: #ff9900;
+}
+
+/* LABORATORY PANEL */
+.research-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.research-display-box {
+    width: 240px;
+    height: 180px;
+    background: rgba(0, 0, 0, 0.4);
+    border: 1px solid rgba(80, 150, 200, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.research-blue {
+    filter: saturate(0) brightness(0.5) !important;
+}
+
+.research-complete .research-blue {
+    filter: saturate(1) brightness(1) !important;
+}
+
+.scan-effect {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent, rgba(0, 204, 255, 0.1), transparent);
+    animation: scan-vertical 3s linear infinite;
+    display: none;
+}
+
+.research-active .scan-effect {
+    display: block;
+}
+
+@keyframes scan-vertical {
+    from {
+        transform: translateY(-100%);
+    }
+
+    to {
+        transform: translateY(100%);
+    }
+}
+
+.research-readout {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 15px;
+    border: 1px solid rgba(80, 150, 200, 0.1);
+}
+
+.readout-header {
+    font-size: 9px;
+    color: #5096c8;
+    margin-bottom: 10px;
+    letter-spacing: 1px;
+}
+
+.readout-value {
+    font-family: monospace;
+    font-size: 24px;
+    font-weight: bold;
+    color: #fff;
+    margin-bottom: 10px;
+}
+
+.readout-progress-bg {
+    height: 4px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 2px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background: #00ccff;
+    box-shadow: 0 0 10px #00ccff;
+    transition: width 0.3s;
+}
+
+.lab-notes {
+    margin-top: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.note-item {
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+}
+
+.note-bullet {
+    color: #5096c8;
+    font-weight: bold;
+}
+
+.note-text {
+    font-size: 9px;
+    color: #666;
+    line-height: 1.4;
+}
+
+/* REUSABLE STORAGE ITEM REDESIGN */
+.weapons-storage-item-4k {
+    width: 60px;
+    height: 80px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 5px;
+    position: relative;
+    transition: all 0.2s;
+}
+
+.weapons-storage-item-4k:hover {
+    background: rgba(0, 204, 255, 0.1);
+    border-color: #00ccff;
+    transform: translateY(-2px);
+}
+
+.storage-img-mini {
+    height: 50px;
+    width: auto;
+}
+
+.storage-qty-badge {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background: #00ccff;
+    color: #000;
+    font-size: 8px;
+    font-weight: bold;
+    padding: 2px 4px;
+    border-radius: 2px;
+}
+
 
 /* End of file */

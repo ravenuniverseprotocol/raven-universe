@@ -211,9 +211,28 @@ O projeto foi modularizado para garantir estabilidade e facilidade de expansão:
 * **Estabilização de Segurança**: Sincronização de segredos JWT em ambiente de produção, permitindo que a identificação de comandantes (como o Comandante Fuso) persista de forma segura.
 * **Independência Operacional**: A estação agora é servida via HTTPS seguro, com persistência total em nuvem, marcando o fim da dependência do Ngrok e do servidor local.
 
+### Fase 12: Hub de Segurança & Interdição de Redes
+
+* **Sistema de Banimento por IP (Central Admin Hub)**:
+  * **Interdição de Registo**: Bloqueio permanente de novas identificações a partir de IPs em lista negra.
+  * **Interdição de Login (Deep Enforcement)**: Implementação de verificação de banimento no momento do login para impedir que utilizadores com contas passadas (ex: `EXTREME`) contornem a interdição.
+  * **Normalização de Radar (Proxy Normalization)**: Desenvolvimento de motor de extração de IP real (`extractClientIp`) para filtrar cadeias de proxy/Cloudflare, garantindo que o Ban atinja o nó de origem e não o servidor intermédio.
+* **Interface Administrativa Premium (1000px Layout)**:
+  * **Navegação por Abas**: Reconstrução do `AdminModule.js` com sistema de abas dinâmicas (`COMMANDER REGISTRY` e `BANNED IP REGISTRY`).
+  * **Consola de Comando**: Inclusão de botões de ação críticos (`PURGE`, `BAN IP`, `UNBAN`) com feedback visual neon e alertas táticos.
+* **Salvaguardas de Comando (Anti-Self Ban)**:
+  * **Safety Gate**: Implementação de lógica no backend que impede o Comandante Fuso de banir o seu próprio IP de acesso, garantindo a integridade do nó de comando.
+  * **Auto-Cura de Identidade**: Correção de bug de legado que rotulava o Comandante Fuso como `UNKNOWN`; o sistema agora captura e valida o IP de comando automaticamente no login.
+* **Persistência & Backup**:
+  * **Segurança de Dados**: Criação de backups integros do estado do projeto (`backup_20260228_223729`) antes da implementação de protocolos destrutivos.
+* **Redesign Tático 4K - Ordnance Control**:
+  * **Interface Cinematográfica**: Reconstrução total da janela de Armas com Glassmorphism profundo, scanlines CRT e sistema de partículas de fundo.
+  * **Automação Visual**: Implementação de scanners laser para pesquisa e animação de "impressão 3D" horizontal para fabricação de mísseis.
+  * **Organização Modular**: Segmentação da consola em núcleos de Logística, Laboratório e Fábrica para maior clareza tática.
+
 ---
 
-## � LÓGICA BLOQUEADA (RESTRIÇÃO ABSOLUTA - PROIBIDO MEXER)
+## LÓGICA BLOQUEADA (RESTRIÇÃO ABSOLUTA - PROIBIDO MEXER)
 
 As funcionalidades abaixo foram seladas por ordem direta do Comandante e estão sob a **REGRA 9** do Protocolo de Subordinação. Nenhuma IA ou desenvolvedor tem autorização para alterar estes blocos:
 
