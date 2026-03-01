@@ -65,7 +65,7 @@ const MISSILE_DATABASE = [
         type: 'MATTER / INTER-GALACTIC',
         desc: 'Strategic inter-system payload with ultra-range warp capability.',
         image: 'assets/media/mkx_galactic_voyager.png',
-        researchTime: 3600000, // 1h
+        researchTime: 900000, // 15m
         fabTime: 600000,
         damage: 4500,
         speed: 25.0,
@@ -362,14 +362,17 @@ class WeaponsModule {
 
     startResearch() {
         const weapon = MISSILE_DATABASE[this.selectedIndex];
-        const state = this.researchState[weapon.id] || { completed: false, progress: 0 };
 
+        // Ensure state is initialized in the main registry
+        if (!this.researchState[weapon.id]) {
+            this.researchState[weapon.id] = { completed: false, progress: 0 };
+        }
+
+        const state = this.researchState[weapon.id];
         if (this.isWorking || state.completed) return;
 
         this.isWorking = true;
         const researchBox = document.getElementById('weapons-research-box');
-        const percentageTxt = document.getElementById('weapons-research-percentage');
-        const progressFill = document.getElementById('research-progress-fill');
 
         researchBox.parentElement.classList.add('research-active');
         if (typeof showGameNotification === 'function') {
@@ -382,27 +385,27 @@ class WeaponsModule {
 
         const timer = setInterval(() => {
             state.progress += progressPerTick;
-            let displayPct = Math.floor(state.progress);
 
-            if (displayPct >= 100) {
-                displayPct = 100;
+            if (state.progress >= 100) {
+                state.progress = 100;
                 clearInterval(timer);
                 this.isWorking = false;
                 state.completed = true;
-                state.progress = 100;
 
-                this.researchState[weapon.id] = state;
                 this.saveState();
 
                 researchBox.parentElement.classList.remove('research-active');
                 if (typeof showGameNotification === 'function') {
                     showGameNotification(`SCHEMATICS SECURED: ${weapon.name}`);
                 }
-                this.updateUI();
             }
 
-            if (percentageTxt) percentageTxt.innerText = `${displayPct}%`;
-            if (progressFill) progressFill.style.width = `${displayPct}%`;
+            // UI Update is handled by the main app loop (setInterval in init)
+            // But we can call it here for immediate responsiveness
+            this.updateUI();
+
+            // Auto-save every 5% for persistence
+            if (Math.floor(state.progress) % 5 === 0) this.saveState();
         }, interval);
     }
 
