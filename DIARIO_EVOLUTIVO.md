@@ -317,12 +317,30 @@ Para reativar o ecossistema Raven Universe, segue estes passos literais:
 * [ ] **Multiplayer Real-time**: Visualização de outros comandantes humanos no mesmo sistema via WebSockets.
 * [ ] **Sistemas de Combate PvE**: Incursões de piratas e drones defensivos.
 
-### [2026-03-01] - Strategic Armament Expansion (Modular Weapons V2)
-- **Asset Integration:** Renamed tactical assets mk2_vesta.png to mkx_voyager.png for a 6-tier weapon hierarchy.
-- **Modular Architecture:** Refactored WeaponsModule.js to a data-driven model (MISSILE_DATABASE).
-- **UI Upgrade:** Implemented carousel navigation in the Weapons Window with dynamic stat readouts (Damage, Speed, Fab Time).
-- **Tactical Realism:** Updated MissileSimulation.js to consume specific stock and apply tiered damage/speed stats during automated defense.
-- **Inter-Galactic Strike:** Integrated MapModule.js with MK-X Voyager logic, allowing long-range strategic strikes (range < 3500ly).
-- **Economic Balance:** Scaled research and fabrication costs to match missile tiers (MK1 to MK-X).
+### [2026-03-01] - Expansão de Armamento Estratégico (Sistemas Modulares V2)
+
+- **Base de Dados Tática:** Implementação do `MISSILE_DATABASE` data-driven, suportando 6 classes de mísseis com estatísticas individuais de dano, velocidade e custo.
+* **Especialização de Funções (Roles):**
+  * **MK1 Pulse:** Função Anti-Fighter (Baixo custo, Alta cadência).
+  * **MK2 Vesta:** Função Precision Interceptor (Ultra-alta velocidade).
+  * **MK3 Typhon:** Função Anti-Fleet (Dano de Área - AOE).
+  * **MK4 Hyperion:** Função Anti-Station (Heavy Breach / Alto Dano).
+  * **MK5 Zeus:** Função Strategic EMP (Desativa sistemas inimigos).
+  * **MK-X Voyager:** Função Inter-Galactic Annihilation (Arma estratégica de longo alcance).
+* **Interface Tática Única:**
+  * Novo Carrossel de Blueprints com navegação lateral (setas ❮ e ❯).
+  * Readout dinâmico de estatísticas (Yield, Velocity e Cycle Time).
+  * Sistema de renderização 4K individual por míssil.
+* **Defesa Automática Ativa:**
+  * Refactor da `MissileSimulation.js` para consumir stock real do inventário.
+  * Implementação de **Priority Fire System**: a estação dispara automaticamente os mísseis mais potentes disponíveis.
+  * Sincronização de efeitos visuais (cores e rastros) com o tipo de ogiva.
+* **Capacidade MK-X Voyager:**
+  * Integração no `MapModule.js` via **Galactic Strike**.
+  * Cálculo de alcance estratégico (3500ly) para ataques inter-sistema.
+* **Correções e Estabilidade:**
+  * Fix do bug de sincronização da pesquisa (Barra de progresso intermitente).
+  * Balanceamento de tempos de pesquisa (MK-X ajustado para 15 minutos).
+  * Persistência de estado via `localStorage` com auto-save granular.
 
 ---
