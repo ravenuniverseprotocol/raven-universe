@@ -87,7 +87,7 @@ class WeaponsModule {
         if (!this.particleCtx || this.window.style.display !== 'flex') return;
 
         this.particleCtx.clearRect(0, 0, this.particleCanvas.width, this.particleCanvas.height);
-        this.particleCtx.fillStyle = '#00ccff';
+        this.particleCtx.fillStyle = '#ff9900';
 
         this.particles.forEach(p => {
             p.x += p.speedX;
@@ -98,7 +98,7 @@ class WeaponsModule {
             if (p.y < 0) p.y = this.particleCanvas.height;
             if (p.y > this.particleCanvas.height) p.y = 0;
 
-            this.particleCtx.globalAlpha = p.opacity;
+            this.particleCtx.globalAlpha = p.opacity * 0.6;
             this.particleCtx.beginPath();
             this.particleCtx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
             this.particleCtx.fill();
@@ -145,7 +145,7 @@ class WeaponsModule {
                 const owned = res.id === 'RUC' ? window.skillManager.credits : window.skillManager.getOwned(res.id);
                 const valEl = el.querySelector('.res-val');
                 if (valEl) {
-                    valEl.style.color = owned >= res.cost ? '#00ffaa' : '#ff4444';
+                    valEl.style.color = owned >= res.cost ? '#ff9900' : '#ff4444';
                 }
             }
         });
@@ -250,7 +250,7 @@ class WeaponsModule {
             setTimeout(() => {
                 if (!this.isConstructing) {
                     percentageTxt.innerText = "READY TO FABRICATE";
-                    percentageTxt.style.color = "#00ffaa";
+                    percentageTxt.style.color = "#ff9900";
                 }
             }, 3000);
             return;

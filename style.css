@@ -2331,19 +2331,20 @@ html {
 .weapons-4k-window {
     width: 1000px !important;
     height: 720px !important;
-    background: rgba(5, 10, 15, 0.8) !important;
-    backdrop-filter: blur(20px) saturate(180%) !important;
-    border: 1px solid rgba(80, 150, 200, 0.3) !important;
-    border-top: 3px solid #00ccff !important;
-    box-shadow: 0 0 50px rgba(0, 0, 0, 0.8), inset 0 0 20px rgba(0, 204, 255, 0.1) !important;
-    overflow: hidden;
+    background: rgba(0, 0, 0, 0.1) !important;
+    backdrop-filter: blur(1px) !important;
+    border: 1px solid rgba(255, 153, 0, 0.2) !important;
+    border-top: 2px solid #ff9900 !important;
+    animation: neon-pulse 2s ease-in-out infinite !important;
+    box-shadow: none !important;
     left: calc(50% - 500px) !important;
     top: calc(50% - 360px) !important;
+    overflow: hidden;
 }
 
 .weapons-4k-window .window-header {
-    background: linear-gradient(90deg, rgba(0, 204, 255, 0.1), transparent);
-    border-bottom: 1px solid rgba(0, 204, 255, 0.2);
+    background: linear-gradient(90deg, rgba(255, 153, 0, 0.1), transparent);
+    border-bottom: 1px solid rgba(255, 153, 0, 0.2);
     height: 35px;
 }
 
@@ -2351,8 +2352,8 @@ html {
     display: flex;
     align-items: center;
     gap: 10px;
-    color: #00ccff;
-    text-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
+    color: #ff9900;
+    text-shadow: 0 0 10px rgba(255, 153, 0, 0.5);
 }
 
 .header-icon {
@@ -2411,8 +2412,8 @@ html {
 }
 
 .weapons-panel {
-    background: rgba(0, 20, 30, 0.4);
-    border: 1px solid rgba(80, 150, 200, 0.15);
+    background: rgba(255, 153, 0, 0.03);
+    border: 1px solid rgba(255, 153, 0, 0.15);
     border-radius: 4px;
     display: flex;
     flex-direction: column;
@@ -2422,8 +2423,8 @@ html {
 }
 
 .weapons-panel:hover {
-    background: rgba(0, 30, 45, 0.5);
-    border-color: rgba(0, 204, 255, 0.3);
+    background: rgba(45, 30, 0, 0.4);
+    border-color: rgba(255, 153, 0, 0.3);
 }
 
 .panel-header {
@@ -2431,10 +2432,10 @@ html {
 }
 
 .panel-label {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Courier New', Courier, monospace;
     font-size: 10px;
     font-weight: 800;
-    color: #5096c8;
+    color: #ff9900;
     letter-spacing: 2px;
     text-transform: uppercase;
     display: block;
@@ -2443,7 +2444,7 @@ html {
 
 .panel-line {
     height: 2px;
-    background: linear-gradient(90deg, #5096c8, transparent);
+    background: linear-gradient(90deg, #ff9900, transparent);
     width: 100%;
     opacity: 0.3;
 }
@@ -2504,8 +2505,8 @@ html {
 .scifi-spinner {
     width: 30px;
     height: 30px;
-    border: 2px solid rgba(80, 150, 200, 0.1);
-    border-top-color: #5096c8;
+    border: 2px solid rgba(255, 153, 0, 0.1);
+    border-top-color: #ff9900;
     border-radius: 50%;
     animation: rotate-slow 2s linear infinite;
 }
@@ -2523,7 +2524,7 @@ html {
     position: absolute;
     width: 20px;
     height: 20px;
-    border: 2px solid rgba(0, 204, 255, 0.4);
+    border: 2px solid rgba(255, 153, 0, 0.4);
     z-index: 5;
 }
 
@@ -2558,8 +2559,8 @@ html {
 .fab-display-box {
     width: 240px;
     height: 310px;
-    background: radial-gradient(circle, rgba(0, 204, 255, 0.05) 0%, transparent 70%);
-    border: 1px solid rgba(0, 204, 255, 0.1);
+    background: radial-gradient(circle, rgba(255, 153, 0, 0.05) 0%, transparent 70%);
+    border: 1px solid rgba(255, 153, 0, 0.1);
     position: relative;
     display: flex;
     align-items: center;
@@ -2570,13 +2571,13 @@ html {
 
 .missile-render-4k {
     height: 85%;
-    filter: drop-shadow(0 0 20px rgba(0, 204, 255, 0.3));
+    filter: drop-shadow(0 0 20px rgba(255, 153, 0, 0.3));
     transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .fab-display-box:hover .missile-render-4k {
     transform: scale(1.05) translateY(-5px);
-    filter: drop-shadow(0 0 30px rgba(0, 204, 255, 0.5));
+    filter: drop-shadow(0 0 30px rgba(255, 153, 0, 0.5));
 }
 
 .laser-print-line {
@@ -2585,8 +2586,8 @@ html {
     left: -10%;
     width: 120%;
     height: 2px;
-    background: #00ccff;
-    box-shadow: 0 0 15px #00ccff;
+    background: #ff9900;
+    box-shadow: 0 0 15px #ff9900;
     z-index: 10;
     opacity: 0;
     pointer-events: none;
@@ -2618,7 +2619,7 @@ html {
     left: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 204, 255, 0.1);
+    background: rgba(255, 153, 0, 0.1);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2647,7 +2648,7 @@ html {
 }
 
 .spec-name {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Courier New', Courier, monospace;
     font-size: 18px;
     color: #fff;
     margin: 0 0 5px 0;
@@ -2674,8 +2675,8 @@ html {
     align-items: center;
     gap: 4px;
     padding: 8px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.05);
+    background: rgba(255, 153, 0, 0.05);
+    border: 1px solid rgba(255, 153, 0, 0.1);
     min-width: 60px;
 }
 
@@ -2700,9 +2701,9 @@ html {
 .fab-status-bar {
     width: 100%;
     padding: 10px;
-    background: rgba(0, 255, 170, 0.05);
-    border: 1px solid rgba(0, 255, 170, 0.2);
-    color: #00ffaa;
+    background: rgba(255, 153, 0, 0.05);
+    border: 1px solid rgba(255, 153, 0, 0.2);
+    color: #ff9900;
     font-size: 10px;
     font-weight: 800;
     letter-spacing: 2px;
@@ -2727,7 +2728,7 @@ html {
     width: 240px;
     height: 170px;
     background: rgba(0, 0, 0, 0.4);
-    border: 1px solid rgba(80, 150, 200, 0.2);
+    border: 1px solid rgba(255, 153, 0, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -2748,7 +2749,7 @@ html {
     position: absolute;
     width: 100%;
     height: 100%;
-    background: linear-gradient(to bottom, transparent, rgba(0, 204, 255, 0.1), transparent);
+    background: linear-gradient(to bottom, transparent, rgba(255, 153, 0, 0.1), transparent);
     animation: scan-vertical 3s linear infinite;
     display: none;
 }
@@ -2770,12 +2771,12 @@ html {
 .research-readout {
     background: rgba(0, 0, 0, 0.3);
     padding: 15px;
-    border: 1px solid rgba(80, 150, 200, 0.1);
+    border: 1px solid rgba(255, 153, 0, 0.1);
 }
 
 .readout-header {
     font-size: 9px;
-    color: #5096c8;
+    color: #ff9900;
     margin-bottom: 10px;
     letter-spacing: 1px;
 }
@@ -2798,8 +2799,8 @@ html {
 .progress-fill {
     height: 100%;
     width: 0%;
-    background: #00ccff;
-    box-shadow: 0 0 10px #00ccff;
+    background: #ff9900;
+    box-shadow: 0 0 10px #ff9900;
     transition: width 0.3s;
 }
 
@@ -2817,7 +2818,7 @@ html {
 }
 
 .note-bullet {
-    color: #5096c8;
+    color: #ff9900;
     font-weight: bold;
 }
 
@@ -2843,8 +2844,8 @@ html {
 }
 
 .weapons-storage-item-4k:hover {
-    background: rgba(0, 204, 255, 0.1);
-    border-color: #00ccff;
+    background: rgba(255, 153, 0, 0.1);
+    border-color: #ff9900;
     transform: translateY(-2px);
 }
 
@@ -2857,7 +2858,7 @@ html {
     position: absolute;
     top: -5px;
     right: -5px;
-    background: #00ccff;
+    background: #ff9900;
     color: #000;
     font-size: 8px;
     font-weight: bold;
