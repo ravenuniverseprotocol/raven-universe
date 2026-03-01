@@ -1298,7 +1298,7 @@ html {
 .map-content {
     padding: 0 !important;
     overflow: hidden !important;
-    background: radial-gradient(circle at center, #0a0a0f 0%, #000 100%);
+    background: transparent !important;
     position: relative;
 }
 
@@ -2406,7 +2406,7 @@ html {
 }
 
 .weapons-panel {
-    background: transparent;
+    background: transparent !important;
     border: 1px solid rgba(255, 153, 0, 0.1);
     border-radius: 4px;
     display: flex;
