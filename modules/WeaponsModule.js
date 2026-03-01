@@ -2,8 +2,8 @@ const MISSILE_DATABASE = [
     {
         id: 'mk1',
         name: 'MK1 PULSE MISSILE',
-        type: 'KINETIC',
-        desc: 'Legacy pulse ordnance with localized impact.',
+        type: 'ROLE: ANTI-FIGHTER / LIGHT DEFENSE',
+        desc: 'Standard kinetic ordnance. Optimized for intercepting light fighters and automated drones at short range. Low cost, high rate of fire.',
         image: 'assets/media/mk1%20-%20pulse%20missile.png',
         researchTime: 10000,
         fabTime: 8000,
@@ -14,10 +14,10 @@ const MISSILE_DATABASE = [
     {
         id: 'mk2_vesta',
         name: 'MK2 VESTA',
-        type: 'KINETIC / INTERCEPTOR',
-        desc: 'High-speed interceptor optimized for fast targets.',
+        type: 'ROLE: PRECISION INTERCEPTOR',
+        desc: 'Advanced propulsion interceptor. Ultra-high velocity warhead designed to track and neutralize high-speed reconnaissance vessels and agile targets.',
         image: 'assets/media/mk2_vesta.png',
-        researchTime: 30000, // 30s
+        researchTime: 30000,
         fabTime: 15000,
         damage: 90,
         speed: 12.0,
@@ -26,10 +26,10 @@ const MISSILE_DATABASE = [
     {
         id: 'mk3_typhon',
         name: 'MK3 TYPHON',
-        type: 'THERMAL',
-        desc: 'Incendiary warheads designed to melt armor plating.',
+        type: 'ROLE: ANTI-FLEET / AREA DAMAGE',
+        desc: 'Cluster-burn warheads. Upon impact, releases a thermal cloud of fragmenting sub-munitions. Highly effective against dense enemy formations and fleet groups.',
         image: 'assets/media/mk3_typhon.png',
-        researchTime: 60000, // 1m
+        researchTime: 60000,
         fabTime: 30000,
         damage: 250,
         speed: 8.0,
@@ -38,10 +38,10 @@ const MISSILE_DATABASE = [
     {
         id: 'mk4_hyperion',
         name: 'MK4 HYPERION',
-        type: 'PLASMA / HEAVY',
-        desc: 'Massive plasma discharge capable of hull collapse.',
+        type: 'ROLE: ANTI-STATION / HEAVY BREACH',
+        desc: 'Plasma-compression payload. Devastating kinetic and thermal energy delivery. Designed for breaching heavy plating of Cruisers and stationary Outposts.',
         image: 'assets/media/mk4_hyperion.png',
-        researchTime: 300000, // 5m
+        researchTime: 300000,
         fabTime: 60000,
         damage: 650,
         speed: 5.0,
@@ -50,10 +50,10 @@ const MISSILE_DATABASE = [
     {
         id: 'mk5_zeus',
         name: 'MK5 ZEUS',
-        type: 'ELECTROMAGNETIC',
-        desc: 'EMP burst payload to disable high-end neural links.',
+        type: 'ROLE: STRATEGIC EMP / DISABLE',
+        desc: 'High-yield electromagnetic pulse. Temporarily overloads neural links and energy grids, disabling enemy weapon systems and engines. Optimal for high-value targets.',
         image: 'assets/media/mk5_zeus.png',
-        researchTime: 600000, // 10m
+        researchTime: 600000,
         fabTime: 120000,
         damage: 1200,
         speed: 7.0,
@@ -62,10 +62,10 @@ const MISSILE_DATABASE = [
     {
         id: 'mkx_voyager',
         name: 'MK-X GALACTIC VOYAGER',
-        type: 'MATTER / INTER-GALACTIC',
-        desc: 'Strategic inter-system payload with ultra-range warp capability.',
+        type: 'ROLE: INTER-GALACTIC ANNIHILATION',
+        desc: 'Inter-system strategic payload. Utilizing warp-integrated warheads to strike systems at ultra-long range. The ultimate weapon for projectable dominance.',
         image: 'assets/media/mkx_galactic_voyager.png',
-        researchTime: 900000, // 15m
+        researchTime: 900000,
         fabTime: 600000,
         damage: 4500,
         speed: 25.0,
