@@ -100,6 +100,21 @@ class WeaponsModule {
         this.init();
     }
 
+    loadResearchState() {
+        const saved = localStorage.getItem('raven_weapons_research');
+        if (saved) return JSON.parse(saved);
+        // Default: Only MK1 is researched (or needs research but starting state)
+        return {
+            'mk1': { completed: false, progress: 0 }
+        };
+    }
+
+    loadStorage() {
+        const saved = localStorage.getItem('raven_weapons_storage');
+        if (saved) return JSON.parse(saved);
+        return { 'mk1': 0 };
+    }
+
     loadAutoFireState() {
         const saved = localStorage.getItem('raven_artillery_auto');
         if (saved) return JSON.parse(saved);
