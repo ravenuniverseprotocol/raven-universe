@@ -476,7 +476,8 @@
     <script>
         window.DEBUG_RESET = true;
         if (window.DEBUG_RESET) {
-            console.warn("[RAVEN] DEBUG RESET ACTIVE - UI FORCED RESET WITHOUT PURGING CONFIG");
+            console.warn("[RAVEN] DEBUG RESET ACTIVE - PURGING ALL SESSION DATA ON REFRESH");
+            localStorage.clear();
         }
     </script>
 
