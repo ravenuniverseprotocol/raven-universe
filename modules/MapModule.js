@@ -236,10 +236,8 @@ class GalaxyMap {
     }
 
     viewSystem(system) {
-        // Gating: Only work if Radar Systems are at Level 1+
+        // GATING: Radar check
         if (!window.skillManager || !window.skillManager.checkRadarStatus()) {
-            console.warn("Radar Systems insufficient for Tactical Scan.");
-            // Trigger a visual notification (optional)
             if (typeof showGameNotification === 'function') {
                 showGameNotification("RADAR SYSTEMS OFFLINE - TRAIN RADAR SKILLS TO LVL 1");
             }
@@ -249,8 +247,25 @@ class GalaxyMap {
         this.currentSystemId = system.id;
         this.updateHUD(system.name);
 
-        // Close map window
+        // --- MK-X GALACTIC STRIKE INTEGRATION ---
         const mapWin = document.getElementById('map-window');
+        // Let's create a strategic strike interface if we have MK-X stock
+        const weaponStock = window.weaponsModule ? window.weaponsModule.storage : JSON.parse(localStorage.getItem('raven_weapons_storage') || "{}");
+        const mkxStock = weaponStock['mkx_voyager'] || 0;
+
+        // Range calculation (Coordinates are relative to center 10.05.29)
+        const dist = Math.sqrt(Math.pow(system.x, 2) + Math.pow(system.y, 2));
+        const maxStrikeRange = 3500;
+
+        if (dist > 0 && dist < maxStrikeRange && mkxStock > 0) {
+            if (confirm(`INITIATE MK-X GALACTIC STRIKE AGAINST SYSTEM ${system.name}?\n\nRANGE: ${dist.toFixed(0)}ly\nYIELD: 4500GJ\nSTOCK: ${mkxStock}`)) {
+                this.executeGalacticStrike(system);
+                return; // Strike replaces viewing for that click if confirmed
+            }
+        }
+        // --- END MK-X INTEGRATION ---
+
+        // Close map window
         if (mapWin) mapWin.style.display = 'none';
 
         // Open TACTICAL SYSTEM VIEW window
@@ -262,12 +277,29 @@ class GalaxyMap {
             }
         }
 
-        // Update Tactical Radar to show this system's data
         if (window.tacticalRadar) {
             window.tacticalRadar.generateSystemData(system.id);
         }
+    }
 
-        console.log(`Viewing system: ${system.name}`);
+    executeGalacticStrike(system) {
+        if (window.weaponsModule) {
+            window.weaponsModule.storage['mkx_voyager']--;
+            window.weaponsModule.saveState();
+            window.weaponsModule.updateStorageUI();
+        } else {
+            const stock = JSON.parse(localStorage.getItem('raven_weapons_storage') || "{}");
+            stock['mkx_voyager']--;
+            localStorage.setItem('raven_weapons_storage', JSON.stringify(stock));
+        }
+
+        if (typeof showGameNotification === 'function') {
+            showGameNotification(`MK-X LAUNCHED. WARP TRANSIT INITIATED TO SYSTEM ${system.name}.`);
+        }
+
+        // Visual flare on map
+        this.render();
+        console.log(`[STRIKE] MK-X Impacting ${system.name}`);
     }
 
     updateHUD(systemName) {

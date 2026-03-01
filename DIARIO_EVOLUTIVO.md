@@ -316,3 +316,13 @@ Para reativar o ecossistema Raven Universe, segue estes passos literais:
 * [x] **Módulo de Armamento & UI**: Implementação de consola de artilharia e gating de skills.
 * [ ] **Multiplayer Real-time**: Visualização de outros comandantes humanos no mesmo sistema via WebSockets.
 * [ ] **Sistemas de Combate PvE**: Incursões de piratas e drones defensivos.
+
+### [2026-03-01] - Strategic Armament Expansion (Modular Weapons V2)
+- **Asset Integration:** Renamed tactical assets mk2_vesta.png to mkx_voyager.png for a 6-tier weapon hierarchy.
+- **Modular Architecture:** Refactored WeaponsModule.js to a data-driven model (MISSILE_DATABASE).
+- **UI Upgrade:** Implemented carousel navigation in the Weapons Window with dynamic stat readouts (Damage, Speed, Fab Time).
+- **Tactical Realism:** Updated MissileSimulation.js to consume specific stock and apply tiered damage/speed stats during automated defense.
+- **Inter-Galactic Strike:** Integrated MapModule.js with MK-X Voyager logic, allowing long-range strategic strikes (range < 3500ly).
+- **Economic Balance:** Scaled research and fabrication costs to match missile tiers (MK1 to MK-X).
+
+---

@@ -1,21 +1,93 @@
+const MISSILE_DATABASE = [
+    {
+        id: 'mk1',
+        name: 'MK1 PULSE MISSILE',
+        type: 'KINETIC',
+        desc: 'Legacy pulse ordnance with localized impact.',
+        image: 'assets/media/mk1%20-%20pulse%20missile.png',
+        researchTime: 10000,
+        fabTime: 8000,
+        damage: 60,
+        speed: 6.0,
+        costs: { IRON: 250, TITANIUM: 100, RUC: 10000 }
+    },
+    {
+        id: 'mk2_vesta',
+        name: 'MK2 VESTA',
+        type: 'KINETIC / INTERCEPTOR',
+        desc: 'High-speed interceptor optimized for fast targets.',
+        image: 'assets/media/mk2_vesta.png',
+        researchTime: 30000, // 30s
+        fabTime: 15000,
+        damage: 90,
+        speed: 12.0,
+        costs: { IRON: 800, TITANIUM: 350, RUC: 45000 }
+    },
+    {
+        id: 'mk3_typhon',
+        name: 'MK3 TYPHON',
+        type: 'THERMAL',
+        desc: 'Incendiary warheads designed to melt armor plating.',
+        image: 'assets/media/mk3_typhon.png',
+        researchTime: 60000, // 1m
+        fabTime: 30000,
+        damage: 250,
+        speed: 8.0,
+        costs: { IRON: 2500, TITANIUM: 1200, RUC: 120000 }
+    },
+    {
+        id: 'mk4_hyperion',
+        name: 'MK4 HYPERION',
+        type: 'PLASMA / HEAVY',
+        desc: 'Massive plasma discharge capable of hull collapse.',
+        image: 'assets/media/mk4_hyperion.png',
+        researchTime: 300000, // 5m
+        fabTime: 60000,
+        damage: 650,
+        speed: 5.0,
+        costs: { IRON: 8000, TITANIUM: 4500, RUC: 500000 }
+    },
+    {
+        id: 'mk5_zeus',
+        name: 'MK5 ZEUS',
+        type: 'ELECTROMAGNETIC',
+        desc: 'EMP burst payload to disable high-end neural links.',
+        image: 'assets/media/mk5_zeus.png',
+        researchTime: 600000, // 10m
+        fabTime: 120000,
+        damage: 1200,
+        speed: 7.0,
+        costs: { IRON: 25000, TITANIUM: 12000, RUC: 2500000 }
+    },
+    {
+        id: 'mkx_voyager',
+        name: 'MK-X GALACTIC VOYAGER',
+        type: 'MATTER / INTER-GALACTIC',
+        desc: 'Strategic inter-system payload with ultra-range warp capability.',
+        image: 'assets/media/mkx_galactic_voyager.png',
+        researchTime: 3600000, // 1h
+        fabTime: 600000,
+        damage: 4500,
+        speed: 25.0,
+        costs: { IRON: 100000, TITANIUM: 65000, RUC: 15000000 }
+    }
+];
+
 class WeaponsModule {
     constructor() {
         this.window = document.getElementById('weapons-window');
         this.btn = document.getElementById('weapons-menu-btn');
         this.closeBtn = this.window ? this.window.querySelector('.close-btn') : null;
 
-        this.ammo = 24;
-        this.maxAmmo = 24;
-        this.isReloading = false;
+        // Current Selection
+        this.selectedIndex = 0;
 
-        // Research State
-        this.isResearching = false;
-        this.researchProgress = 0;
-        this.researchComplete = false;
+        // Persistent State
+        this.researchState = this.loadResearchState();
+        this.storage = this.loadStorage();
 
-        // Construction State
-        this.isConstructing = false;
-        this.storageMK1 = 0;
+        // Operational States
+        this.isWorking = false; // Prevents multiple ops
 
         // Particle System
         this.particles = [];
@@ -24,6 +96,26 @@ class WeaponsModule {
         this.particleAnimationId = null;
 
         this.init();
+    }
+
+    loadResearchState() {
+        const saved = localStorage.getItem('raven_weapons_research');
+        if (saved) return JSON.parse(saved);
+        // Default: Only MK1 is researched (or needs research but starting state)
+        return {
+            'mk1': { completed: false, progress: 0 }
+        };
+    }
+
+    loadStorage() {
+        const saved = localStorage.getItem('raven_weapons_storage');
+        if (saved) return JSON.parse(saved);
+        return { 'mk1': 0 };
+    }
+
+    saveState() {
+        localStorage.setItem('raven_weapons_research', JSON.stringify(this.researchState));
+        localStorage.setItem('raven_weapons_storage', JSON.stringify(this.storage));
     }
 
     init() {
@@ -43,6 +135,9 @@ class WeaponsModule {
             }
         }
 
+        // Add Navigation Buttons to UI via JS for minimal HTML changes
+        this.injectNavButtons();
+
         // Initialize Particle Canvas
         this.particleCanvas = document.getElementById('weapons-particle-canvas');
         if (this.particleCanvas) {
@@ -51,13 +146,43 @@ class WeaponsModule {
             window.addEventListener('resize', () => this.resizeParticleCanvas());
         }
 
-        // Auto-update UI if open (legacy elements may be gone, keep running just in case)
+        // Auto-update UI loop (throttled)
         setInterval(() => {
             if (this.window && this.window.style.display === 'flex') {
                 this.updateUI();
                 this.updateResourceCosts();
             }
         }, 500);
+    }
+
+    injectNavButtons() {
+        // Injecting navigation arrows into the fabrication area
+        const fabWrapper = document.getElementById('weapons-construction-wrapper');
+        if (fabWrapper && !document.getElementById('weapons-nav-left')) {
+            const leftBtn = document.createElement('button');
+            leftBtn.id = 'weapons-nav-left';
+            leftBtn.className = 'weapons-nav-btn left';
+            leftBtn.innerHTML = '❮';
+            leftBtn.onclick = (e) => { e.stopPropagation(); this.navigate(-1); };
+
+            const rightBtn = document.createElement('button');
+            rightBtn.id = 'weapons-nav-right';
+            rightBtn.className = 'weapons-nav-btn right';
+            rightBtn.innerHTML = '❯';
+            rightBtn.onclick = (e) => { e.stopPropagation(); this.navigate(1); };
+
+            fabWrapper.appendChild(leftBtn);
+            fabWrapper.appendChild(rightBtn);
+        }
+    }
+
+    navigate(dir) {
+        if (this.isWorking) return;
+        this.selectedIndex += dir;
+        if (this.selectedIndex < 0) this.selectedIndex = MISSILE_DATABASE.length - 1;
+        if (this.selectedIndex >= MISSILE_DATABASE.length) this.selectedIndex = 0;
+
+        this.updateUI();
     }
 
     resizeParticleCanvas() {
@@ -73,8 +198,8 @@ class WeaponsModule {
         const count = 50;
         for (let i = 0; i < count; i++) {
             this.particles.push({
-                x: Math.random() * this.particleCanvas.width,
-                y: Math.random() * this.particleCanvas.height,
+                x: Math.random() * (this.particleCanvas ? this.particleCanvas.width : 500),
+                y: Math.random() * (this.particleCanvas ? this.particleCanvas.height : 500),
                 size: Math.random() * 2 + 0.5,
                 speedX: (Math.random() - 0.5) * 0.5,
                 speedY: (Math.random() - 0.5) * 0.5,
@@ -114,7 +239,6 @@ class WeaponsModule {
         this.window.style.display = isVisible ? 'flex' : 'none';
 
         if (isVisible) {
-            // Notify if locked, but open anyway
             if (!window.skillManager || !window.skillManager.checkMissileStatus()) {
                 if (typeof showGameNotification === 'function') {
                     showGameNotification("SYSTEMS LOCKED: ORDNANCE IGNITION REQUIRED");
@@ -132,203 +256,251 @@ class WeaponsModule {
 
     updateResourceCosts() {
         if (!window.skillManager) return;
+        const weapon = MISSILE_DATABASE[this.selectedIndex];
 
-        const resources = [
-            { id: 'IRON', cost: 250 },
-            { id: 'TITANIUM', cost: 100 },
-            { id: 'RUC', cost: 10000 }
-        ];
-
-        resources.forEach(res => {
-            const el = document.querySelector(`.res-item[data-res="${res.id}"]`);
+        Object.entries(weapon.costs).forEach(([res, cost]) => {
+            const el = document.querySelector(`.res-item[data-res="${res}"]`);
             if (el) {
-                const owned = res.id === 'RUC' ? window.skillManager.credits : window.skillManager.getOwned(res.id);
+                const owned = res === 'RUC' ? window.skillManager.credits : window.skillManager.getOwned(res);
                 const valEl = el.querySelector('.res-val');
                 if (valEl) {
-                    valEl.style.color = owned >= res.cost ? '#ff9900' : '#ff4444';
+                    valEl.innerText = cost.toLocaleString();
+                    valEl.style.color = owned >= cost ? '#ff9900' : '#ff4444';
                 }
             }
         });
     }
 
     updateUI() {
+        const weapon = MISSILE_DATABASE[this.selectedIndex];
+        const state = this.researchState[weapon.id] || { completed: false, progress: 0 };
+
+        // 1. Text Info
+        const nameEl = document.querySelector('.spec-name');
+        const descEl = document.querySelector('.spec-desc');
+        const typeEl = document.querySelector('.weapons-status'); // Recycled element
+        const labHeader = document.querySelector('.readout-header');
+
+        if (nameEl) nameEl.innerText = weapon.name;
+        if (descEl) descEl.innerText = weapon.desc;
+        if (typeEl) typeEl.innerText = weapon.type;
+        if (labHeader) labHeader.innerText = `PROJECT: ${weapon.id.toUpperCase()}_RESEARCH_V1`;
+
+        // 2. Images
+        const fabImg = document.getElementById('weapons-construction-img');
+        const resImg = document.querySelector('.research-display-box img');
+
+        if (fabImg) fabImg.src = weapon.image;
+        if (resImg) resImg.src = weapon.image;
+
+        // 3. Stats (Injecting or updating)
+        this.updateStatsReadout(weapon);
+
+        // 4. Research Progress UI
         const researchProgressFill = document.getElementById('research-progress-fill');
         const researchPct = document.getElementById('weapons-research-percentage');
+        const resWrapper = document.getElementById('weapons-research-wrapper');
+        const resOverlay = document.getElementById('weapons-research-box');
 
-        if (researchProgressFill) {
-            researchProgressFill.style.width = `${Math.floor(this.researchProgress)}%`;
-        }
-        if (researchPct) {
-            researchPct.innerText = `${Math.floor(this.researchProgress)}%`;
+        if (researchProgressFill) researchProgressFill.style.width = `${Math.floor(state.progress)}%`;
+        if (researchPct) researchPct.innerText = `${Math.floor(state.progress)}%`;
+
+        if (resWrapper) {
+            if (state.completed) {
+                resWrapper.classList.add('research-complete');
+                if (resOverlay) resOverlay.querySelector('.overlay-text').innerText = "CALIBRATION SECURE";
+            } else {
+                resWrapper.classList.remove('research-complete');
+                if (resOverlay) resOverlay.querySelector('.overlay-text').innerText = this.isWorking ? "PROCESSING..." : "START RESEARCH";
+            }
         }
 
-        if (this.researchComplete) {
-            const resWrapper = document.getElementById('weapons-research-wrapper');
-            if (resWrapper) resWrapper.classList.add('research-complete');
+        // 5. Fabrication UI
+        const fabWrapper = document.getElementById('weapons-construction-wrapper');
+        const fabStatus = document.getElementById('weapons-construction-percentage');
+
+        if (fabWrapper) {
+            if (state.completed) {
+                fabWrapper.style.opacity = '1';
+                fabWrapper.style.pointerEvents = 'auto';
+                if (fabStatus && !this.isWorking) fabStatus.innerText = "READY TO FABRICATE";
+            } else {
+                fabWrapper.style.opacity = '0.3';
+                fabWrapper.style.pointerEvents = 'none';
+                if (fabStatus) fabStatus.innerText = "RESEARCH REQUIRED";
+            }
+        }
+    }
+
+    updateStatsReadout(weapon) {
+        // Find or create stat readout in the lab notes or near descriptions
+        let statsContainer = document.getElementById('weapons-stats-readout');
+        if (!statsContainer) {
+            const labNotes = document.querySelector('.lab-notes');
+            if (labNotes) {
+                statsContainer = document.createElement('div');
+                statsContainer.id = 'weapons-stats-readout';
+                statsContainer.style.cssText = 'margin-top:10px; border-top:1px solid rgba(255,153,0,0.1); padding-top:10px; font-family:monospace; font-size:10px; color:#5096c8;';
+                labNotes.parentElement.appendChild(statsContainer);
+            }
+        }
+
+        if (statsContainer) {
+            statsContainer.innerHTML = `
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span>YIELD_CAPACITY:</span> <span style="color:#ff9900">${weapon.damage}GJ</span>
+                </div>
+                <div style="display:flex; justify-content:space-between; margin-bottom:5px;">
+                    <span>PROPULSION_VELOCITY:</span> <span style="color:#ff9900">${weapon.speed.toFixed(1)}kps</span>
+                </div>
+                <div style="display:flex; justify-content:space-between;">
+                    <span>FAB_CYCLE_TIME:</span> <span style="color:#ff9900">${(weapon.fabTime / 1000).toFixed(0)}s</span>
+                </div>
+            `;
         }
     }
 
     startResearch() {
-        if (this.isResearching || this.researchComplete) return;
+        const weapon = MISSILE_DATABASE[this.selectedIndex];
+        const state = this.researchState[weapon.id] || { completed: false, progress: 0 };
 
+        if (this.isWorking || state.completed) return;
+
+        this.isWorking = true;
         const researchBox = document.getElementById('weapons-research-box');
         const percentageTxt = document.getElementById('weapons-research-percentage');
-        const constructionBox = document.getElementById('weapons-construction-box');
-        const constructionImg = document.getElementById('weapons-construction-img');
         const progressFill = document.getElementById('research-progress-fill');
 
-        if (!researchBox || !percentageTxt || !constructionBox) return;
-
-        this.isResearching = true;
-        this.researchProgress = 0;
-        percentageTxt.innerText = "0%";
-
         researchBox.parentElement.classList.add('research-active');
-
         if (typeof showGameNotification === 'function') {
-            showGameNotification("INITIATING MK1 PULSE MISSILE RESEARCH...");
+            showGameNotification(`INITIATING ${weapon.name} RESEARCH...`);
         }
 
-        const totalTime = 10000; // 10 seconds
-        const interval = 50;
+        const totalTime = weapon.researchTime;
+        const interval = 100;
         const progressPerTick = (interval / totalTime) * 100;
 
         const timer = setInterval(() => {
-            this.researchProgress += progressPerTick;
-            let displayPct = Math.floor(this.researchProgress);
+            state.progress += progressPerTick;
+            let displayPct = Math.floor(state.progress);
 
-            if (displayPct > 100) displayPct = 100;
-            percentageTxt.innerText = `${displayPct}%`;
-            if (progressFill) progressFill.style.width = `${displayPct}%`;
-
-            if (this.researchProgress >= 100) {
+            if (displayPct >= 100) {
+                displayPct = 100;
                 clearInterval(timer);
-                this.isResearching = false;
-                this.researchComplete = true;
+                this.isWorking = false;
+                state.completed = true;
+                state.progress = 100;
 
-                percentageTxt.innerText = "100%";
+                this.researchState[weapon.id] = state;
+                this.saveState();
+
                 researchBox.parentElement.classList.remove('research-active');
-                researchBox.parentElement.classList.add('research-complete');
-
-                if (constructionImg) constructionImg.style.display = 'block';
-
-                const constStatus = document.getElementById('weapons-construction-percentage');
-                if (constStatus) constStatus.innerText = "READY TO FABRICATE";
-
                 if (typeof showGameNotification === 'function') {
-                    showGameNotification("RESEARCH SECURE. SCHEMATICS UPLOADED TO FABRICATION QUEUE.");
+                    showGameNotification(`SCHEMATICS SECURED: ${weapon.name}`);
                 }
+                this.updateUI();
             }
+
+            if (percentageTxt) percentageTxt.innerText = `${displayPct}%`;
+            if (progressFill) progressFill.style.width = `${displayPct}%`;
         }, interval);
     }
 
     startConstruction() {
-        if (!this.researchComplete || this.isConstructing) return;
+        const weapon = MISSILE_DATABASE[this.selectedIndex];
+        const state = this.researchState[weapon.id] || { completed: false };
 
-        const percentageTxt = document.getElementById('weapons-construction-percentage');
-        const fabWrapper = document.getElementById('weapons-construction-wrapper');
+        if (!state.completed || this.isWorking) return;
 
-        if (!fabWrapper || !percentageTxt) return;
-
-        // --- RESOURCE CHECK & DEDUCTION ---
+        // Resource Check
         if (!window.skillManager) return;
+        let hasAll = true;
+        Object.entries(weapon.costs).forEach(([res, cost]) => {
+            const owned = res === 'RUC' ? window.skillManager.credits : window.skillManager.getOwned(res);
+            if (owned < cost) hasAll = false;
+        });
 
-        const requiredIron = 250;
-        const requiredTitanium = 100;
-        const requiredRUC = 10000;
-
-        const hasIron = window.skillManager.getOwned("IRON") >= requiredIron;
-        const hasTitanium = window.skillManager.getOwned("TITANIUM") >= requiredTitanium;
-        const hasRUC = window.skillManager.credits >= requiredRUC;
-
-        if (!hasIron || !hasTitanium || !hasRUC) {
-            if (typeof showGameNotification === 'function') {
-                showGameNotification("INSUFFICIENT RESOURCES FOR FABRICATION");
-            }
-            percentageTxt.innerText = "INSUFFICIENT RESOURCES";
-            percentageTxt.style.color = "#ff4444";
-            setTimeout(() => {
-                if (!this.isConstructing) {
-                    percentageTxt.innerText = "READY TO FABRICATE";
-                    percentageTxt.style.color = "#ff9900";
-                }
-            }, 3000);
+        if (!hasAll) {
+            if (typeof showGameNotification === 'function') showGameNotification("INSUFFICIENT RESOURCES");
             return;
         }
 
-        // Deduct resources
-        window.skillManager.removeFromInventory("IRON", requiredIron);
-        window.skillManager.removeFromInventory("TITANIUM", requiredTitanium);
-        window.skillManager.spendCredits(requiredRUC);
+        // Deduct
+        Object.entries(weapon.costs).forEach(([res, cost]) => {
+            if (res === 'RUC') window.skillManager.spendCredits(cost);
+            else window.skillManager.removeFromInventory(res, cost);
+        });
 
-        // --- START CONSTRUCTION ---
-        this.isConstructing = true;
+        this.isWorking = true;
+        const percentageTxt = document.getElementById('weapons-construction-percentage');
+        const fabWrapper = document.getElementById('weapons-construction-wrapper');
+
         let progress = 0;
         fabWrapper.classList.add('construction-active');
 
         if (typeof showGameNotification === 'function') {
-            showGameNotification("FABRICATION STARTED: MK1 PULSE MISSILE");
+            showGameNotification(`FABRICATION INITIATED: ${weapon.name}`);
         }
 
-        const totalTime = 8000; // 8 seconds to build
-        const interval = 50;
+        const totalTime = weapon.fabTime;
+        const interval = 100;
         const progressPerTick = (interval / totalTime) * 100;
 
         const timer = setInterval(() => {
             progress += progressPerTick;
             let displayPct = Math.floor(progress);
 
-            if (displayPct > 100) displayPct = 100;
-            percentageTxt.innerText = `FABRICATING: ${displayPct}%`;
-
-            if (progress >= 100) {
+            if (displayPct >= 100) {
+                displayPct = 100;
                 clearInterval(timer);
-                this.isConstructing = false;
-                percentageTxt.innerText = "READY TO FABRICATE";
+                this.isWorking = false;
                 fabWrapper.classList.remove('construction-active');
 
                 // Add to Storage
-                this.storageMK1++;
+                this.storage[weapon.id] = (this.storage[weapon.id] || 0) + 1;
+                this.saveState();
                 this.updateStorageUI();
 
                 if (typeof showGameNotification === 'function') {
-                    showGameNotification("FABRICATION COMPLETE. SENT TO ORDNANCE STORAGE.");
+                    showGameNotification(`FABRICATION COMPLETE: ${weapon.name}`);
                 }
+                this.updateUI();
             }
+
+            if (percentageTxt) percentageTxt.innerText = `FABRICATING: ${displayPct}%`;
         }, interval);
     }
 
     updateStorageUI() {
         const storageGrid = document.getElementById('weapons-storage-grid');
         const emptyMsg = document.getElementById('storage-empty-msg');
-
         if (!storageGrid) return;
 
-        if (this.storageMK1 > 0 && emptyMsg) {
-            emptyMsg.style.display = 'none';
-        }
+        // Clear existing to avoid duplicates, keep empty message logic
+        storageGrid.innerHTML = '';
 
-        let mk1Item = document.getElementById('storage-item-mk1');
+        let hasItems = false;
+        Object.entries(this.storage).forEach(([id, qty]) => {
+            if (qty <= 0) return;
+            hasItems = true;
+            const weapon = MISSILE_DATABASE.find(m => m.id === id);
+            if (!weapon) return;
 
-        if (!mk1Item && this.storageMK1 > 0) {
-            mk1Item = document.createElement('div');
-            mk1Item.id = 'storage-item-mk1';
-            mk1Item.className = 'weapons-storage-item-4k';
-            mk1Item.innerHTML = `
-                <img src="assets/media/mk1%20-%20pulse%20missile.png" class="storage-img-mini">
-                <div class="storage-qty-badge" id="storage-count-mk1">${this.storageMK1}</div>
+            const item = document.createElement('div');
+            item.className = 'weapons-storage-item-4k';
+            item.innerHTML = `
+                <img src="${weapon.image}" class="storage-img-mini">
+                <div class="storage-qty-badge">${qty}</div>
             `;
-            storageGrid.appendChild(mk1Item);
-        } else if (mk1Item) {
-            const countLabel = document.getElementById('storage-count-mk1');
-            if (countLabel) {
-                countLabel.innerText = this.storageMK1;
-            }
-        }
+            storageGrid.appendChild(item);
+        });
+
+        if (emptyMsg) emptyMsg.style.display = hasItems ? 'none' : 'flex';
     }
 }
 
 window.initWeapons = () => {
     window.weaponsModule = new WeaponsModule();
 };
+
 

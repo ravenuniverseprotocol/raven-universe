@@ -147,8 +147,42 @@ class MissileSimulation {
     }
 
     fireMissile(target) {
-        // Origin: Approx center of station + offset to launcher location
-        // Assuming launcher is at a specific offset
+        // --- DYNAMIC WEAPON SELECTION ---
+        const weaponStock = window.weaponsModule ? window.weaponsModule.storage : JSON.parse(localStorage.getItem('raven_weapons_storage') || "{}");
+
+        // Priority: Use strongest available (except MK-X which is strategic)
+        const missilePriority = ['mk5_zeus', 'mk4_hyperion', 'mk3_typhon', 'mk2_vesta', 'mk1'];
+        let selectedId = null;
+
+        for (const id of missilePriority) {
+            if (weaponStock[id] > 0) {
+                selectedId = id;
+                break;
+            }
+        }
+
+        if (!selectedId) return; // No ammo, no fire
+
+        // Deduct and Save
+        if (window.weaponsModule) {
+            window.weaponsModule.storage[selectedId]--;
+            window.weaponsModule.saveState();
+            window.weaponsModule.updateStorageUI();
+        } else {
+            weaponStock[selectedId]--;
+            localStorage.setItem('raven_weapons_storage', JSON.stringify(weaponStock));
+        }
+
+        // Stats Matrix
+        const db = {
+            'mk1': { damage: 60, speed: 6, class: 'sim-missile-mk1' },
+            'mk2_vesta': { damage: 90, speed: 10, class: 'sim-missile-mk2' },
+            'mk3_typhon': { damage: 250, speed: 8, class: 'sim-missile-mk3' },
+            'mk4_hyperion': { damage: 650, speed: 5, class: 'sim-missile-mk4' },
+            'mk5_zeus': { damage: 1200, speed: 7, class: 'sim-missile-mk5' }
+        };
+        const stats = db[selectedId] || db['mk1'];
+
         const originX = this.targetPos.x;
         const originY = this.targetPos.y;
 
@@ -157,17 +191,19 @@ class MissileSimulation {
             x: originX,
             y: originY,
             target: target,
-            speed: 6,
+            speed: stats.speed,
+            damage: stats.damage,
+            type: selectedId,
             el: document.createElement('div')
         };
 
-        missile.el.className = 'sim-missile-mk1';
+        missile.el.className = `sim-missile ${stats.class}`;
         missile.el.innerHTML = '<div class="missile-trail"></div>';
         this.container.appendChild(missile.el);
         this.missiles.push(missile);
 
-        if (typeof playSound === 'function') {
-            // Placeholder sound if available
+        if (selectedId !== 'mk1' && typeof showGameNotification === 'function') {
+            showGameNotification(`LAUNCHING: ${selectedId.toUpperCase()} INTERCEPTOR`);
         }
     }
 
@@ -185,8 +221,8 @@ class MissileSimulation {
 
             if (dist < 15) {
                 // Impact!
-                m.target.hp -= 60;
-                this.impactEffect(m.x, m.y);
+                m.target.hp -= m.damage;
+                this.impactEffect(m.x, m.y, m.type);
                 m.el.remove();
                 this.missiles.splice(index, 1);
             } else {
@@ -202,9 +238,9 @@ class MissileSimulation {
         });
     }
 
-    impactEffect(x, y) {
+    impactEffect(x, y, type) {
         const p = document.createElement('div');
-        p.className = 'sim-impact-spark';
+        p.className = `sim-impact-spark spark-${type}`;
         p.style.left = `${x}px`;
         p.style.top = `${y}px`;
         this.container.appendChild(p);
