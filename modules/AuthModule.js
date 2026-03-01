@@ -1,13 +1,7 @@
 class AuthModule {
     constructor() {
         if (window.DEBUG_RESET) {
-            console.warn("[RAVEN DEBUG] Reset Mode Active: Purging Local Session.");
-            // We clear most keys but keep maybe the last name entered if desired? 
-            // The user said "inicie desde o inicio", so let's be thorough.
-            const keysToKeep = ['raven_debug_persist']; // Example
-            Object.keys(localStorage).forEach(key => {
-                if (!keysToKeep.includes(key)) localStorage.removeItem(key);
-            });
+            console.warn("[RAVEN DEBUG] Reset Mode Active: Session state handled by CommanderModule.");
         }
         this.token = localStorage.getItem('raven_token');
         this.user = JSON.parse(localStorage.getItem('raven_user'));

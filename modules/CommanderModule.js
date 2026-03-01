@@ -36,12 +36,12 @@ class SkillManager {
         this.lastUpdateTime = Date.now();
         this.onlineAnnounced = false; // Reset
 
-        // Identity and State from Server/Login
-        this.commanderName = initialState?.username || 'UNIDENTIFIED';
-        this.credits = initialState?.gameState?.credits || 5000;
-        this.inventory = initialState?.gameState?.inventory || { 'OXYGEN': 500 };
-        this.homeSystem = initialState?.gameState?.homeSystem || "10.05.29";
-        this.homeCoords = initialState?.gameState?.homeCoords || { x: 0, y: 0 };
+        // Identity and State from Server/Login (Forced reset on reload per user protocol)
+        this.commanderName = 'UNIDENTIFIED';
+        this.credits = 5000;
+        this.inventory = { 'OXYGEN': 500 };
+        this.homeSystem = "10.05.29";
+        this.homeCoords = { x: 0, y: 0 };
 
         this.isOnline = false;
         this.radarUnlocked = false;
