@@ -147,21 +147,28 @@ class MissileSimulation {
     }
 
     fireMissile(target) {
-        // --- DYNAMIC WEAPON SELECTION ---
-        const weaponStock = window.weaponsModule ? window.weaponsModule.storage : JSON.parse(localStorage.getItem('raven_weapons_storage') || "{}");
+        // --- TACTICAL GATE: REQUIRE SKILLS ---
+        if (!window.skillManager || !window.skillManager.checkMissileStatus()) return;
 
-        // Priority: Use strongest available (except MK-X which is strategic)
+        // --- DYNAMIC WEAPON SELECTION ---
+        const wm = window.weaponsModule;
+        if (!wm) return;
+
+        const weaponStock = wm.storage;
+        const autoStates = wm.autoFireState;
+
+        // Priority: Use strongest available AND toggled to AUTO
         const missilePriority = ['mk5_zeus', 'mk4_hyperion', 'mk3_typhon', 'mk2_vesta', 'mk1'];
         let selectedId = null;
 
         for (const id of missilePriority) {
-            if (weaponStock[id] > 0) {
+            if (weaponStock[id] > 0 && autoStates[id]) {
                 selectedId = id;
                 break;
             }
         }
 
-        if (!selectedId) return; // No ammo, no fire
+        if (!selectedId) return; // No ammo or none in AUTO mode
 
         // Deduct and Save
         if (window.weaponsModule) {

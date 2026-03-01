@@ -85,9 +85,11 @@ class WeaponsModule {
         // Persistent State
         this.researchState = this.loadResearchState();
         this.storage = this.loadStorage();
+        this.autoFireState = this.loadAutoFireState(); // NEW: Track which missiles fire automatically
 
         // Operational States
         this.isWorking = false; // Prevents multiple ops
+        this.strategicTarget = null; // Target for MK-X
 
         // Particle System
         this.particles = [];
@@ -98,24 +100,17 @@ class WeaponsModule {
         this.init();
     }
 
-    loadResearchState() {
-        const saved = localStorage.getItem('raven_weapons_research');
+    loadAutoFireState() {
+        const saved = localStorage.getItem('raven_artillery_auto');
         if (saved) return JSON.parse(saved);
-        // Default: Only MK1 is researched (or needs research but starting state)
-        return {
-            'mk1': { completed: false, progress: 0 }
-        };
-    }
-
-    loadStorage() {
-        const saved = localStorage.getItem('raven_weapons_storage');
-        if (saved) return JSON.parse(saved);
-        return { 'mk1': 0 };
+        // Default: MK1 is AUTO by default, others are OFF
+        return { 'mk1': true, 'mk2_vesta': false, 'mk3_typhon': false, 'mk4_hyperion': false, 'mk5_zeus': false };
     }
 
     saveState() {
         localStorage.setItem('raven_weapons_research', JSON.stringify(this.researchState));
         localStorage.setItem('raven_weapons_storage', JSON.stringify(this.storage));
+        localStorage.setItem('raven_artillery_auto', JSON.stringify(this.autoFireState));
     }
 
     init() {
@@ -138,6 +133,9 @@ class WeaponsModule {
         // Add Navigation Buttons to UI via JS for minimal HTML changes
         this.injectNavButtons();
 
+        // NEW: Initialize Artillery HUD Console
+        this.initArtilleryHUD();
+
         // Initialize Particle Canvas
         this.particleCanvas = document.getElementById('weapons-particle-canvas');
         if (this.particleCanvas) {
@@ -152,7 +150,104 @@ class WeaponsModule {
                 this.updateUI();
                 this.updateResourceCosts();
             }
+            // Always update HUD Console if visible
+            this.updateArtilleryHUD();
         }, 500);
+    }
+
+    initArtilleryHUD() {
+        const container = document.getElementById('artillery-slots-container');
+        if (!container) return;
+
+        container.innerHTML = ''; // Reset
+
+        MISSILE_DATABASE.forEach(m => {
+            const slot = document.createElement('div');
+            slot.id = `artillery-slot-${m.id}`;
+            slot.className = 'artillery-slot';
+            slot.title = m.name;
+
+            // Image
+            const img = document.createElement('img');
+            img.src = m.image;
+            slot.appendChild(img);
+
+            // Stock Badge
+            const badge = document.createElement('div');
+            badge.className = 'stock-badge';
+            badge.innerText = '0';
+            slot.appendChild(badge);
+
+            // Button (AUTO or READY)
+            const btn = document.createElement('button');
+            btn.className = 'btn-artillery-toggle';
+            if (m.id === 'mkx_voyager') {
+                btn.classList.add('voyager');
+                btn.innerText = 'READY';
+                btn.onclick = (e) => { e.stopPropagation(); this.prepareVoyagerStrike(); };
+            } else {
+                const isAuto = this.autoFireState[m.id];
+                btn.innerText = isAuto ? 'AUTO ON' : 'AUTO OFF';
+                if (isAuto) btn.classList.add('on');
+                btn.onclick = (e) => { e.stopPropagation(); this.toggleAutoFire(m.id, btn); };
+            }
+            slot.appendChild(btn);
+
+            container.appendChild(slot);
+        });
+    }
+
+    toggleAutoFire(id, btn) {
+        this.autoFireState[id] = !this.autoFireState[id];
+        btn.innerText = this.autoFireState[id] ? 'AUTO ON' : 'AUTO OFF';
+        btn.classList.toggle('on', this.autoFireState[id]);
+        this.saveState();
+
+        if (typeof showGameNotification === 'function') {
+            showGameNotification(`${MISSILE_DATABASE.find(m => m.id === id).name}: AUTO FIRE ${this.autoFireState[id] ? 'ACTIVATED' : 'DISABLED'}`);
+        }
+    }
+
+    updateArtilleryHUD() {
+        MISSILE_DATABASE.forEach(m => {
+            const slot = document.getElementById(`artillery-slot-${m.id}`);
+            if (!slot) return;
+
+            const qty = this.storage[m.id] || 0;
+            const badge = slot.querySelector('.stock-badge');
+            if (badge) badge.innerText = qty;
+
+            // Activate slot if stock > 0
+            slot.classList.toggle('active', qty > 0);
+        });
+    }
+
+    updateStorageUI() {
+        // Alias for the update loop to trigger immediate sync
+        this.updateArtilleryHUD();
+        // Also update the main weapons window if it's open
+        if (this.window && this.window.style.display === 'flex') {
+            this.updateUI();
+        }
+    }
+
+    prepareVoyagerStrike() {
+        if ((this.storage['mkx_voyager'] || 0) <= 0) {
+            if (typeof showGameNotification === 'function') showGameNotification("MK-X VOYAGER STOCK DEPLETED");
+            return;
+        }
+
+        if (window.mapModule) {
+            if (typeof showGameNotification === 'function') showGameNotification("SELECT TARGET SYSTEM ON STELLAR MAP");
+            window.mapModule.initStrategicMode();
+        }
+    }
+
+    resizeParticleCanvas() {
+        if (!this.particleCanvas) return;
+        const rect = this.particleCanvas.getBoundingClientRect();
+        this.particleCanvas.width = rect.width;
+        this.particleCanvas.height = rect.height;
     }
 
     injectNavButtons() {

@@ -396,6 +396,30 @@
         <div class="radar-overlay"></div>
     </div>
 
+    <!-- TACTICAL ARTILLERY CONSOLE (Left Side) -->
+    <div id="artillery-hud-console" class="artillery-console-root">
+        <div class="artillery-header">
+            <span class="label">ORDNANCE BATT.</span>
+            <div class="status-dot"></div>
+        </div>
+        <div id="artillery-slots-container" class="artillery-slots">
+            <!-- Dynamic Slots Injected by WeaponsModule.js -->
+        </div>
+    </div>
+
+    <!-- STRATEGIC LAUNCH OVERLAY -->
+    <div id="hud-launch-overlay" class="launch-overlay-hidden">
+        <div class="launch-bracket top"></div>
+        <div class="launch-content">
+            <div class="target-readout">TARGET: <span id="launch-target-name">NONE</span></div>
+            <button id="btn-strategic-launch" class="btn-launch-main">
+                <span class="glitch-text" data-text="LOCKED: LAUNCH">LOCKED: LAUNCH</span>
+            </button>
+            <div class="cancel-prompt">ESC TO ABORT</div>
+        </div>
+        <div class="launch-bracket bottom"></div>
+    </div>
+
     <!-- TRIPLE-A COCKPIT HUD (Structural Realism Overhaul) -->
     <div id="tactical-hud" class="hud-cockpit-root">
         <!-- SVG Definitions for complex glows and filters -->

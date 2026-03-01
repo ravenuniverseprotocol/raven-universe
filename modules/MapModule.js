@@ -30,6 +30,10 @@ class GalaxyMap {
         this.lastPlayerFetchTime = 0;
         this.startAnimation();
 
+        // Strategic Mode States
+        this.isStrategicMode = false;
+        this.activeStrikes = [];
+
         // Initial fetch and periodic refresh
         this.fetchOtherPlayers();
         setInterval(() => this.fetchOtherPlayers(), 60000);
@@ -217,7 +221,12 @@ class GalaxyMap {
             const found = this.systems.find(s => Math.sqrt((s.x - mouseX) ** 2 + (s.y - mouseY) ** 2) < 20 / this.zoom);
             if (found) {
                 this.currentSystemId = found.id;
-                this.updateHUD(found.name);
+                if (this.isStrategicMode) {
+                    this.handleStrategicSelection(found);
+                } else {
+                    this.currentSystemId = found.id;
+                    this.updateHUD(found.name);
+                }
                 this.render();
             }
         });
@@ -235,6 +244,42 @@ class GalaxyMap {
         });
     }
 
+    initStrategicMode() {
+        this.isStrategicMode = true;
+        this.toggleWindow(true);
+        if (typeof showGameNotification === 'function') {
+            showGameNotification("SELECT TARGET SYSTEM FOR MK-X STRIKE");
+        }
+    }
+
+    handleStrategicSelection(system) {
+        this.isStrategicMode = false;
+
+        // Show Launch Overlay on HUD
+        const overlay = document.getElementById('hud-launch-overlay');
+        const targetName = document.getElementById('launch-target-name');
+        const btn = document.getElementById('btn-strategic-launch');
+
+        if (overlay && targetName && btn) {
+            targetName.innerText = system.name;
+            overlay.classList.remove('launch-overlay-hidden');
+
+            btn.onclick = () => {
+                this.executeGalacticStrike(system);
+                overlay.classList.add('launch-overlay-hidden');
+            };
+        }
+
+        // Close map window
+        this.toggleWindow(false);
+    }
+
+    toggleWindow(show) {
+        const mapWin = document.getElementById('map-window');
+        if (mapWin) mapWin.style.display = show ? 'flex' : 'none';
+        if (show) this.resize();
+    }
+
     viewSystem(system) {
         // GATING: Radar check
         if (!window.skillManager || !window.skillManager.checkRadarStatus()) {
@@ -247,26 +292,8 @@ class GalaxyMap {
         this.currentSystemId = system.id;
         this.updateHUD(system.name);
 
-        // --- MK-X GALACTIC STRIKE INTEGRATION ---
-        const mapWin = document.getElementById('map-window');
-        // Let's create a strategic strike interface if we have MK-X stock
-        const weaponStock = window.weaponsModule ? window.weaponsModule.storage : JSON.parse(localStorage.getItem('raven_weapons_storage') || "{}");
-        const mkxStock = weaponStock['mkx_voyager'] || 0;
-
-        // Range calculation (Coordinates are relative to center 10.05.29)
-        const dist = Math.sqrt(Math.pow(system.x, 2) + Math.pow(system.y, 2));
-        const maxStrikeRange = 3500;
-
-        if (dist > 0 && dist < maxStrikeRange && mkxStock > 0) {
-            if (confirm(`INITIATE MK-X GALACTIC STRIKE AGAINST SYSTEM ${system.name}?\n\nRANGE: ${dist.toFixed(0)}ly\nYIELD: 4500GJ\nSTOCK: ${mkxStock}`)) {
-                this.executeGalacticStrike(system);
-                return; // Strike replaces viewing for that click if confirmed
-            }
-        }
-        // --- END MK-X INTEGRATION ---
-
         // Close map window
-        if (mapWin) mapWin.style.display = 'none';
+        this.toggleWindow(false);
 
         // Open TACTICAL SYSTEM VIEW window
         const sysWin = document.getElementById('system-view-window');
@@ -287,19 +314,72 @@ class GalaxyMap {
             window.weaponsModule.storage['mkx_voyager']--;
             window.weaponsModule.saveState();
             window.weaponsModule.updateStorageUI();
-        } else {
-            const stock = JSON.parse(localStorage.getItem('raven_weapons_storage') || "{}");
-            stock['mkx_voyager']--;
-            localStorage.setItem('raven_weapons_storage', JSON.stringify(stock));
         }
+
+        const strike = {
+            id: 'strike-' + Date.now(),
+            origin: { x: 0, y: 0 }, // Launches from center (10.05.29)
+            target: { x: system.x, y: system.y },
+            progress: 0,
+            speed: 0.002, // 1/500th per frame, approx 8-10 seconds for max range
+            targetName: system.name
+        };
+        this.activeStrikes.push(strike);
 
         if (typeof showGameNotification === 'function') {
-            showGameNotification(`MK-X LAUNCHED. WARP TRANSIT INITIATED TO SYSTEM ${system.name}.`);
+            showGameNotification(`MK-X VOYAGER LAUNCHED. TRANSIT TO SYSTEM ${system.name} INITIATED.`);
         }
 
-        // Visual flare on map
-        this.render();
-        console.log(`[STRIKE] MK-X Impacting ${system.name}`);
+        // Trigger Cinematic Shake if available
+        document.body.classList.add('cockpit-vibration');
+        setTimeout(() => document.body.classList.remove('cockpit-vibration'), 2000);
+    }
+
+    renderStrikes() {
+        const ctx = this.ctx;
+        this.activeStrikes.forEach((strike, index) => {
+            strike.progress += strike.speed;
+
+            if (strike.progress >= 1.0) {
+                if (typeof showGameNotification === 'function') {
+                    showGameNotification(`STRATEGIC IMPACT CONFIRMED: SYSTEM ${strike.targetName}`);
+                }
+                this.activeStrikes.splice(index, 1);
+                return;
+            }
+
+            const curX = strike.origin.x + (strike.target.x - strike.origin.x) * strike.progress;
+            const curY = strike.origin.y + (strike.target.y - strike.origin.y) * strike.progress;
+
+            // Draw Tactical Marker "-"
+            ctx.save();
+            ctx.translate(curX, curY);
+
+            // Rotate to point at target
+            const angle = Math.atan2(strike.target.y - strike.origin.y, strike.target.x - strike.origin.x);
+            ctx.rotate(angle);
+
+            ctx.font = '14px Courier New';
+            ctx.fillStyle = '#ff4444';
+            ctx.textAlign = 'center';
+            ctx.fillText('-', 0, 0);
+
+            // Glow
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = '#ff4444';
+            ctx.fillText('-', 0, 0);
+
+            ctx.restore();
+
+            // Draw faint trajectory line
+            ctx.beginPath();
+            ctx.setLineDash([5, 10]);
+            ctx.strokeStyle = 'rgba(255, 68, 68, 0.2)';
+            ctx.moveTo(strike.origin.x, strike.origin.y);
+            ctx.lineTo(curX, curY);
+            ctx.stroke();
+            ctx.setLineDash([]);
+        });
     }
 
     updateHUD(systemName) {
@@ -451,6 +531,9 @@ class GalaxyMap {
 
         // 7. Draw Player Activity (Ships)
         this.drawPlayerActivity(ctx);
+
+        // --- NEW: RENDER STRATEGIC STRIKES ---
+        this.renderStrikes();
 
         ctx.restore();
 
