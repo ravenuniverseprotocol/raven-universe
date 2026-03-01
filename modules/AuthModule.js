@@ -2,9 +2,7 @@ class AuthModule {
     constructor() {
         if (window.DEBUG_RESET) {
             console.warn("[RAVEN DEBUG] Reset Mode Active: Purging Local Session.");
-            // We clear most keys but keep maybe the last name entered if desired? 
-            // The user said "inicie desde o inicio", so let's be thorough.
-            const keysToKeep = ['raven_debug_persist']; // Example
+            const keysToKeep = ['raven_debug_persist'];
             Object.keys(localStorage).forEach(key => {
                 if (!keysToKeep.includes(key)) localStorage.removeItem(key);
             });
@@ -49,6 +47,10 @@ class AuthModule {
                             <button id="auth-register-btn" class="auth-secondary-btn">REGISTER</button>
                         </div>
                         
+                        <div class="auth-extra-actions" style="margin-top: 20px; text-align: center; border-top: 1px solid rgba(255, 153, 0, 0.2); padding-top: 15px;">
+                            <button id="auth-guest-btn" class="auth-secondary-btn" style="width: 100%; border-color: #ff9900; color: #ff9900;">GUEST ACCESS (START AS UNIDENTIFIED)</button>
+                        </div>
+                        
                         <div id="auth-status" class="auth-status"></div>
                     </div>
                 </div>
@@ -58,6 +60,10 @@ class AuthModule {
 
         document.getElementById('auth-login-btn').onclick = () => this.handleAuth('login');
         document.getElementById('auth-register-btn').onclick = () => this.handleAuth('register');
+        document.getElementById('auth-guest-btn').onclick = () => {
+            console.log("[RAVEN AUTH] Entering as GUEST...");
+            this.hideGate({ username: 'UNIDENTIFIED' });
+        };
     }
 
     async handleAuth(type) {
@@ -77,7 +83,6 @@ class AuthModule {
             const apiBase = isLocalFile ? 'https://raven-universe.onrender.com' : '';
             const apiPath = `${apiBase}/api/auth/${type}`;
 
-            console.log(`[RAVEN AUTH] Attempting ${type} via ${apiPath}`);
             const response = await fetch(apiPath, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -94,7 +99,6 @@ class AuthModule {
                 this.isAuth = true;
 
                 status.innerText = "IDENTIFICATION GRANTED";
-                // Pass combined state: user info + game state
                 const fullState = {
                     username: this.user.username,
                     gameState: data.gameState
@@ -119,23 +123,25 @@ class AuthModule {
                 const response = await fetch(apiPath, {
                     headers: { 'Authorization': this.token }
                 });
+
                 if (response.ok) {
                     let gameState = await response.json();
                     if (window.DEBUG_RESET) {
                         console.log("[RAVEN DEBUG] Bypassing Server State for Clinical Reset.");
-                        gameState = null; // Force defaults
+                        gameState = null;
                     }
-                    // Combine local user info with server state
                     const fullState = {
-                        username: this.user ? this.user.username : 'COMMANDER',
+                        username: (this.user && !window.DEBUG_RESET) ? this.user.username : 'UNIDENTIFIED',
                         gameState: gameState
                     };
                     this.hideGate(fullState);
                 } else {
+                    console.warn("OFFLINE MODE ACTIVATED or TOKEN EXPIRED. Clearing session.");
                     this.logout();
                 }
             } catch (err) {
-                console.warn("OFFLINE MODE ACTIVATED");
+                console.warn("OFFLINE MODE ACTIVATED: Could not connect to server. Clearing session.");
+                this.logout();
             }
         }
     }

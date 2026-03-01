@@ -12,6 +12,14 @@
     <canvas id="gameCanvas"></canvas>
     <canvas id="foregroundCanvas"></canvas>
 
+    <script>
+        window.DEBUG_RESET = true;
+        if (window.DEBUG_RESET) {
+            console.warn("[RAVEN] DEBUG RESET ACTIVE - PURGING SESSION DATA");
+            localStorage.clear();
+        }
+    </script>
+
     <!-- NAVIGATION HUD (Top Right) -->
     <div id="navigation-hud">
         <div class="hud-plate">
@@ -478,14 +486,7 @@
         </div>
     </div>
 
-    <!-- Global Debug Flags & Hard Reset -->
-    <script>
-        window.DEBUG_RESET = true;
-        if (window.DEBUG_RESET) {
-            console.warn("[RAVEN] DEBUG RESET ACTIVE - PURGING SESSION DATA");
-            localStorage.clear();
-        }
-    </script>
+    <!-- Modules Loading -->
 
     <!-- Modules Loading -->
     <script src="modules/AuthModule.js"></script>
