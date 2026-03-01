@@ -12,14 +12,6 @@
     <canvas id="gameCanvas"></canvas>
     <canvas id="foregroundCanvas"></canvas>
 
-    <script>
-        window.DEBUG_RESET = true;
-        if (window.DEBUG_RESET) {
-            console.warn("[RAVEN] DEBUG RESET ACTIVE - PURGING SESSION DATA");
-            localStorage.clear();
-        }
-    </script>
-
     <!-- NAVIGATION HUD (Top Right) -->
     <div id="navigation-hud">
         <div class="hud-plate">
@@ -42,7 +34,6 @@
         <img src="assets/media/boa config.webp" alt="Raven Universe" class="logo-image">
     </div>
     <div class="station-container">
-        <div id="defense-sim-container" class="defense-sim-overlay"></div>
         <div id="shield-core" class="shield-core"></div>
         <div id="shield-bubble" class="shield-bubble"></div>
         <img id="radar-visual" src="assets/media/Radar.png" alt="Radar System" class="radar-visual">
@@ -298,8 +289,7 @@
                         <div class="fab-info">
                             <div class="missile-specs">
                                 <h2 class="spec-name">MK1 PULSE MISSILE</h2>
-                                <p class="spec-desc">Automatic short-range defense system with high EM shield
-                                    disruption.</p>
+                                <p class="spec-desc">High-velocity kinetic payload with EM pulse capability.</p>
                             </div>
                             <div id="weapons-construction-details" class="resource-requirements">
                                 <div class="res-item" data-res="IRON">
@@ -352,15 +342,11 @@
                     <div class="lab-notes">
                         <div class="note-item">
                             <span class="note-bullet">»</span>
-                            <span class="note-text">Damage: 60 (Nominal)</span>
+                            <span class="note-text">Analyzing payload stability...</span>
                         </div>
                         <div class="note-item">
                             <span class="note-bullet">»</span>
-                            <span class="note-text">Effect: +50% vs Shields.</span>
-                        </div>
-                        <div class="note-item">
-                            <span class="note-bullet">»</span>
-                            <span class="note-text">Range: Short (Proximity).</span>
+                            <span class="note-text">Optimizing EM pulse frequency.</span>
                         </div>
                     </div>
                 </div>
@@ -486,7 +472,14 @@
         </div>
     </div>
 
-    <!-- Modules Loading -->
+    <!-- Global Debug Flags & Hard Reset -->
+    <script>
+        window.DEBUG_RESET = true;
+        if (window.DEBUG_RESET) {
+            console.warn("[RAVEN] DEBUG RESET ACTIVE - PURGING SESSION DATA");
+            localStorage.clear();
+        }
+    </script>
 
     <!-- Modules Loading -->
     <script src="modules/AuthModule.js"></script>
@@ -500,7 +493,6 @@
     <script src="modules/MarketModule.js"></script>
     <script src="modules/HangarModule.js"></script>
     <script src="modules/WeaponsModule.js?v=3"></script>
-    <script src="modules/MissileSimulation.js"></script>
     <script src="modules/SettingsModule.js"></script>
     <script src="modules/AdminModule.js"></script>
     <script src="main.js"></script>

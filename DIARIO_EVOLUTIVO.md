@@ -92,6 +92,9 @@ O projeto foi modularizado para garantir estabilidade e facilidade de expansão:
 
 * **START_RAVEN.bat**: Lançador direto para evitar vistas de diretório no Windows.
 * **Diagnóstico de Motor**: Alertas em tempo real para falhas de scripts.
+* **UI Harmonization (Fase 1)**:
+  * **Consistência Visual**: Padronização de todos os elementos de interface (botões, janelas, ícones) para seguir o design system Orange Core / Blue Commander.
+  * **Feedback Unificado**: Implementação de um sistema global de notificações e alertas visuais/sonoros para todas as interações do utilizador.
 * **Mercado Galáctico (Fases 1 & 2)**:
   * **Financeiro**: Implementação de créditos (RUC) e carteira persistente.
   * **Inventário**: Sistema de armazenamento para commodities com lógica de BUY/SELL funcional.

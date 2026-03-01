@@ -3,6 +3,7 @@ node_modules/
 data/
 backups/
 backup_before_galaxy/
+backup_*/
 .gemini/
 *.log
 npm-debug.log*
