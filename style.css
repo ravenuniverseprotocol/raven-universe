@@ -2856,3 +2856,46 @@ html {
 
 
 /* End of file */
+/* WEAPONS MODULE ENHANCEMENTS */
+.weapons-nav-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(255, 153, 0, 0.4);
+    color: #ff9900;
+    width: 35px;
+    height: 70px;
+    cursor: pointer;
+    z-index: 100;
+    font-size: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    backdrop-filter: blur(4px);
+    pointer-events: auto !important;
+}
+
+.weapons-nav-btn:hover {
+    background: #ff9900;
+    color: #000;
+    box-shadow: 0 0 20px rgba(255, 153, 0, 0.6);
+}
+
+.weapons-nav-btn.left { left: 5px; border-radius: 4px 0 0 4px; }
+.weapons-nav-btn.right { right: 5px; border-radius: 0 4px 4px 0; }
+
+.research-active .missile-render-4k {
+    animation: pulse-glow 2s infinite ease-in-out;
+}
+
+@keyframes pulse-glow {
+    0%, 100% { filter: drop-shadow(0 0 10px rgba(255,153,0,0.3)); }
+    50% { filter: drop-shadow(0 0 30px rgba(255,153,0,0.8)); }
+}
+
+#weapons-stats-readout div {
+    border-bottom: 1px solid rgba(80, 150, 200, 0.05);
+    padding: 2px 0;
+}
