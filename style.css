@@ -1291,8 +1291,8 @@ html {
     width: 90vw !important;
     height: 85vh !important;
     max-width: 1400px;
-    left: 5vw !important;
-    top: 7.5vh !important;
+    left: 5vw;
+    top: 7.5vh;
 }
 
 .map-content {
@@ -2332,8 +2332,8 @@ html {
 #weapons-window {
     width: 1000px !important;
     height: 720px !important;
-    left: calc(50% - 500px) !important;
-    top: calc(50% - 360px) !important;
+    left: calc(50% - 500px);
+    top: calc(50% - 360px);
 }
 
 .weapons-4k-window .window-header {
