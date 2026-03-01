@@ -2050,12 +2050,6 @@ html {
     animation: emergencyBlink 1s infinite;
 }
 
-/* WEAPONS MODULE STYLES */
-#weapons-window {
-    width: 1000px;
-    height: 600px;
-    background: rgba(10, 15, 25, 0.95) !important;
-}
 
 .weapons-content {
     padding: 15px;
