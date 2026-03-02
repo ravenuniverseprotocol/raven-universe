@@ -2717,7 +2717,21 @@ html {
     font-weight: 800;
     letter-spacing: 2px;
     text-transform: uppercase;
-    transition: all 0.3s;
+    transition: all 0.3s cubic-bezier(0.19, 1, 0.22, 1);
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+}
+
+.fab-status-bar:hover {
+    background: rgba(255, 153, 0, 0.1);
+    border-color: rgba(255, 153, 0, 0.6);
+    color: #fff;
+    box-shadow: 0 0 15px rgba(255, 153, 0, 0.3), inset 0 0 10px rgba(255, 153, 0, 0.1);
+}
+
+.fab-status-bar:active {
+    transform: scale(0.98);
 }
 
 .construction-active .fab-status-bar {
