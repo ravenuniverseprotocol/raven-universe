@@ -2914,39 +2914,55 @@ html {
     padding: 2px 0;
 }
 
-/* 4K TACTICAL ARTILLERY HUD - COMPACT HORIZONTAL ALIGNMENT */
+/* 4K TACTICAL ARTILLERY HUD - CINEMATIC MIRROR REFINEMENT */
 .artillery-console-root {
     position: fixed;
     bottom: 25px;
     left: 45px;
-    /* Shifting further left to avoid O2 bar */
     display: flex;
     flex-direction: row;
     align-items: flex-end;
     gap: 15px;
-    /* More compact gap */
     z-index: 1000;
     pointer-events: auto;
-    padding: 12px;
-    background: linear-gradient(180deg, rgba(15, 15, 15, 0.3) 0%, rgba(0, 0, 0, 0.5) 100%);
-    backdrop-filter: blur(20px);
-    border-top: 1px solid rgba(255, 153, 0, 0.25);
-    border-left: 1px solid rgba(255, 153, 0, 0.1);
-    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.8);
-    animation: slide-in-bottom 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+    padding: 15px 25px;
+    /* CINEMATIC MIRROR GLASS PLATE */
+    background: radial-gradient(circle at 30% 50%, rgba(0, 100, 160, 0.2) 0%, transparent 85%),
+        linear-gradient(180deg, rgba(20, 20, 20, 0.2) 0%, rgba(0, 0, 0, 0.4) 100%);
+    backdrop-filter: blur(15px) saturate(1.4);
+    border-top: 1px solid rgba(0, 240, 255, 0.3);
+    /* Refraction Highlight */
+    border-left: 1px solid rgba(0, 240, 255, 0.15);
+    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9),
+        inset 0 2px 2px rgba(255, 255, 255, 0.1);
     border-radius: 4px;
+    animation: slide-in-bottom 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+    overflow: hidden;
 }
 
 .artillery-console-root::before {
     content: "";
     position: absolute;
     top: 0;
+    top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: repeating-linear-gradient(0deg, rgba(255, 153, 0, 0.03) 0px, transparent 1px, transparent 4px);
+    background: repeating-linear-gradient(90deg, rgba(0, 210, 255, 0.02) 0px, transparent 1px, transparent 50px);
     pointer-events: none;
     opacity: 0.5;
+}
+
+.artillery-console-root::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: repeating-linear-gradient(90deg, rgba(0, 200, 255, 0.03) 0px, transparent 1px, transparent 40px);
+    pointer-events: none;
+    mask-image: linear-gradient(to right, black, transparent);
 }
 
 .artillery-header {
@@ -2955,126 +2971,150 @@ html {
     display: flex;
     flex-direction: row-reverse;
     align-items: center;
-    gap: 6px;
-    padding-bottom: 0;
-    margin-right: 12px;
-    border-left: 2px solid #ff9900;
+    gap: 8px;
+    margin-right: 25px;
+    border-left: 1px solid rgba(0, 210, 255, 0.5);
+    padding-left: 15px;
 }
 
 .artillery-header .label {
     font-family: 'Courier New', monospace;
     font-size: 10px;
-    /* Slightly smaller for density */
     font-weight: 900;
-    color: #ff9900;
-    letter-spacing: 2px;
-    text-shadow: 0 0 10px rgba(255, 153, 0, 0.8);
-}
-
-.artillery-header .status-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #00ff00;
-    box-shadow: 0 0 12px #00ff00;
-    animation: blink 1s infinite ease-in-out;
+    color: #00f0ff;
+    letter-spacing: 5px;
+    text-shadow: 0 0 15px rgba(0, 240, 255, 1);
+    opacity: 0.85;
 }
 
 .artillery-slots {
     display: flex;
     flex-direction: row;
-    gap: 10px;
-    /* Compact slots */
+    gap: 12px;
     align-items: flex-end;
 }
 
+/* FLOATING MISSILE ICON - NO BOXES */
 .artillery-slot {
     position: relative;
-    width: 62px;
-    /* Slimmer slots */
-    height: 95px;
-    background: rgba(5, 5, 5, 0.85);
-    border: 1px solid rgba(255, 153, 0, 0.08);
-    padding: 10px 4px;
+    width: 65px;
+    height: 110px;
+    background: transparent !important;
+    border: none !important;
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: space-between;
-    transition: all 0.4s cubic-bezier(0.19, 1, 0.22, 1);
+    justify-content: flex-end;
+    gap: 15px;
+    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
     opacity: 0.15;
-    filter: grayscale(1) blur(1px);
+    filter: grayscale(1) brightness(0.7);
+}
+
+/* Subtle Base Glow for Floating Items */
+.artillery-slot::before {
+    content: "";
+    position: absolute;
+    bottom: 35px;
+    left: 10%;
+    width: 80%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0, 240, 255, 0.2), transparent);
+    box-shadow: 0 0 10px rgba(0, 240, 255, 0.1);
+    opacity: 0;
+    transition: opacity 0.5s;
 }
 
 .artillery-slot.active {
     opacity: 1;
-    filter: grayscale(0) blur(0);
-    border-color: rgba(255, 153, 0, 0.2);
-    background: linear-gradient(180deg, rgba(15, 15, 15, 0.95) 0%, rgba(5, 5, 5, 1) 100%);
+    filter: grayscale(0) brightness(1);
+}
+
+.artillery-slot.active::before {
+    opacity: 1;
 }
 
 .artillery-slot:hover.active {
-    border-color: #ff9900;
-    background: rgba(255, 153, 0, 0.05);
-    transform: translateY(-5px);
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.6);
+    transform: translateY(-8px) scale(1.05);
 }
 
 .artillery-slot img {
-    width: 85%;
+    width: 100%;
     height: auto;
-    max-height: 45px;
+    max-height: 55px;
     object-fit: contain;
-    filter: drop-shadow(0 0 5px rgba(0, 0, 0, 0.5));
+    filter: drop-shadow(0 0 10px rgba(0, 210, 255, 0.4));
     transition: transform 0.4s;
 }
 
 .artillery-slot:hover img {
-    transform: scale(1.1) rotate(2deg);
+    transform: scale(1.2);
+    filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.8));
 }
 
 .artillery-slot .stock-badge {
     position: absolute;
-    top: 3px;
+    top: 5px;
     right: 5px;
     font-size: 11px;
     font-family: 'Courier New', monospace;
-    color: #ff9900;
+    color: #fff;
     font-weight: 900;
-    text-shadow: 0 0 10px #000;
+    background: rgba(0, 210, 255, 0.4);
+    box-shadow: 0 0 8px rgba(0, 210, 255, 0.5);
+    padding: 2px 5px;
+    border-radius: 4px;
+    text-shadow: 0 0 5px #000;
 }
 
+/* ELABORATE PARTICLE BUTTONS */
 .btn-artillery-toggle {
-    width: 95%;
-    background: rgba(0, 0, 0, 0.8);
-    border: 1px solid #222;
-    color: #444;
+    width: 65px;
+    background: rgba(10, 20, 30, 0.7);
+    border: 1px solid rgba(0, 210, 255, 0.3);
+    color: #5096c8;
     font-family: 'Courier New', monospace;
-    font-size: 8.5px;
-    font-weight: 800;
-    padding: 4px 0;
+    font-size: 8px;
+    font-weight: 900;
+    padding: 8px 0;
     cursor: pointer;
     text-align: center;
-    transition: all 0.3s;
-    letter-spacing: 0.5px;
+    transition: all 0.4s;
+    letter-spacing: 1.5px;
+    position: relative;
+    overflow: hidden;
+    clip-path: polygon(15% 0, 100% 0, 85% 100%, 0% 100%);
 }
 
 .btn-artillery-toggle.on {
     color: #fff;
-    border-color: #ff9900;
-    background: #ff9900;
-    box-shadow: 0 0 15px rgba(255, 153, 0, 0.4);
-    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+    background: rgba(0, 200, 255, 0.5);
+    border-color: #00f0ff;
+    box-shadow: 0 0 20px rgba(0, 240, 255, 0.5);
+    text-shadow: 0 0 10px #fff;
+}
+
+.btn-artillery-toggle.on::before {
+    content: "";
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, transparent, rgba(0, 240, 255, 0.3), transparent 40%);
+    animation: rotate-slow 3s linear infinite;
+    pointer-events: none;
 }
 
 .btn-artillery-toggle.voyager {
     color: #fff;
-    border-color: #00ccff;
-    background: rgba(0, 204, 255, 0.2);
-    box-shadow: 0 0 10px rgba(0, 204, 255, 0.3);
+    background: rgba(255, 68, 68, 0.3);
+    border-color: #ff4444;
 }
 
 .btn-artillery-toggle.voyager:hover {
-    background: #00ccff;
+    background: #ff4444;
+    box-shadow: 0 0 25px rgba(255, 68, 68, 0.6);
 }
 
 .btn-launch-main:hover {
