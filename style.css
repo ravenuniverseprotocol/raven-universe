@@ -2914,7 +2914,7 @@ html {
     padding: 2px 0;
 }
 
-/* 4K TACTICAL ARTILLERY HUD - CINEMATIC MIRROR REFINEMENT */
+/* 4K TACTICAL ARTILLERY HUD - FLOATING CINEMATIC REFINEMENT (NO BOX) */
 .artillery-console-root {
     position: fixed;
     bottom: 25px;
@@ -2925,19 +2925,8 @@ html {
     gap: 15px;
     z-index: 1000;
     pointer-events: auto;
-    padding: 15px 25px;
-    /* CINEMATIC MIRROR GLASS PLATE */
-    background: radial-gradient(circle at 30% 50%, rgba(0, 100, 160, 0.2) 0%, transparent 85%),
-        linear-gradient(180deg, rgba(20, 20, 20, 0.2) 0%, rgba(0, 0, 0, 0.4) 100%);
-    backdrop-filter: blur(15px) saturate(1.4);
-    border-top: 1px solid rgba(0, 240, 255, 0.3);
-    /* Refraction Highlight */
-    border-left: 1px solid rgba(0, 240, 255, 0.15);
-    box-shadow: 0 25px 60px rgba(0, 0, 0, 0.9),
-        inset 0 2px 2px rgba(255, 255, 255, 0.1);
-    border-radius: 4px;
+    padding: 15px 10px;
     animation: slide-in-bottom 1.5s cubic-bezier(0.16, 1, 0.3, 1);
-    overflow: hidden;
 }
 
 .artillery-console-root::before {
@@ -2972,9 +2961,9 @@ html {
     flex-direction: row-reverse;
     align-items: center;
     gap: 8px;
-    margin-right: 25px;
-    border-left: 1px solid rgba(0, 210, 255, 0.5);
-    padding-left: 15px;
+    margin-right: 20px;
+    border-left: 1px solid rgba(0, 240, 255, 0.4);
+    padding-left: 12px;
 }
 
 .artillery-header .label {
