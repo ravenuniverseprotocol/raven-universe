@@ -135,7 +135,9 @@ class SystemView {
             }
 
             // 2. MOVEMENT LOGIC
-            const stopDist = ship.status === 'RETURNING' ? 1 : 5;
+            // FIX: Increased stopDist for mining to 20px to create a reliable arrival zone.
+            // stopDist for RETURNING remains 1px for perfect docking precision.
+            const stopDist = ship.status === 'RETURNING' ? 1 : 20;
             if (dist > stopDist) {
                 const angleToTarget = Math.atan2(dy, dx);
                 let angleDiff = angleToTarget - ship.angle;
@@ -146,8 +148,16 @@ class SystemView {
                 ship.angle += angleDiff * turnSpeed;
 
                 const moveSpeed = (ship.speed || 2) * 60 * dt;
-                ship.x += Math.cos(ship.angle) * moveSpeed;
-                ship.y += Math.sin(ship.angle) * moveSpeed;
+
+                // FIX: Snap-to-target guard — prevents overshoot when moveSpeed > remaining dist.
+                // This is the primary cause of the infinite orbit bug.
+                if (moveSpeed >= dist) {
+                    ship.x = ship.targetX || 0;
+                    ship.y = ship.targetY || 0;
+                } else {
+                    ship.x += Math.cos(ship.angle) * moveSpeed;
+                    ship.y += Math.sin(ship.angle) * moveSpeed;
+                }
 
                 if (ship.status === 'IDLE') ship.status = 'TRANSIT';
             } else {
