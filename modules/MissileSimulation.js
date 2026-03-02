@@ -132,6 +132,20 @@ class MissileSimulation {
             enemy.el.style.left = `${enemy.x}px`;
             enemy.el.style.top = `${enemy.y}px`;
 
+            // Proximity Threat: If too close to station center, deal damage and explode
+            if (dist < 100) {
+                if (window.integrityManager) {
+                    window.integrityManager.takeDamage(150); // Significant hit
+                    if (typeof showGameNotification === 'function') {
+                        showGameNotification("HULL IMPACT: HOSTILE BREACHED PERIMETER", "warning");
+                    }
+                }
+                this.explode(enemy.x, enemy.y);
+                enemy.el.remove();
+                this.enemies.splice(index, 1);
+                return;
+            }
+
             // Auto-fire logic: If in range (e.g., 450px)
             if (dist < 450 && (!enemy.lastFireTime || Date.now() - enemy.lastFireTime > 2000)) {
                 this.fireMissile(enemy);

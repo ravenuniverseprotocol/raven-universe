@@ -243,14 +243,13 @@ class StationHUD {
             p.x = tx; p.y = ty;
         });
 
-        // 3. Status Data
-        this.vShield = (window.shieldManager) ? window.shieldManager.shieldPercent : 100;
-        this.cShield += (this.vShield - this.cShield) * 0.1;
-
-        const tArmor = 100;
-        const tHull = 100;
-        this.cArmor += (tArmor - this.cArmor) * 0.1;
-        this.cHull += (tHull - this.cHull) * 0.1;
+        // 3. Status Data - Link to Central Integrity Manager
+        const integrity = window.integrityManager;
+        if (integrity) {
+            this.cShield += (integrity.shieldPercent - this.cShield) * 0.1;
+            this.cArmor += (integrity.armorPercent - this.cArmor) * 0.1;
+            this.cHull += (integrity.hullPercent - this.cHull) * 0.1;
+        }
 
         this.updateArcs();
         this.updateLEDs(radarActive, shieldActive);
