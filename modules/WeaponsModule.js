@@ -434,10 +434,12 @@ class WeaponsModule {
             if (state.completed) {
                 fabWrapper.style.opacity = '1';
                 fabWrapper.style.pointerEvents = 'auto';
+                if (fabImg) fabImg.style.display = 'block';
                 if (fabStatus && !this.isWorking) fabStatus.innerText = "READY TO FABRICATE";
             } else {
                 fabWrapper.style.opacity = '0.3';
                 fabWrapper.style.pointerEvents = 'none';
+                if (fabImg) fabImg.style.display = 'none';
                 if (fabStatus) fabStatus.innerText = "RESEARCH REQUIRED";
             }
         }
