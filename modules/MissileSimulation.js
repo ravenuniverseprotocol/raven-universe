@@ -253,8 +253,8 @@ class MissileSimulation {
                 m.el.style.left = `${m.x}px`;
                 m.el.style.top = `${m.y}px`;
 
-                // Rotation towards target
-                const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+                // Rotation towards target (+90 deg because sprite is vertical)
+                const angle = (Math.atan2(dy, dx) * 180 / Math.PI) + 90;
                 m.el.style.transform = `rotate(${angle}deg)`;
             }
         });
