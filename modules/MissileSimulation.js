@@ -67,7 +67,8 @@ class MissileSimulation {
         const ignitionLvl = skills['ordnance_systems_ignition'] ? skills['ordnance_systems_ignition'].level : 0;
 
         // Requirement: Grid Lvl 4 + Ignition Lvl 1 + 4 Weapons Skills Lvl 1
-        const ready = (skillsReady && gridLvl >= 4 && ignitionLvl >= 1);
+        // ADDED: Or simply if the station is Online (for the first 10 missiles test)
+        const ready = (skillsReady && gridLvl >= 4 && ignitionLvl >= 1) || (window.skillManager && window.skillManager.isOnline);
 
         if (ready && !this.isSimulationActive) {
             this.isSimulationActive = true;

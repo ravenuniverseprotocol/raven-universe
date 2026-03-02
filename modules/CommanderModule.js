@@ -92,6 +92,18 @@ class SkillManager {
             stationImg.classList.remove('offline');
             if (!this.onlineAnnounced && !isInitial) {
                 this.playOnlineSound();
+
+                // --- AUTO GRANT: 10 MK1 Missiles on First Activation ---
+                console.log("[RAVEN] First Activation: Granting 10 MK1 Pulse Missiles.");
+                const savedStorage = localStorage.getItem('raven_weapons_storage');
+                const storage = savedStorage ? JSON.parse(savedStorage) : {};
+                storage['mk1'] = (storage['mk1'] || 0) + 10;
+                localStorage.setItem('raven_weapons_storage', JSON.stringify(storage));
+                if (window.weaponsModule) {
+                    window.weaponsModule.storage = storage;
+                    window.weaponsModule.updateStorageUI();
+                }
+
                 this.onlineAnnounced = true;
                 localStorage.setItem('raven_online_announced', 'true');
             }
