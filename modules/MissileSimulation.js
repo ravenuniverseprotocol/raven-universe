@@ -298,17 +298,17 @@ window.addEventListener('load', () => {
 // GLOBAL ACCESS FOR TEST COMMANDS
 window.spawnHostile = () => {
     if (window.missileSim) {
-        // --- DEBUG: Grant Test Ammo ---
+        // --- DEBUG: Grant EXACTLY 10 MK1 Missiles ---
         if (window.weaponsModule) {
-            window.weaponsModule.storage['mk1'] = (window.weaponsModule.storage['mk1'] || 0) + 10;
+            window.weaponsModule.storage['mk1'] = 10;
             window.weaponsModule.autoFireState['mk1'] = true;
             window.weaponsModule.saveState();
             window.weaponsModule.updateStorageUI();
         }
 
         window.missileSim.isSimulationActive = true;
-        window.missileSim.spawnEnemy();
-        return "HOSTILE DETECTED. MK1 INTERCEPTORS ARMED. ENGAGING.";
+        window.missileSim.spawnEnemy(); // Immediate spawn
+        return "TEST INITIATED: 10 MK1 PULSE MISSILES LOADED. HOSTILE INBOUND.";
     }
     return "SIMULATION OFFLINE";
 };
