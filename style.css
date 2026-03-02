@@ -1830,28 +1830,49 @@ html {
     /* Tick Marks appearance */
 }
 
+/* 4K SCIFI HUD ARCS - CINEMATIC REFINEMENT */
 .arc-segment {
     fill: none;
     stroke-width: 8;
     stroke-linecap: butt;
-    filter: drop-shadow(0 0 8px currentColor);
-    transition: stroke-dasharray 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+    /* Sharp edge for technical look */
+    filter: drop-shadow(0 0 12px currentColor) drop-shadow(0 0 25px currentColor);
+    transition: stroke-dasharray 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+    stroke-dashoffset: 0;
 }
 
+/* Energy Particle Flow Effect - Layered via Animations */
 .arc-segment.shield {
     stroke: #00f0ff;
-    stroke-dasharray: 314 314;
+    animation: arc-particle-flow 4s linear infinite;
 }
 
 /* L = PI * R */
 .arc-segment.armor {
     stroke: #ffcc00;
-    stroke-dasharray: 361 361;
+    animation: arc-particle-flow 6s linear infinite reverse;
 }
 
 .arc-segment.hull {
     stroke: #ffffff;
-    stroke-dasharray: 408 408;
+    animation: arc-particle-flow 8s linear infinite;
+}
+
+@keyframes arc-particle-flow {
+    0% {
+        stroke-dashoffset: 400;
+    }
+
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+/* Charging State Aesthetic */
+.arc-charging {
+    filter: brightness(1.5) drop-shadow(0 0 20px currentColor);
+    stroke-width: 10;
+    opacity: 0.85;
 }
 
 /* Concentric Reactor Core Area */
@@ -3256,19 +3277,36 @@ html {
     100% {
         transform: translate(2px, 2px);
     }
-}   
- / *   C O C K P I T   I M P A C T   F E E D B A C K   * /  
- . c o c k p i t - s h a k e   {  
-         a n i m a t i o n :   c o c k p i t - s h a k e - a n i m   0 . 4 s   c u b i c - b e z i e r ( . 3 6 ,   . 0 7 ,   . 1 9 ,   . 9 7 )   b o t h ;  
-         t r a n s f o r m :   t r a n s l a t e 3 d ( 0 ,   0 ,   0 ) ;  
-         b a c k f a c e - v i s i b i l i t y :   h i d d e n ;  
-         p e r s p e c t i v e :   1 0 0 0 p x ;  
- }  
-  
- @ k e y f r a m e s   c o c k p i t - s h a k e - a n i m   {  
-         1 0 % ,   9 0 %   {   t r a n s f o r m :   t r a n s l a t e 3 d ( - 1 p x ,   0 ,   0 ) ;   }  
-         2 0 % ,   8 0 %   {   t r a n s f o r m :   t r a n s l a t e 3 d ( 2 p x ,   0 ,   0 ) ;   }  
-         3 0 % ,   5 0 % ,   7 0 %   {   t r a n s f o r m :   t r a n s l a t e 3 d ( - 4 p x ,   1 p x ,   0 ) ;   }  
-         4 0 % ,   6 0 %   {   t r a n s f o r m :   t r a n s l a t e 3 d ( 4 p x ,   - 1 p x ,   0 ) ;   }  
- }  
- 
+}
+
+/* COCKPIT IMPACT FEEDBACK */
+.cockpit-shake {
+    animation: cockpit-shake-anim 0.4s cubic-bezier(.36, .07, .19, .97) both;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+}
+
+@keyframes cockpit-shake-anim {
+
+    10%,
+    90% {
+        transform: translate3d(-1px, 0, 0);
+    }
+
+    20%,
+    80% {
+        transform: translate3d(2px, 0, 0);
+    }
+
+    30%,
+    50%,
+    70% {
+        transform: translate3d(-4px, 1px, 0);
+    }
+
+    40%,
+    60% {
+        transform: translate3d(4px, -1px, 0);
+    }
+}

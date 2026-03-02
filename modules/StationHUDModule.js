@@ -259,18 +259,26 @@ class StationHUD {
     }
 
     updateArcs() {
-        // Path Lengths:
-        // Hull (R100): ~314 (PI * 100)
-        // Armor (R115): ~361 (PI * 115)
-        // Shield (R130): ~408 (PI * 130)
+        // Path Lengths: Hull ~314, Armor ~361, Shield ~408
+        const integrity = window.integrityManager;
+        if (!integrity) return;
 
         const shdArc = document.getElementById('shield-arc');
         const armArc = document.getElementById('armor-arc');
         const hulArc = document.getElementById('hull-arc');
 
-        if (shdArc) shdArc.style.strokeDasharray = `${408 * (this.cShield / 100)} 408`;
-        if (armArc) armArc.style.strokeDasharray = `${361 * (this.cArmor / 100)} 361`;
-        if (hulArc) hulArc.style.strokeDasharray = `${314 * (this.cHull / 100)} 314`;
+        const updateArcElement = (el, current, maxLen, targetPct) => {
+            if (!el) return;
+            el.style.strokeDasharray = `${maxLen * (current / 100)} ${maxLen}`;
+
+            // Apply charging effect if not full or if system is booting
+            if (current < 99.5 && targetPct > 0) el.classList.add('arc-charging');
+            else el.classList.remove('arc-charging');
+        };
+
+        updateArcElement(shdArc, this.cShield, 408, integrity.shieldPercent);
+        updateArcElement(armArc, this.cArmor, 361, integrity.armorPercent);
+        updateArcElement(hulArc, this.cHull, 314, integrity.hullPercent);
     }
 
     updateLEDs(radarActive, shieldActive) {
