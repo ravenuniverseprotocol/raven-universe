@@ -103,7 +103,7 @@ class MissileSimulation {
         else { x = Math.random() * window.innerWidth; y = window.innerHeight + margin; } // Bottom
 
         const enemy = {
-            id: 'enemy-' + now(),
+            id: 'enemy-' + Date.now() + Math.random(),
             x: x,
             y: y,
             hp: 180, // Needs ~3 missiles (60 dmg each)
@@ -208,7 +208,7 @@ class MissileSimulation {
         const originY = this.targetPos.y;
 
         const missile = {
-            id: 'missile-' + now(),
+            id: 'missile-' + Date.now() + Math.random(),
             x: originX,
             y: originY,
             target: target,
@@ -294,3 +294,21 @@ function now() { return Date.now() + Math.random(); }
 window.addEventListener('load', () => {
     window.missileSim = new MissileSimulation();
 });
+
+// GLOBAL ACCESS FOR TEST COMMANDS
+window.spawnHostile = () => {
+    if (window.missileSim) {
+        // --- DEBUG: Grant Test Ammo ---
+        if (window.weaponsModule) {
+            window.weaponsModule.storage['mk1'] = (window.weaponsModule.storage['mk1'] || 0) + 10;
+            window.weaponsModule.autoFireState['mk1'] = true;
+            window.weaponsModule.saveState();
+            window.weaponsModule.updateStorageUI();
+        }
+
+        window.missileSim.isSimulationActive = true;
+        window.missileSim.spawnEnemy();
+        return "HOSTILE DETECTED. MK1 INTERCEPTORS ARMED. ENGAGING.";
+    }
+    return "SIMULATION OFFLINE";
+};
