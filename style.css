@@ -2918,7 +2918,7 @@ html {
 .artillery-console-root {
     position: fixed;
     bottom: 25px;
-    left: 45px;
+    left: 95px;
     display: flex;
     flex-direction: row;
     align-items: flex-end;
